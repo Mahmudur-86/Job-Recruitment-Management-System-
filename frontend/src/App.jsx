@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./components/Home/Home.jsx";
 
@@ -11,6 +11,12 @@ import ManageUsers from "./components/Admin/Pages/ManageUsers.jsx";
 import ManageJobs from "./components/Admin/Pages/ManageJobs.jsx";
 import ManageApplicants from "./components/Admin/Pages/ManageApplicants.jsx";
 import InternshipAlerts from "./components/Admin/Pages/InternshipAlerts.jsx";
+
+
+//  Job Seeker Dashboard imports
+import JobSeekerDashboard from "./components/JobSeeker/JobSeekerDashboard.jsx";
+
+
 
 function AdminLayout({ children }) {
   return (
@@ -73,6 +79,10 @@ export default function App() {
             </AdminLayout>
           }
         />
+        {/*  Job Seeker Dashboard */}
+        <Route path="/jobseeker" element={<JobSeekerDashboard />} />
+
+
       </Routes>
     </Router>
   );
