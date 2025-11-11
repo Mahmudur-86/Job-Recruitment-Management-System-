@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function ManageApplicants() {
   const applications = [
-    { id: 1, applicant: 'John Doe', job: 'Software Engineer', company: 'Tech Corp', date: '2024-11-02', status: 'Pending' },
-    { id: 2, applicant: 'Alice Brown', job: 'Marketing Manager', company: 'Brand Inc', date: '2024-11-06', status: 'Reviewed' },
-    { id: 3, applicant: 'Charlie Davis', job: 'Data Analyst', company: 'Data Solutions', date: '2024-11-09', status: 'Pending' }
+    { id: 1, applicant: 'John Doe', job: 'Software Engineer', company: 'Tech Corp', date: '2024-11-02', status: 'Pending' }
+   
+    
   ];
 
   return (

@@ -1,3 +1,6 @@
+
+import logo from '../../assets/logo.svg';
+
 const Btn = ({ children, onClick }) => (
   <button
     onClick={onClick}
@@ -8,12 +11,22 @@ const Btn = ({ children, onClick }) => (
 );
 
 export default function Navbar() {
+ 
   return (
-    <nav className="mx-auto flex max-w-6xl items-center justify-end gap-4 px-6 py-6">
+    
+    <nav className="flex w-full items-center justify-between bg-white mt-4">
+      <div className="pl-4 sm:pl-6">
+        <img src={logo} alt="Logo" className="h-24 w-36 object-contain sm:h-32 sm:w-44"  />
+      </div>
+        
+      <div className="pr-4 sm:pr-6 flex gap-2 sm:gap-3">
+        <Btn>Register</Btn>
+        <Btn>Login</Btn>
+        <Btn>Admin</Btn>
+      </div>
       
-      <Btn>Register</Btn>
-      <Btn>Login</Btn>
-      <Btn>Admin</Btn>
+     
     </nav>
   );
 }
+

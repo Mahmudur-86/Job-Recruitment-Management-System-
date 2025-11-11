@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function InternshipAlerts() {
   const internships = [
-    { id: 1, company: 'Tech University', title: 'Summer Internship Program', university: 'MIT', submitted: '2024-11-01', status: 'Pending' },
-    { id: 2, company: 'Innovation Labs', title: 'Research Internship', university: 'Stanford', submitted: '2024-11-03', status: 'Approved' },
-    { id: 3, company: 'StartUp Inc', title: 'Product Internship', university: 'Harvard', submitted: '2024-11-07', status: 'Pending' }
+    { id: 1, company: 'StartUp Inc', title: ' Internship Program', university: 'IUBAT', submitted: '2024-11-01', status: 'Pending' },
+    { id: 2, company: 'Innovation Labs', title: 'MERN Internship', university: 'Stanford', submitted: '2024-11-03', status: 'Approved' },
+   
   ];
 
   return (
