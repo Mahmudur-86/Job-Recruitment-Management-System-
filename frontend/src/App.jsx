@@ -16,7 +16,9 @@ import InternshipAlerts from "./components/Admin/Pages/InternshipAlerts.jsx";
 //  Job Seeker Dashboard imports
 import JobSeekerDashboard from "./components/JobSeeker/JobSeekerDashboard.jsx";
 
+//  Employer Dashboard imports
 
+import EmployerDashboard from "./components/Employer/EmployerDashboard.jsx";
 
 function AdminLayout({ children }) {
   return (
@@ -82,6 +84,10 @@ export default function App() {
         {/*  Job Seeker Dashboard */}
         <Route path="/jobseeker" element={<JobSeekerDashboard />} />
 
+
+
+        {/*  Employer Dashboard */}   
+             <Route path="/employer" element={<EmployerDashboard />} />
 
       </Routes>
     </Router>
