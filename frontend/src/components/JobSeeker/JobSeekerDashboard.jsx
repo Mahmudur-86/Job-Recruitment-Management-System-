@@ -56,7 +56,7 @@ export default function JobSeekerDashboard() {
   const confirmLogout = window.confirm('Are you sure you want to logout?');
   if (confirmLogout) {
     alert('Logged out successfully!');
-   
+    // Add actual logout logic here (e.g., clearing auth tokens, redirecting to login page)
   }
 };
 

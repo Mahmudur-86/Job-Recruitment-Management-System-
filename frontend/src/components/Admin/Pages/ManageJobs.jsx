@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ManageJobs() {
   const jobs = [
-    { id: 1, title: 'Software Engineer', company: 'Tech Corp', posted: '2024-11-01', applicants: 45 }
+    { id: 1, title: 'Software Engineer', company: 'Tech Corp', posted: '2024-11-01', applicants: 8 }
    
   ];
 

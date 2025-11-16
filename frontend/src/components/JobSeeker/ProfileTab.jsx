@@ -83,16 +83,16 @@ return (
             type="file"
             accept=".pdf"
             onChange={(e) => setProfile({...profile, cv: e.target.files[0]})}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 "
           />
           {profile.cv && (
-            <p className="text-sm text-green-600 mt-1">✓ {profile.cv.name}</p>
+            <p className="text-sm text-green-600 mt-">✓ {profile.cv.name}</p>
           )}
         </div>
         
         <button 
           onClick={handleSaveProfile}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-900 transition"
         >
           Save Profile
         </button>

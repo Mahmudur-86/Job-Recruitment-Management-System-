@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function ManageUsers() {
   const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'Job Seeker', status: 'Active' }
-    
+    { id: 1, name: 'John Doe', email: 'john@example.com', type: 'Job Seeker', status: 'Active' },
+    { id: 2, name: ' Doe Ellen', email: 'elen@example.com', type: 'Employer', status: 'Active' }
   ];
 
   return (
