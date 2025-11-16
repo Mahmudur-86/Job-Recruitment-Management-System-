@@ -1,6 +1,11 @@
 
 import logo from '../../assets/logo.svg';
 
+import Register from "./AuthForm/Register.jsx";
+import Login from "./AuthForm/Login.jsx";
+import Admin from "./AuthForm/Admin.jsx";
+
+
 const Btn = ({ children, onClick }) => (
   <button
     onClick={onClick}
@@ -10,7 +15,7 @@ const Btn = ({ children, onClick }) => (
   </button>
 );
 
-export default function Navbar() {
+export default function Navbar({ onAuthClick }) {
  
   return (
     
@@ -20,9 +25,14 @@ export default function Navbar() {
       </div>
         
       <div className="pr-4 sm:pr-6 flex gap-2 sm:gap-3">
-        <Btn>Register</Btn>
-        <Btn>Login</Btn>
-        <Btn>Admin</Btn>
+    
+
+ <Btn onClick={() => onAuthClick('register')}>Register</Btn>
+        <Btn onClick={() => onAuthClick('login')}>Login</Btn>
+        <Btn onClick={() => onAuthClick('admin')}>Admin</Btn>
+
+
+
         
       </div>
       
