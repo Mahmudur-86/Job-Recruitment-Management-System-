@@ -1,8 +1,7 @@
 
 import logo from '../../assets/logo.svg';
 
-import Register from "./AuthForm/Register.jsx";
-import Login from "./AuthForm/Login.jsx";
+
 import Admin from "./AuthForm/Admin.jsx";
 
 

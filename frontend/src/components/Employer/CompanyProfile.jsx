@@ -55,9 +55,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                 onChange={(e) => setProfile({...profile, logo: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               />
-              {profile.logo && (
-                <img src={profile.logo} alt="Logo" className="mt-2 h-20 rounded" />
-              )}
+              
             </div>
             <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
               Save Profile

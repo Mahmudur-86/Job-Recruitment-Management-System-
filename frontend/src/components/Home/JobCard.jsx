@@ -1,4 +1,7 @@
 
+
+
+
 export default function JobCard({ company, tag, title, image }) {
  // const [applied, setApplied] = useState(false);
  // const [loading, setLoading] = useState(false);

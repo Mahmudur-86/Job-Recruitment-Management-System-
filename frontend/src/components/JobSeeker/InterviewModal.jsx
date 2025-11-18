@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 
 
-export default function InterviewModal(job, profile, onClose, onSubmit, applicationId) {
+export default function InterviewModal({job, profile, onClose, onSubmit, applicationId}) {
 const [interviewAnswers, setInterviewAnswers] = useState({});
 
   const interviewQuestions = [
@@ -42,7 +42,7 @@ const [interviewAnswers, setInterviewAnswers] = useState({});
   const allAnswersValid = interviewQuestions.every((_, i) => isAnswerValid(interviewAnswers[i]));
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
         {/* Header */}
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Interview Questions</h2>

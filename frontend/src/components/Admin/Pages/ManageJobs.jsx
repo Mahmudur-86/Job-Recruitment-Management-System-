@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ManageJobs() {
   const jobs = [
-    { id: 1, title: 'Software Engineer', company: 'Tech Corp', posted: '2024-11-01', applicants: 8 }
+    
    
   ];
 
@@ -16,7 +16,7 @@ export default function ManageJobs() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job Title</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Posted Date</th>
+             
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applicants</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
