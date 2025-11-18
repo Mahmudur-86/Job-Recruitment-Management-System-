@@ -9,7 +9,7 @@ import StudentInternList from './StudentInternList';
 import StudentInternshipAlert from './StudentInternshipAlert';
 import EmailModal from './EmailModal';
 
-export default function EmployerDashboard() {
+export default function EmployerDashboard({onLogout}) {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [jobs, setJobs] = useState([
     { id: 1, title: 'Frontend Developer', department: 'IT', applications: 15, salary: '$60k-80k', deadline: '2025-12-01' },
@@ -47,6 +47,12 @@ export default function EmployerDashboard() {
   const [universityFilter, setUniversityFilter] = useState('');
 
   return (
+<div className="min-h-screen bg-gray-100">
+ <NavBar onLogout={onLogout} />
+
+
+
+    
     <div>
       {currentPage === 'dashboard' && (
         <Dashboard setCurrentPage={setCurrentPage} />
@@ -106,6 +112,8 @@ export default function EmployerDashboard() {
           onClose={() => setShowEmailModal(false)} 
         />
       )}
+     
+    </div>
     </div>
   );
 }

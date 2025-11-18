@@ -1,9 +1,9 @@
-import NavBar from './NavBar';
+
 
 export default function CompanyProfile({ setCurrentPage, profile, setProfile }) {
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavBar />
+     
       <div className="container mx-auto p-8">
         <button onClick={() => setCurrentPage('dashboard')} className="mb-4 text-blue-600 hover:underline">
           ← Back to Dashboard

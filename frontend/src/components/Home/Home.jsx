@@ -1,34 +1,93 @@
 import { useState } from "react";
+
 import Navbar from "./Navbar.jsx";
 import Hero from "./Hero.jsx";
 import JobGrid from "./JobGrid.jsx";
 import LargeBanner from "./LargeBanner.jsx";
 import Footer from "./Footer.jsx";
-import Register from './AuthForm/Register';
-import Login from './AuthForm/Login';
-import Admin from './AuthForm/Admin';
 
+// AUTH POPUPS
+import Register from "./AuthForm/Register";
+import Login from "./AuthForm/Login";
+import Admin from "./AuthForm/Admin";
+
+// DASHBOARDS
+import JobSeekerDashboard from "../JobSeeker/JobSeekerDashboard.jsx";
+import EmployerDashboard from "../Employer/EmployerDashboard.jsx";
 
 export default function Home() {
-
   const [activeForm, setActiveForm] = useState(null);
-  // 'register', 'login', 'admin', or null
+  const [userRole, setUserRole] = useState(null);
+
+  //  LOGOUT (from any dashboard)
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    setUserRole(null); // back to home
+  };
+
+  //  ROLE SWITCH → Dashboard Open
+  if (userRole === "jobseeker") {
+    return <JobSeekerDashboard onLogout={handleLogout} />;
+  }
+
+  if (userRole === "employer") {
+    return <EmployerDashboard onLogout={handleLogout} />;
+  }
+
+  // -----------------------------
+  //     PUBLIC HOME PAGE
+  // -----------------------------
 
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar onAuthClick={setActiveForm} />
       <Hero />
 
-     {/* Auth Forms Modal/Overlay */}
+      {/* POPUP FORMS */}
       {activeForm && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          {activeForm === 'register' && <Register onBack={() => setActiveForm(null)} />}
-          {activeForm === 'login' && <Login onBack={() => setActiveForm(null)} />}
-          {activeForm === 'admin' && <Admin onBack={() => setActiveForm(null)} />}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+
+          {/* REGISTER FORM */}
+          {activeForm === "register" && (
+            <Register
+              onBack={() => setActiveForm(null)}
+
+              //  After Register → Auto Login to Dashboard
+              onRegistrationSuccess={(role) => {
+                setUserRole(role);   // open dashboard
+                setActiveForm(null); // close popup
+              }}
+            />
+          )}
+
+          {/* LOGIN FORM */}
+          {activeForm === "login" && (
+            <Login
+              onBack={() => setActiveForm(null)}
+              onCreateNew={() => setActiveForm("register")}
+
+              //  Login → Go to correct dashboard
+              onLoginSuccess={(role) => {
+                setUserRole(role);
+                setActiveForm(null);
+              }}
+            />
+          )}
+
+          {/* ADMIN LOGIN */}
+          {activeForm === "admin" && (
+            <Admin onBack={() => setActiveForm(null)} />
+          )}
         </div>
       )}
 
-     
       <JobGrid />
       <LargeBanner />
       <Footer />
