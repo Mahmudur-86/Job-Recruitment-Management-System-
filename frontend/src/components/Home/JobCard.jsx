@@ -1,9 +1,4 @@
 
-
-
-
-import { useState } from "react";
-
 export default function JobCard({ company, tag, title, image }) {
  // const [applied, setApplied] = useState(false);
  // const [loading, setLoading] = useState(false);
@@ -23,7 +18,7 @@ export default function JobCard({ company, tag, title, image }) {
         <img src={image} alt={title} className="h-28 w-full object-cover" />
       </div>
 
-      {/* Title + pill */}
+      {/* Title */}
       <div className="mt-3 text-base font-semibold text-stone/90">{company}</div>
       <div className="mt-2">
         <span className="inline-block rounded-full bg-rose-100 px-4 py-1 text-xs text-stone/90">
