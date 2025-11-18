@@ -6,7 +6,7 @@ export default function Dashboard() {
     { label: 'Total Jobs', value: '2', color: 'bg-green-500' },
     { label: 'Employers', value: '1', color: 'bg-purple-500' },
     { label: 'Total Applications', value: '10', color: 'bg-orange-500' },
-    { label: 'Internship Alerts', value: '1', color: 'bg-red-500' },
+    { label: 'Internship Alerts', value: '5', color: 'bg-red-500' },
      { label: 'Internship Student List', value: '1', color: 'bg-red-500' },
   ];
 

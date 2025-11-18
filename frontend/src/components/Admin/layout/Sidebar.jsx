@@ -1,10 +1,10 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, Briefcase, FileText, Bell, LogOut } from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
+
 
   const navItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: <LayoutDashboard size={18} /> },
@@ -14,10 +14,10 @@ export default function Sidebar() {
     { name: "Internship Alerts", path: "/admin/internships", icon: <Bell size={18} /> },
   ];
 
-  const handleLogout = () => {
-    alert(" Logged out successfully!");
-    navigate("/"); 
-  };
+ const handleLogout = () => {
+  localStorage.removeItem("adminToken");
+  window.location.href = "/";   // direct homepage redirect
+};
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen p-4 flex flex-col justify-between">

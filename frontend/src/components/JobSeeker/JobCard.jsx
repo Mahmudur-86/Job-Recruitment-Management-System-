@@ -24,7 +24,7 @@ return (
         <p className="flex items-center gap-1">
           <MapPin size={14} /> {job.location}
         </p>
-        <p>💼 {job.department}</p>
+        
         <p className="col-span-2 font-semibold text-green-600">💰 {job.salary}</p>
       </div>
       

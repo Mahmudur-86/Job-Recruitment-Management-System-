@@ -16,11 +16,11 @@ const demoJobs = [
       id: 1,
       title: 'Frontend Developer',
       company: 'Tech Corp',
-      location: 'New York',
-      department: 'Engineering',
+      location: 'Dhaka',
+      
       category: 'Full-time',
       salary: '$80,000 - $100,000',
-      description: 'Looking for an experienced frontend developer...',
+      description: 'Looking for an experienced frontend developer',
       requirements: 'React, JavaScript, CSS'
     },
  

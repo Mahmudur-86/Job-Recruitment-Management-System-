@@ -40,7 +40,13 @@ const [showPassword, setShowPassword] = useState(false);
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
-
+ <button
+          onClick={handleSubmit}
+          className="w-full bg-cyan-400 text-white py-2 rounded-lg hover:bg-cyan-500 transition"
+        >
+          Register
+        </button>
+        
         <button
           onClick={handleSubmit}
           className="w-full flex items-center justify-center gap-3 bg-blue-500 text-white py-3 rounded-lg border border-gray-300 hover:bg-blue-600 transition font-medium"
@@ -48,12 +54,7 @@ const [showPassword, setShowPassword] = useState(false);
           Continue with Google
         </button>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-cyan-400 text-white py-2 rounded-lg hover:bg-cyan-500 transition"
-        >
-          Register
-        </button>
+       
       </div>
       <button
         onClick={onBack}
