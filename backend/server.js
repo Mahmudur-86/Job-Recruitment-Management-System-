@@ -5,10 +5,13 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
 const adminRoutes = require("./routes/adminRoutes");
-
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
+// -------------------------
+// DATABASE CONNECT
+// -------------------------
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
@@ -16,8 +19,12 @@ mongoose
 
 const app = express();
 
-app.use(express.json());
-app.use(cookieParser());
+// -------------------------
+// MIDDLEWARE (TOP LEVEL)
+// MUST BE BEFORE ROUTES
+// -------------------------
+app.use(express.json());      // BODY PARSER
+app.use(cookieParser());      // COOKIE PARSER
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -25,12 +32,23 @@ app.use(
   })
 );
 
+// -------------------------
+// ROUTES (AFTER MIDDLEWARE)
+// -------------------------
+
+// AUTH ROUTES
+app.use("/", authRoutes);
+
+// ADMIN ROUTES
+app.use("/api/admin", adminRoutes);
+
+// DEFAULT ROOT
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
-app.use("/api/admin", adminRoutes);
-
+// -------------------------
+// SERVER START
+// -------------------------
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

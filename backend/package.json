@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "MERN backend for job recruitment system",
   "main": "server.js",
-"scripts": {
-  "dev": "nodemon server.js",
-  "start": "node server.js"
-}
-,
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

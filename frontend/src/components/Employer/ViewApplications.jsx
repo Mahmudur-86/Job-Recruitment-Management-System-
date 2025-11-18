@@ -1,4 +1,4 @@
-import NavBar from './NavBar';
+
 import EmailModal from './EmailModal';
 
 export default function ViewApplications({ 
@@ -11,7 +11,7 @@ export default function ViewApplications({
 }) {
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavBar />
+      
       <div className="container mx-auto p-8">
         <button onClick={() => setCurrentPage('managejobs')} className="mb-4 text-blue-600 hover:underline">
           ← Back to Jobs

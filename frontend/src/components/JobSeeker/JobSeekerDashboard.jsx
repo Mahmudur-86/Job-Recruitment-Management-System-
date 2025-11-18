@@ -7,7 +7,7 @@ import NotificationsTab from './NotificationsTab';
 import InternTab from './InternTab';
 import InterviewModal from './InterviewModal';
 
-export default function JobSeekerDashboard() {
+export default function JobSeekerDashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('browse');
   const [profile, setProfile] = useState({
     name: 'John Doe',
@@ -52,13 +52,7 @@ export default function JobSeekerDashboard() {
   };
 
 
-  const handleLogout = () => {
-  const confirmLogout = window.confirm('Are you sure you want to logout?');
-  if (confirmLogout) {
-    alert('Logged out successfully!');
-    // Add actual logout logic here (e.g., clearing auth tokens, redirecting to login page)
-  }
-};
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -70,8 +64,8 @@ export default function JobSeekerDashboard() {
             <p className="mt-2">Welcome, {profile.name}!</p>
           </div>
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition duration-200 shadow-md"
+            onClick={onLogout}
+            className="flex items-center gap-2  hover:bg-green-600 px-4 py-2 rounded transition duration-200 shadow-md"
           >
             <LogOut size={20} />
             Logout

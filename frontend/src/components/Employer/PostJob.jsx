@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import NavBar from './NavBar';
+
 
 export default function PostJob({ setCurrentPage, jobs, setJobs }) {
 
@@ -17,7 +17,7 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavBar />
+     
 
       <div className="container mx-auto p-8">
         <button 

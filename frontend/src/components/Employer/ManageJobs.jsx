@@ -1,9 +1,9 @@
-import NavBar from './NavBar';
+
 
 export default function ManageJobs({ setCurrentPage, jobs, setJobs }) {
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavBar />
+     
 
       <div className="container mx-auto p-8">
         <button 
