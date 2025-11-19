@@ -2,7 +2,9 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Register user
+// ==================================
+// REGISTER USER
+// ==================================
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -34,10 +36,9 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-
-
-// Login user
-
+// ==================================
+// LOGIN USER
+// ==================================
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -45,7 +46,7 @@ exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Blocked user check
+    // BLOCKED USER CHECK
     if (user.status === "Blocked") {
       return res.status(403).json({ message: "Your account is blocked" });
     }
@@ -53,20 +54,20 @@ exports.loginUser = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: "Wrong password" });
 
-    // Generate token
+    // GENERATE TOKEN
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Store token in cookie also 
+    // STORE TOKEN IN COOKIE ALSO (optional)
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict"
     });
 
-    // Return token to frontend
+    // RETURN TOKEN TO FRONTEND (VERY IMPORTANT)
     return res.json({
       message: "Login success",
       role: user.role,
@@ -79,9 +80,9 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-
-// Logout user
-
+// ==================================
+// LOGOUT USER
+// ==================================
 exports.logoutUser = (req, res) => {
   res.clearCookie("token");
   return res.json({ message: "Logged out" });

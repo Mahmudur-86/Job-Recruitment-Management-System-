@@ -12,10 +12,10 @@ const {
 
 const auth = require("../middleware/authMiddleware");
 
-// Admin login
+// Admin login — not protected
 router.post("/login", adminLogin);
 
-// All other admin features 
+// All other admin features — protected
 router.use(auth);
 
 router.get("/users", getAllUsers);
