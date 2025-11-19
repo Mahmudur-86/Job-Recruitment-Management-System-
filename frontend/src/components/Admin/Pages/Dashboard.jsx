@@ -1,26 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Dashboard() {
-  const ee = [
-    { label: 'Total Users', value: '3', color: 'bg-blue-500' },
-    { label: 'Total Jobs', value: '2', color: 'bg-green-500' },
-    { label: 'Employers', value: '1', color: 'bg-purple-500' },
-    { label: 'Total Applications', value: '10', color: 'bg-orange-500' },
-    { label: 'Internship Alerts', value: '5', color: 'bg-red-500' },
-     { label: 'Internship Student List', value: '1', color: 'bg-red-500' },
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    employers: 0,
+    totalJobs: 0,
+    totalApplications: 0,
+    totalInternshipAlert: 0,
+  });
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/admin/stats`)
+      .then((res) => setStats(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const cards = [
+    { label: "Total Users", value: stats.totalUsers },
+    
+    { label: "Total Jobs", value: stats.totalJobs },
+    { label: "Total Applications", value: stats.totalApplications },
+ { label: "Total Internship Alerts", value: stats.totalInternshipAlert  },
+
+
+
+
+
   ];
 
   return (
     <div>
       <h3 className="text-xl font-semibold mb-6 text-gray-800">Dashboard Overview</h3>
-      <p className="text-gray-600 mb-6">Overview of total users, jobs, employers, applications and internship alerts.</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {ee.map((stat, idx) => (
-          <div key={idx} className="bg-neutral-500 rounded-lg shadow p-6 flex flex-col justify-between">
-            
-              <span className="text-white text-sm font-semibold text-left px-2 leading-tight transition-[1,2] duration-500 hover:h-2 ">{stat.label}</span>
-            
-            <p className="text-2xl font-bold text-gray-800 text-right ">{stat.value}</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((c, idx) => (
+          <div key={idx} className="bg-white shadow rounded-lg p-6">
+            <p className="text-gray-600 text-sm">{c.label}</p>
+            <p className="text-3xl font-bold">{c.value}</p>
           </div>
         ))}
       </div>
