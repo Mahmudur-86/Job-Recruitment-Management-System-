@@ -4,9 +4,9 @@ import axios from "axios";
 export default function Dashboard() {
   const [stats, setStats] = useState({
     totalUsers: 0,
-    employers: 0,
     totalJobs: 0,
     totalApplications: 0,
+    totalInternshipsAlert:0,
   });
 
   useEffect(() => {
@@ -44,11 +44,7 @@ export default function Dashboard() {
           <p className="text-3xl font-semibold text-blue-600">{stats.totalUsers}</p>
         </div>
 
-        {/* Employers */}
-        <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Employers</h3>
-          <p className="text-3xl font-semibold text-green-600">{stats.employers}</p>
-        </div>
+      
 
         {/* Total Jobs */}
         <div className="bg-white shadow p-6 rounded-lg border">
@@ -60,6 +56,12 @@ export default function Dashboard() {
         <div className="bg-white shadow p-6 rounded-lg border">
           <h3 className="text-xl font-bold text-gray-700 mb-2">Applications</h3>
           <p className="text-3xl font-semibold text-green-800">{stats.totalApplications}</p>
+        </div>
+
+
+        <div className="bg-white shadow p-6 rounded-lg border">
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Internships Alert</h3>
+          <p className="text-3xl font-semibold text-green-800">{stats.totalInternshipsAlert}</p>
         </div>
 
       </div>

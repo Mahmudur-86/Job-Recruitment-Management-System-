@@ -1,3 +1,4 @@
+// Home.jsx
 import { useState } from "react";
 
 import Navbar from "./Navbar.jsx";
@@ -19,7 +20,6 @@ export default function Home() {
   const [activeForm, setActiveForm] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
-  //  LOGOUT (from any dashboard)
   const handleLogout = async () => {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
@@ -29,15 +29,10 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     }
-
-    // 🔥 IMPORTANT: REMOVE TOKEN FROM BROWSER
     localStorage.removeItem("token");
-
-    // BACK TO HOME PAGE
     setUserRole(null);
   };
 
-  //  ROLE SWITCH → Dashboard Open
   if (userRole === "jobseeker") {
     return <JobSeekerDashboard onLogout={handleLogout} />;
   }
@@ -45,10 +40,6 @@ export default function Home() {
   if (userRole === "employer") {
     return <EmployerDashboard onLogout={handleLogout} />;
   }
-
-  // -----------------------------
-  //     PUBLIC HOME PAGE
-  // -----------------------------
 
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">
@@ -58,27 +49,20 @@ export default function Home() {
       {/* POPUP FORMS */}
       {activeForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-
-          {/* REGISTER FORM */}
           {activeForm === "register" && (
             <Register
               onBack={() => setActiveForm(null)}
-
-              //  After Register → Auto Login to Dashboard
               onRegistrationSuccess={(role) => {
-                setUserRole(role);   // open dashboard
-                setActiveForm(null); // close popup
+                setUserRole(role);
+                setActiveForm(null);
               }}
             />
           )}
 
-          {/* LOGIN FORM */}
           {activeForm === "login" && (
             <Login
               onBack={() => setActiveForm(null)}
               onCreateNew={() => setActiveForm("register")}
-
-              //  Login → Go to correct dashboard
               onLoginSuccess={(role) => {
                 setUserRole(role);
                 setActiveForm(null);
@@ -86,14 +70,19 @@ export default function Home() {
             />
           )}
 
-          {/* ADMIN LOGIN */}
           {activeForm === "admin" && (
             <Admin onBack={() => setActiveForm(null)} />
           )}
         </div>
       )}
 
-      <JobGrid />
+      {/* ⬇️ Ei line ta important – Apply Now theke Register popup open korbe */}
+      <JobGrid
+        onApply={() => {
+          setActiveForm("register");
+        }}
+      />
+
       <LargeBanner />
       <Footer />
     </main>
