@@ -21,7 +21,10 @@ exports.adminLogin = async (req, res) => {
     { expiresIn: "1d" }
   );
 
-  res.json({ token, admin: { username: admin.username } });
+  return res.json({
+    token,
+    admin: { username: admin.username }
+  });
 };
 
 // ======================================
@@ -68,16 +71,14 @@ exports.addUser = async (req, res) => {
 };
 
 // ======================================
-// GET DASHBOARD STATS  (⭐ THIS IS YOUR CODE)
+// GET DASHBOARD STATS
 // ======================================
 exports.getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const employers = await User.countDocuments({ role: "employer" });
 
-    // If you don't have Job and Application models yet,
-    // we will send static 0 values to avoid error.
-    const totalJobs = 0;
+    const totalJobs = 0; // If no Jobs model yet
     const totalApplications = 0;
 
     res.json({
@@ -86,6 +87,7 @@ exports.getDashboardStats = async (req, res) => {
       totalJobs,
       totalApplications,
     });
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });

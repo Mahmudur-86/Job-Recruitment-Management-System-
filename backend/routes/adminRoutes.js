@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 
 const {
   adminLogin,
@@ -9,18 +10,18 @@ const {
   getDashboardStats
 } = require("../controllers/adminController");
 
-const router = express.Router();   //  Declare router 
+const auth = require("../middleware/authMiddleware");
 
-// Admin login
+// Admin login — not protected
 router.post("/login", adminLogin);
 
-// USERS CRUD
+// All other admin features — protected
+router.use(auth);
+
 router.get("/users", getAllUsers);
 router.post("/user/status", updateUserStatus);
 router.delete("/user/:id", deleteUser);
 router.post("/user/add", addUser);
-
-//  DASHBOARD STATS ROUTE
 router.get("/stats", getDashboardStats);
 
 module.exports = router;
