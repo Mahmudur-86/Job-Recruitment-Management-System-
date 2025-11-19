@@ -17,7 +17,7 @@ export default function ProfileTab({ profile, setProfile }) {
       setProfile((prev) => ({
         ...prev,
         cvName: file.name,
-        cvFile: file, // Later will be sent to backend via FormData
+        cvFile: file, 
       }));
     } else {
       alert("Only PDF file allowed.");
@@ -35,7 +35,7 @@ export default function ProfileTab({ profile, setProfile }) {
       </h2>
 
       <div className="space-y-8">
-        {/* ---------------- BASIC INFORMATION ---------------- */}
+        {/*  BASIC INFORMATION */}
         <section>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
             Basic Information
@@ -92,7 +92,7 @@ export default function ProfileTab({ profile, setProfile }) {
           </div>
         </section>
 
-        {/* ---------------- PERSONAL DETAILS ---------------- */}
+        {/* PERSONAL DETAILS  */}
         <section>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
             Personal Details
@@ -154,7 +154,7 @@ export default function ProfileTab({ profile, setProfile }) {
           </div>
         </section>
 
-        {/* ---------------- SKILLS / EDUCATION / EXPERIENCE ---------------- */}
+        {/*  SKILLS / EDUCATION / EXPERIENCE  */}
         <section>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
             Skills & Background
@@ -187,7 +187,7 @@ export default function ProfileTab({ profile, setProfile }) {
           </div>
         </section>
 
-        {/* ---------------- LINKS ---------------- */}
+        {/* LINKS */}
         <section>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
             Online Presence
@@ -220,7 +220,7 @@ export default function ProfileTab({ profile, setProfile }) {
           </div>
         </section>
 
-        {/* ---------------- CV UPLOAD ---------------- */}
+        {/* CV UPLOAD */}
         <section>
           <h3 className="text-lg font-semibold text-gray-800 mb-3">CV / Resume</h3>
 
@@ -259,7 +259,7 @@ export default function ProfileTab({ profile, setProfile }) {
           </div>
         </section>
 
-        {/* ---------------- SAVE BUTTON ---------------- */}
+        {/*SAVE BUTTON  */}
         <div className="pt-4">
           <button
             onClick={handleSave}
