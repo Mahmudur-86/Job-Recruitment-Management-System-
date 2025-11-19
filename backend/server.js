@@ -9,46 +9,48 @@ const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
-
-// DATABASE CONNECT
-
+// =============================
+// DATABASE CONNECTION
+// =============================
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    dbName: process.env.DB_NAME,   // ⭐ MUST for Atlas
+  })
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("DB Error:", err));
 
 const app = express();
 
+// =============================
+// GLOBAL MIDDLEWARE
+// =============================
+app.use(express.json());
+app.use(cookieParser());
 
-// MIDDLEWARE (TOP LEVEL)
-// MUST BE BEFORE ROUTES
-
-app.use(express.json());      // BODY PARSER
-app.use(cookieParser());      // COOKIE PARSER
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL,  // Frontend URL
     credentials: true,
   })
 );
 
+// =============================
+// ROUTES
+// =============================
 
-// ROUTES (AFTER MIDDLEWARE)
-
-
-// AUTH ROUTES
+// Auth routes (register, login, logout)
 app.use("/", authRoutes);
 
-// ADMIN ROUTES
+// Admin routes (manage users)
 app.use("/api/admin", adminRoutes);
 
-// DEFAULT ROOT
+// Default Route
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
-
+// =============================
 // SERVER START
-
+// =============================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

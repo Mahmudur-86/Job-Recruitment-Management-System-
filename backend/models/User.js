@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
   // Role system
   role: { type: String, enum: ["jobseeker", "employer"], required: true },
 
+status: { type: String, enum: ["Active", "Blocked"], default: "Active" }, 
+
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
