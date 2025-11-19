@@ -46,7 +46,7 @@ export default function Register({ onBack, onRegistrationSuccess }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/register",
+        `${import.meta.env.VITE_API_URL}/register`,
         form,
         { withCredentials: true }
       );
