@@ -7,40 +7,61 @@ export default function Dashboard() {
     employers: 0,
     totalJobs: 0,
     totalApplications: 0,
-    totalInternshipAlert: 0,
   });
 
   useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/admin/stats`)
-      .then((res) => setStats(res.data))
-      .catch((err) => console.log(err));
+    const loadStats = async () => {
+      try {
+        const adminToken = localStorage.getItem("adminToken");
+
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/admin/stats`,
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        );
+
+        setStats(data);
+      } catch (err) {
+        console.log("DASHBOARD STATS ERROR:", err);
+      }
+    };
+
+    loadStats();
   }, []);
 
-  const cards = [
-    { label: "Total Users", value: stats.totalUsers },
-    
-    { label: "Total Jobs", value: stats.totalJobs },
-    { label: "Total Applications", value: stats.totalApplications },
- { label: "Total Internship Alerts", value: stats.totalInternshipAlert  },
-
-
-
-
-
-  ];
-
   return (
-    <div>
-      <h3 className="text-xl font-semibold mb-6 text-gray-800">Dashboard Overview</h3>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Admin Dashboard</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((c, idx) => (
-          <div key={idx} className="bg-white shadow rounded-lg p-6">
-            <p className="text-gray-600 text-sm">{c.label}</p>
-            <p className="text-3xl font-bold">{c.value}</p>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        {/* Total Users */}
+        <div className="bg-white shadow p-6 rounded-lg border">
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Total Users</h3>
+          <p className="text-3xl font-semibold text-blue-600">{stats.totalUsers}</p>
+        </div>
+
+        {/* Employers */}
+        <div className="bg-white shadow p-6 rounded-lg border">
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Employers</h3>
+          <p className="text-3xl font-semibold text-green-600">{stats.employers}</p>
+        </div>
+
+        {/* Total Jobs */}
+        <div className="bg-white shadow p-6 rounded-lg border">
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Total Jobs</h3>
+          <p className="text-3xl font-semibold text-purple-600">{stats.totalJobs}</p>
+        </div>
+
+        {/* Total Applications */}
+        <div className="bg-white shadow p-6 rounded-lg border">
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Applications</h3>
+          <p className="text-3xl font-semibold text-green-800">{stats.totalApplications}</p>
+        </div>
+
       </div>
     </div>
   );

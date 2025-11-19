@@ -1,8 +1,5 @@
 import { useState } from "react";
 
-
-
-
 import Navbar from "./Navbar.jsx";
 import Hero from "./Hero.jsx";
 import JobGrid from "./JobGrid.jsx";
@@ -32,7 +29,12 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     }
-    setUserRole(null); // back to home
+
+    // 🔥 IMPORTANT: REMOVE TOKEN FROM BROWSER
+    localStorage.removeItem("token");
+
+    // BACK TO HOME PAGE
+    setUserRole(null);
   };
 
   //  ROLE SWITCH → Dashboard Open
