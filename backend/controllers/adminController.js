@@ -76,16 +76,17 @@ exports.addUser = async (req, res) => {
 exports.getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
-    const employers = await User.countDocuments({ role: "employer" });
+    
 
     const totalJobs = 0; // If no Jobs model yet
     const totalApplications = 0;
-
+const totalInternshipsAlert = 0;
     res.json({
       totalUsers,
-      employers,
+      
       totalJobs,
       totalApplications,
+      totalInternshipsAlert,
     });
 
   } catch (err) {
