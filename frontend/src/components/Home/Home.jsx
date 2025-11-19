@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+
+
+
 import Navbar from "./Navbar.jsx";
 import Hero from "./Hero.jsx";
 import JobGrid from "./JobGrid.jsx";
@@ -22,7 +25,7 @@ export default function Home() {
   //  LOGOUT (from any dashboard)
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/logout", {
+      await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });
