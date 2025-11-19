@@ -3,9 +3,9 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// ======================================
-// ADMIN LOGIN
-// ======================================
+
+// Admin login
+
 exports.adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -27,34 +27,34 @@ exports.adminLogin = async (req, res) => {
   });
 };
 
-// ======================================
-// GET ALL USERS
-// ======================================
+//  USER info add here 
+
+
 exports.getAllUsers = async (req, res) => {
   const users = await User.find().select("-password");
   res.json({ users });
 };
 
-// ======================================
+
 // UPDATE USER STATUS
-// ======================================
+
 exports.updateUserStatus = async (req, res) => {
   const { userId, status } = req.body;
   await User.findByIdAndUpdate(userId, { status });
   res.json({ message: "Status updated" });
 };
 
-// ======================================
+
 // DELETE USER
-// ======================================
+
 exports.deleteUser = async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ message: "User deleted" });
 };
 
-// ======================================
-// ADD USER (ADMIN CREATE USER)
-// ======================================
+
+//  USER info can see  here 
+
 exports.addUser = async (req, res) => {
   const { name, email, password, role } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -70,15 +70,15 @@ exports.addUser = async (req, res) => {
   res.json({ message: "User added successfully" });
 };
 
-// ======================================
+
 // GET DASHBOARD STATS
-// ======================================
+
 exports.getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     
 
-    const totalJobs = 0; // If no Jobs model yet
+    const totalJobs = 0; 
     const totalApplications = 0;
 const totalInternshipsAlert = 0;
     res.json({
