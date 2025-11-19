@@ -1,9 +1,9 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./components/Home/Home.jsx";
 
-//  Admin Dashboard imports
+// Admin imports
 import Sidebar from "./components/Admin/layout/Sidebar.jsx";
 import Header from "./components/Admin/layout/Header.jsx";
 import Dashboard from "./components/Admin/Pages/Dashboard.jsx";
@@ -12,15 +12,11 @@ import ManageJobs from "./components/Admin/Pages/ManageJobs.jsx";
 import ManageApplicants from "./components/Admin/Pages/ManageApplicants.jsx";
 import InternshipAlerts from "./components/Admin/Pages/InternshipAlerts.jsx";
 
-
-
-
-//  Job Seeker Dashboard imports
 import JobSeekerDashboard from "./components/JobSeeker/JobSeekerDashboard.jsx";
-
-//  Employer Dashboard imports
-
 import EmployerDashboard from "./components/Employer/EmployerDashboard.jsx";
+
+import PrivateRoute from "./components/Auth/PrivateRoute.jsx";
+
 
 function AdminLayout({ children }) {
   return (
@@ -34,65 +30,90 @@ function AdminLayout({ children }) {
   );
 }
 
-
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/*  Home Page */}
+
+        {/* Public Home */}
         <Route path="/" element={<Home />} />
 
-        {/*  Admin Dashboard Pages */}
+        {/* Admin protected */}
         <Route
           path="/admin/dashboard"
           element={
-            <AdminLayout>
-              <Dashboard />
-            </AdminLayout>
+            <PrivateRoute>
+              <AdminLayout>
+                <Dashboard />
+              </AdminLayout>
+            </PrivateRoute>
           }
         />
+
         <Route
           path="/admin/users"
           element={
-            <AdminLayout>
-              <ManageUsers />
-            </AdminLayout>
+            <PrivateRoute>
+              <AdminLayout>
+                <ManageUsers />
+              </AdminLayout>
+            </PrivateRoute>
           }
         />
+
         <Route
           path="/admin/jobs"
           element={
-            <AdminLayout>
-              <ManageJobs />
-            </AdminLayout>
+            <PrivateRoute>
+              <AdminLayout>
+                <ManageJobs />
+              </AdminLayout>
+            </PrivateRoute>
           }
         />
+
         <Route
           path="/admin/applicants"
           element={
-            <AdminLayout>
-              <ManageApplicants />
-            </AdminLayout>
+            <PrivateRoute>
+              <AdminLayout>
+                <ManageApplicants />
+              </AdminLayout>
+            </PrivateRoute>
           }
         />
+
         <Route
           path="/admin/internships"
           element={
-            <AdminLayout>
-              <InternshipAlerts />
-            </AdminLayout>
+            <PrivateRoute>
+              <AdminLayout>
+                <InternshipAlerts />
+              </AdminLayout>
+            </PrivateRoute>
           }
         />
-        {/*  Job Seeker Dashboard */}
-        <Route path="/jobseeker" element={<JobSeekerDashboard />} />
 
+        {/* User protected */}
+        <Route
+          path="/jobseeker"
+          element={
+            <PrivateRoute>
+              <JobSeekerDashboard />
+            </PrivateRoute>
+          }
+        />
 
-
-        {/*  Employer Dashboard */}   
-             <Route path="/employer" element={<EmployerDashboard />} />
+        <Route
+          path="/employer"
+          element={
+            <PrivateRoute>
+              <EmployerDashboard />
+            </PrivateRoute>
+          }
+        />
 
       </Routes>
     </Router>
   );
 }
-

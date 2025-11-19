@@ -12,8 +12,7 @@ import EmailModal from './EmailModal';
 export default function EmployerDashboard({onLogout}) {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [jobs, setJobs] = useState([
-    { id: 1, title: 'Frontend Developer', department: 'IT', applications: 15, salary: '$60k-80k', deadline: '2025-12-01' },
-    { id: 2, title: 'Marketing Intern', department: 'Marketing', applications: 8, salary: '$30k-40k', deadline: '2025-11-25' }
+    
   ]);
   const [applications] = useState([
     { id: 1, name: 'John Doe', email: 'john@email.com', cv: 'cv1.pdf', score: 85 },

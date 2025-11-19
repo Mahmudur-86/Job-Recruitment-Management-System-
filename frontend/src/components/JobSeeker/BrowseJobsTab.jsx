@@ -2,34 +2,38 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import JobCard from './JobCard';
 
-
-
-export default function BrowseJobsTab({ onApplyNow }) {
+export default function BrowseJobsTab({ jobs = [], onApplyNow }) {
   const [filters, setFilters] = useState({ 
     department: '', 
     location: '', 
     company: '' 
   });
 
-const demoJobs = [
+  const demoJobs = [
     {
       id: 1,
       title: 'Frontend Developer',
       company: 'Tech Corp',
       location: 'Dhaka',
-      
+      department: 'Engineering',
       category: 'Full-time',
-      salary: '$80,000 - $100,000',
+      salary: '80k - 100k',
       description: 'Looking for an experienced frontend developer',
-      requirements: 'React, JavaScript, CSS'
+      requirements: 'React, JavaScript, CSS',
+      mcqs: [] // demo no interview
     },
- 
   ];
 
-  const filteredJobs = demoJobs.filter(job => {
-    return (!filters.department || job.department.toLowerCase().includes(filters.department.toLowerCase())) &&
-           (!filters.location || job.location.toLowerCase().includes(filters.location.toLowerCase())) &&
-           (!filters.company || job.company.toLowerCase().includes(filters.company.toLowerCase()));
+  const jobList = (jobs && jobs.length > 0) ? jobs : demoJobs;
+
+  const filteredJobs = jobList.filter(job => {
+    const dept = (job.department || '').toLowerCase();
+    const loc = (job.location || '').toLowerCase();
+    const comp = (job.company || '').toLowerCase();
+
+    return (!filters.department || dept.includes(filters.department.toLowerCase())) &&
+           (!filters.location || loc.includes(filters.location.toLowerCase())) &&
+           (!filters.company || comp.includes(filters.company.toLowerCase()));
   });
 
   const clearFilters = () => {
@@ -53,7 +57,7 @@ const demoJobs = [
           />
           <input
             type="text"
-            placeholder="Location (e.g., New York)"
+            placeholder="Location (e.g., Dhaka)"
             value={filters.location}
             onChange={(e) => setFilters({...filters, location: e.target.value})}
             className="p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none"
@@ -90,5 +94,4 @@ const demoJobs = [
       </div>
     </div>
   );
-
 }
