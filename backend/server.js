@@ -3,9 +3,11 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const path = require("path");   // ⭐ ADD THIS
 
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 
 dotenv.config();
 
@@ -26,8 +28,17 @@ app.use(
   })
 );
 
-app.use("/", authRoutes);
+// Static folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Admin Routes
 app.use("/api/admin", adminRoutes);
+
+// Profile Routes
+app.use("/api/profile", profileRoutes);
+
+// Auth Routes
+app.use("/", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");
