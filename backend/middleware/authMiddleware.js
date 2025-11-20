@@ -11,8 +11,14 @@ module.exports = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next(); // allow forward
+
+    // FIX: token sends userId, so use userId
+    req.user = {
+      id: decoded.userId,    // <<----- FIX FIX FIX
+      role: decoded.role
+    };
+
+    next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }

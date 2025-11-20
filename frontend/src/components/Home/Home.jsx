@@ -76,7 +76,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ⬇️ Ei line ta important – Apply Now theke Register popup open korbe */}
+     
       <JobGrid
         onApply={() => {
           setActiveForm("register");

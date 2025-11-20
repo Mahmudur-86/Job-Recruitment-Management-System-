@@ -2,6 +2,11 @@ import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
+// ===== API BASE =====
+const RAW_API_BASE =
+  import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
+
 export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -21,9 +26,8 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
     }
 
     try {
-      
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/login`,
+        `${API_BASE}/login`,
         {
           email: form.email,
           password: form.password,
@@ -38,6 +42,11 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
       if (form.role !== realRole) {
         setError(`This account is registered as "${realRole}". Please select the correct role.`);
         return;
+      }
+
+      // ===== SAVE TOKEN =====
+      if (data.token) {
+        localStorage.setItem("token", data.token);
       }
 
       // Login success → send role to Home.jsx

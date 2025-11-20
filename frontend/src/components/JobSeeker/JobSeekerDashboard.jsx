@@ -8,17 +8,12 @@ import InternTab from './InternTab';
 import InterviewModal from './InterviewModal';
 
 export default function JobSeekerDashboard({ onLogout }) {
-  const [activeTab, setActiveTab] = useState('browse');
-  const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    skills: 'React, Node.js, JavaScript',
-    education: 'BS Computer Science',
-    experience: '2 years',
-    cv: null
-  });
+
   
+  // Profile will load from backend via ProfileTab.jsx (GET /api/profile/me)
+  const [profile, setProfile] = useState({});
+
+  const [activeTab, setActiveTab] = useState('browse');
   const [applications, setApplications] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [internRequests, setInternRequests] = useState([]);
@@ -52,28 +47,31 @@ export default function JobSeekerDashboard({ onLogout }) {
   };
 
 
-
-
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+      
+        {/* HEADER */}
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Job Seeker Dashboard</h1>
-            <p className="mt-2">Welcome, {profile.name}!</p>
+
+            {/* ⭐ FIX — REAL NAME FROM BACKEND */}
+            <p className="mt-2">Welcome, {profile.name || "User"}!</p>
           </div>
+
           <button
             onClick={onLogout}
-            className="flex items-center gap-2  hover:bg-green-600 px-4 py-2 rounded transition duration-200 shadow-md"
+            className="flex items-center gap-2 hover:bg-green-600 px-4 py-2 rounded transition duration-200 shadow-md"
           >
             <LogOut size={20} />
             Logout
           </button>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* NAVIGATION TABS */}
         <div className="flex gap-2 mb-6 flex-wrap">
+          
           <button
             onClick={() => setActiveTab('profile')}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -82,6 +80,7 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <User size={18} /> Profile
           </button>
+
           <button
             onClick={() => setActiveTab('browse')}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -90,6 +89,7 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <Search size={18} /> Browse Jobs
           </button>
+
           <button
             onClick={() => setActiveTab('applications')}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -98,6 +98,7 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <FileText size={18} /> Applications
           </button>
+
           <button
             onClick={() => setActiveTab('notifications')}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -111,6 +112,7 @@ export default function JobSeekerDashboard({ onLogout }) {
               </span>
             )}
           </button>
+
           <button
             onClick={() => setActiveTab('intern')}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -121,19 +123,23 @@ export default function JobSeekerDashboard({ onLogout }) {
           </button>
         </div>
 
-        {/* Tab Content */}
+        {/* TAB CONTENT */}
         {activeTab === 'profile' && (
           <ProfileTab profile={profile} setProfile={setProfile} />
         )}
+        
         {activeTab === 'browse' && (
           <BrowseJobsTab onApplyNow={handleApplyNow} />
         )}
+
         {activeTab === 'applications' && (
           <ApplicationsTab applications={applications} />
         )}
+
         {activeTab === 'notifications' && (
           <NotificationsTab notifications={notifications} />
         )}
+
         {activeTab === 'intern' && (
           <InternTab 
             internRequests={internRequests} 
@@ -142,7 +148,7 @@ export default function JobSeekerDashboard({ onLogout }) {
         )}
       </div>
 
-      {/* Interview Modal */}
+      {/* INTERVIEW MODAL */}
       {showInterviewModal && (
         <InterviewModal
           job={selectedJob}
@@ -154,4 +160,4 @@ export default function JobSeekerDashboard({ onLogout }) {
       )}
     </div>
   );
-} 
+}

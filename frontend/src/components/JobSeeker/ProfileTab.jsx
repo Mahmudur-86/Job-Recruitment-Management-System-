@@ -1,273 +1,245 @@
-import React from "react";
-import { User, FileText, Download } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { User, FileText, Download, Pencil, X, Check } from "lucide-react";
+
+// ===== SAFE API BASE HANDLER (NO HARDCODED URL) =====
+let API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL;
+
+// If still missing, show error (but do NOT fall back to localhost)
+if (!API_BASE || API_BASE.trim() === "") {
+  console.error(" API_BASE missing! Please set VITE_API_BASE in .env");
+}
+
+// Clean double slashes
+API_BASE = API_BASE.replace(/\/+$/, "");
+
+console.log("FINAL API_BASE =", API_BASE);
 
 export default function ProfileTab({ profile, setProfile }) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Load profile
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || !API_BASE) return;
+
+    const loadProfile = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/profile/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.status === 404) return;
+
+        const data = await res.json();
+
+        setProfile({
+          ...data,
+          cvName: data.cvUrl ? data.cvUrl.split("/").pop() : "",
+          cvFile: undefined,
+        });
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      }
+    };
+
+    loadProfile();
+  }, [setProfile]);
+
   const handleChange = (field) => (e) => {
-    const value = e.target.value;
-    setProfile((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    if (!isEditing) return;
+    setProfile((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  // PDF Upload Handler
   const handleCvChange = (e) => {
+    if (!isEditing) return;
     const file = e.target.files?.[0];
+
     if (file && file.type === "application/pdf") {
       setProfile((prev) => ({
         ...prev,
+        cvFile: file,
         cvName: file.name,
-        cvFile: file, 
       }));
     } else {
-      alert("Only PDF file allowed.");
+      alert("Only PDF files are allowed.");
     }
   };
 
-  const handleSave = () => {
-    alert("Profile saved! (Backend API will be added next)");
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !API_BASE) return;
+
+    try {
+      const formData = new FormData();
+
+      const fields = [
+        "name", "email", "phone", "address", "age", "gender",
+        "jobInterest", "bio", "skills", "education",
+        "experience", "portfolio", "github", "linkedin",
+      ];
+
+      fields.forEach((field) => {
+        if (profile[field]) formData.append(field, profile[field]);
+      });
+
+      if (profile.cvFile) formData.append("cv", profile.cvFile);
+
+      const res = await fetch(`${API_BASE}/api/profile`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) return;
+
+      setProfile((prev) => ({
+        ...prev,
+        ...data.profile,
+        cvName: data.profile.cvUrl
+          ? data.profile.cvUrl.split("/").pop()
+          : prev.cvName,
+        cvFile: undefined,
+      }));
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-        <User size={24} /> Profile Management
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <User size={24} /> Profile Management
+        </h2>
 
-      <div className="space-y-8">
-        {/*  BASIC INFORMATION */}
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 bg-gray-700 text-white px-4 py-2 rounded"
+          >
+            <Pencil size={18} /> Edit
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsEditing(false)}
+              className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded"
+            >
+              <X size={18} /> Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              <Check size={18} /> Save
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-6">
+
+        {/* BASIC INFO */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Basic Information
-          </h3>
+          <h3 className="font-semibold text-gray-800 mb-2">Basic Info</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* NAME */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Full Name</label>
-              <input
-                type="text"
-                value={profile.name || ""}
-                onChange={handleChange("name")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter your full name"
-              />
-            </div>
+            <input disabled={!isEditing} type="text" placeholder="Full Name"
+              value={profile.name || ""} onChange={handleChange("name")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
 
-            {/* EMAIL */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={profile.email || ""}
-                onChange={handleChange("email")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter your email"
-              />
-            </div>
+            <input disabled={!isEditing} type="email" placeholder="Email"
+              value={profile.email || ""} onChange={handleChange("email")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
 
-            {/* PHONE */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Phone</label>
-              <input
-                type="text"
-                value={profile.phone || ""}
-                onChange={handleChange("phone")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="+8801XXXXXXXXX"
-              />
-            </div>
+            <input disabled={!isEditing} type="text" placeholder="Phone"
+              value={profile.phone || ""} onChange={handleChange("phone")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
 
-            {/* ADDRESS */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Address</label>
-              <input
-                type="text"
-                value={profile.address || ""}
-                onChange={handleChange("address")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="City, Country"
-              />
-            </div>
+            <input disabled={!isEditing} type="text" placeholder="Address"
+              value={profile.address || ""} onChange={handleChange("address")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
           </div>
         </section>
 
-        {/* PERSONAL DETAILS  */}
+        {/* PERSONAL DETAILS */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Personal Details
-          </h3>
+          <h3 className="font-semibold">Personal Details</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* AGE */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Age</label>
-              <input
-                type="number"
-                value={profile.age || ""}
-                onChange={handleChange("age")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="22"
-              />
-            </div>
+            <input disabled={!isEditing} type="number" placeholder="Age"
+              value={profile.age || ""} onChange={handleChange("age")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
 
-            {/* GENDER */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">Gender</label>
-              <select
-                value={profile.gender || ""}
-                onChange={handleChange("gender")}
-                className="w-full border rounded px-3 py-2"
-              >
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+            <select disabled={!isEditing}
+              value={profile.gender || ""} onChange={handleChange("gender")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100">
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
 
-            {/* JOB INTEREST */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Job Interest
-              </label>
-              <input
-                type="text"
-                value={profile.jobInterest || ""}
-                onChange={handleChange("jobInterest")}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Frontend, Backend, DevOps..."
-              />
-            </div>
-          </div>
-
-          {/* BIO */}
-          <div className="mt-4">
-            <label className="text-sm font-medium text-gray-700">Bio</label>
-            <textarea
-              value={profile.bio || ""}
-              onChange={handleChange("bio")}
-              rows={3}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Write something about yourself..."
-            />
+            <input disabled={!isEditing} type="text" placeholder="Job Interest"
+              value={profile.jobInterest || ""} onChange={handleChange("jobInterest")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
           </div>
         </section>
 
-        {/*  SKILLS / EDUCATION / EXPERIENCE  */}
-        <section>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Skills & Background
-          </h3>
-
-          <div className="space-y-4">
-            <textarea
-              value={profile.skills || ""}
-              onChange={handleChange("skills")}
-              rows={2}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Skills: React, Node.js, Tailwind..."
-            />
-
-            <textarea
-              value={profile.education || ""}
-              onChange={handleChange("education")}
-              rows={2}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Education details..."
-            />
-
-            <textarea
-              value={profile.experience || ""}
-              onChange={handleChange("experience")}
-              rows={2}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Work/Intern experience..."
-            />
-          </div>
-        </section>
+        {/* BIO */}
+        <textarea disabled={!isEditing} placeholder="Bio"
+          value={profile.bio || ""} onChange={handleChange("bio")}
+          className="border px-3 py-2 rounded w-full disabled:bg-gray-100" rows={3} />
 
         {/* LINKS */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Online Presence
-          </h3>
-
+          <h3 className="font-semibold">Online Links</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="url"
-              value={profile.portfolio || ""}
-              onChange={handleChange("portfolio")}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Portfolio URL"
-            />
 
-            <input
-              type="url"
-              value={profile.github || ""}
-              onChange={handleChange("github")}
-              className="w-full border rounded px-3 py-2"
-              placeholder="GitHub URL"
-            />
+            <input disabled={!isEditing} type="text" placeholder="Portfolio"
+              value={profile.portfolio || ""} onChange={handleChange("portfolio")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
 
-            <input
-              type="url"
-              value={profile.linkedin || ""}
-              onChange={handleChange("linkedin")}
-              className="w-full border rounded px-3 py-2"
-              placeholder="LinkedIn URL"
-            />
+            <input disabled={!isEditing} type="text" placeholder="GitHub"
+              value={profile.github || ""} onChange={handleChange("github")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
+
+            <input disabled={!isEditing} type="text" placeholder="LinkedIn"
+              value={profile.linkedin || ""} onChange={handleChange("linkedin")}
+              className="border px-3 py-2 rounded disabled:bg-gray-100" />
+
           </div>
         </section>
 
         {/* CV UPLOAD */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">CV / Resume</h3>
+          <h3 className="font-semibold">CV Upload</h3>
 
-          <div className="flex items-center gap-4">
-            {/* Upload Button */}
-            <label
-              htmlFor="cvUpload"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700"
-            >
-              <FileText size={18} />
-              {profile.cvName ? "Change CV" : "Upload CV (PDF)"}
+          {isEditing && (
+            <label htmlFor="cvUpload"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
+              <FileText size={20} /> Upload / Change CV
             </label>
+          )}
 
-            <input
-              id="cvUpload"
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              onChange={handleCvChange}
-            />
+          <input id="cvUpload" type="file" accept="application/pdf"
+            className="hidden" onChange={handleCvChange} disabled={!isEditing} />
 
-            {/* Show Filename */}
-            {profile.cvName && (
-              <span className="text-sm font-medium text-gray-700">
-                {profile.cvName}
-              </span>
-            )}
+          {profile.cvName && (
+            <p className="mt-2 text-sm">{profile.cvName}</p>
+          )}
 
-            {/* Download button (dummy for now) */}
-            {profile.cvName && (
-              <button className="flex items-center gap-1 text-blue-600 hover:underline text-sm">
-                <Download size={18} />
-                Download
-              </button>
-            )}
-          </div>
+          {profile.cvUrl && (
+            <button type="button"
+              onClick={() => window.open(`${API_BASE}${profile.cvUrl}`, "_blank")}
+              className="flex items-center gap-2 text-blue-600 hover:underline mt-2">
+              <Download size={18} /> Download CV
+            </button>
+          )}
         </section>
-
-        {/*SAVE BUTTON  */}
-        <div className="pt-4">
-          <button
-            onClick={handleSave}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800"
-          >
-            Save Profile
-          </button>
-        </div>
       </div>
     </div>
   );
