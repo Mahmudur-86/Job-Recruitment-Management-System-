@@ -49,19 +49,19 @@ export default function Dashboard() {
         {/* Total Jobs */}
         <div className="bg-white shadow p-6 rounded-lg border">
           <h3 className="text-xl font-bold text-gray-700 mb-2">Total Jobs</h3>
-          <p className="text-3xl font-semibold text-purple-600">{stats.totalJobs}</p>
+          <p className="text-3xl font-semibold text-blue-600">{stats.totalJobs}</p>
         </div>
 
         {/* Total Applications */}
         <div className="bg-white shadow p-6 rounded-lg border">
           <h3 className="text-xl font-bold text-gray-700 mb-2">Applications</h3>
-          <p className="text-3xl font-semibold text-green-800">{stats.totalApplications}</p>
+          <p className="text-3xl font-semibold text-blue-800">{stats.totalApplications}</p>
         </div>
 
 
         <div className="bg-white shadow p-6 rounded-lg border">
           <h3 className="text-xl font-bold text-gray-700 mb-2">Internships Alert</h3>
-          <p className="text-3xl font-semibold text-green-800">{stats.totalInternshipsAlert}</p>
+          <p className="text-3xl font-semibold text-blue-800">{stats.totalInternshipsAlert}</p>
         </div>
 
       </div>

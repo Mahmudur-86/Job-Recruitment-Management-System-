@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { User, Briefcase, FileText, Bell, GraduationCap, Search, MapPin, Building, LogOut } from 'lucide-react';
+import { User, Briefcase, FileText, Bell, GraduationCap, Search, LogOut } from 'lucide-react';
+
 import ProfileTab from './ProfileTab';
 import BrowseJobsTab from './BrowseJobsTab';
 import ApplicationsTab from './ApplicationsTab';
@@ -9,54 +10,69 @@ import InterviewModal from './InterviewModal';
 
 export default function JobSeekerDashboard({ onLogout }) {
 
-  
-  // Profile will load from backend via ProfileTab.jsx (GET /api/profile/me)
   const [profile, setProfile] = useState({});
+  const [activeTab, setActiveTab] = useState("profile");   // DEFAULT = PROFILE
 
-  const [activeTab, setActiveTab] = useState('browse');
   const [applications, setApplications] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [internRequests, setInternRequests] = useState([]);
+
   const [showInterviewModal, setShowInterviewModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
 
+  // CHECK IF PROFILE COMPLETE
+  const isProfileComplete = () => {
+    return profile.name && profile.email && profile.phone;
+  };
+
+  // SAFE TAB SWITCHER
+  const handleTabChange = (tab) => {
+    if (tab !== "profile" && !isProfileComplete()) {
+      alert("Please complete your profile first.");
+      setActiveTab("profile");
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   const handleApplyNow = (job) => {
+    if (!isProfileComplete()) {
+      alert("Please complete your profile first.");
+      setActiveTab("profile");
+      return;
+    }
+
     setSelectedJob(job);
     setShowInterviewModal(true);
   };
 
   const handleApplicationSubmit = (applicationData) => {
     setApplications([...applications, applicationData]);
-    
-    if (applicationData.status === 'pending') {
-      const newNotification = {
-        id: notifications.length + 1,
-        message: `${applicationData.company} is reviewing your application for ${applicationData.jobTitle}`,
-        date: new Date().toLocaleDateString(),
-        type: 'info'
-      };
-      setNotifications([newNotification, ...notifications]);
-    }
-    
+
+    const newNotification = {
+      id: notifications.length + 1,
+      message: `${applicationData.company} is reviewing your application for ${applicationData.jobTitle}`,
+      date: new Date().toLocaleDateString(),
+      type: "info",
+    };
+
+    setNotifications([newNotification, ...notifications]);
     setShowInterviewModal(false);
-    setActiveTab('applications');
+    setActiveTab("applications");
   };
 
   const handleInternSubmit = (internData) => {
     setInternRequests([...internRequests, internData]);
   };
 
-
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-      
+
         {/* HEADER */}
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Job Seeker Dashboard</h1>
-
-            {/* ⭐ FIX — REAL NAME FROM BACKEND */}
             <p className="mt-2">Welcome, {profile.name || "User"}!</p>
           </div>
 
@@ -69,40 +85,40 @@ export default function JobSeekerDashboard({ onLogout }) {
           </button>
         </div>
 
-        {/* NAVIGATION TABS */}
+        {/* TABS */}
         <div className="flex gap-2 mb-6 flex-wrap">
-          
+
           <button
-            onClick={() => setActiveTab('profile')}
+            onClick={() => handleTabChange("profile")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === 'profile' ? 'bg-blue-600 text-white' : 'bg-white'
+              activeTab === "profile" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
             <User size={18} /> Profile
           </button>
 
           <button
-            onClick={() => setActiveTab('browse')}
+            onClick={() => handleTabChange("browse")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === 'browse' ? 'bg-blue-600 text-white' : 'bg-white'
+              activeTab === "browse" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
             <Search size={18} /> Browse Jobs
           </button>
 
           <button
-            onClick={() => setActiveTab('applications')}
+            onClick={() => handleTabChange("applications")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === 'applications' ? 'bg-blue-600 text-white' : 'bg-white'
+              activeTab === "applications" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
             <FileText size={18} /> Applications
           </button>
 
           <button
-            onClick={() => setActiveTab('notifications')}
+            onClick={() => handleTabChange("notifications")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === 'notifications' ? 'bg-blue-600 text-white' : 'bg-white'
+              activeTab === "notifications" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
             <Bell size={18} /> Notifications
@@ -114,9 +130,9 @@ export default function JobSeekerDashboard({ onLogout }) {
           </button>
 
           <button
-            onClick={() => setActiveTab('intern')}
+            onClick={() => handleTabChange("intern")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === 'intern' ? 'bg-blue-600 text-white' : 'bg-white'
+              activeTab === "intern" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
             <GraduationCap size={18} /> Student Intern
@@ -124,27 +140,24 @@ export default function JobSeekerDashboard({ onLogout }) {
         </div>
 
         {/* TAB CONTENT */}
-        {activeTab === 'profile' && (
+        {activeTab === "profile" && (
           <ProfileTab profile={profile} setProfile={setProfile} />
         )}
-        
-        {activeTab === 'browse' && (
+
+        {activeTab === "browse" && (
           <BrowseJobsTab onApplyNow={handleApplyNow} />
         )}
 
-        {activeTab === 'applications' && (
+        {activeTab === "applications" && (
           <ApplicationsTab applications={applications} />
         )}
 
-        {activeTab === 'notifications' && (
+        {activeTab === "notifications" && (
           <NotificationsTab notifications={notifications} />
         )}
 
-        {activeTab === 'intern' && (
-          <InternTab 
-            internRequests={internRequests} 
-            onSubmit={handleInternSubmit} 
-          />
+        {activeTab === "intern" && (
+          <InternTab internRequests={internRequests} onSubmit={handleInternSubmit} />
         )}
       </div>
 

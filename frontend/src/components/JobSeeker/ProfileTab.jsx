@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { User, FileText, Download, Pencil, X, Check } from "lucide-react";
 
-// ===== SAFE API BASE HANDLER (NO HARDCODED URL) =====
+//  API BASE HANDLER 
 let API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL;
 
-// If still missing, show error (but do NOT fall back to localhost)
+// If still missing, show error 
 if (!API_BASE || API_BASE.trim() === "") {
   console.error(" API_BASE missing! Please set VITE_API_BASE in .env");
 }
