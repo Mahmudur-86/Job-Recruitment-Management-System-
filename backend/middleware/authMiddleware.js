@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
 
     // FIX: token sends userId, so use userId
     req.user = {
-      id: decoded.userId,    // <<----- FIX FIX FIX
+      id: decoded.userId,    
       role: decoded.role
     };
 
