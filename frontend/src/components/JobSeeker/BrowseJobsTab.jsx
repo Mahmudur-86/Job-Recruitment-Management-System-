@@ -17,7 +17,7 @@ export default function BrowseJobsTab({ jobs = [], onApplyNow }) {
       location: 'Dhaka',
       department: 'Engineering',
       category: 'Full-time',
-      salary: '80k - 100k',
+      salary: 'Negotiable',
       description: 'Looking for an experienced frontend developer',
       requirements: 'React, JavaScript, CSS',
       mcqs: [] // demo no interview
