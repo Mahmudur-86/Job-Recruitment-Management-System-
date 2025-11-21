@@ -10,7 +10,7 @@ export default function Dashboard({ setCurrentPage }) {
           {[
             { title: 'Company Profile', page: 'profile', desc: 'Manage company information', icon: '🏢' },
             { title: 'Post Job', page: 'postjob', desc: 'Create new job posting', icon: '📝' },
-            { title: 'Manage Jobs', page: 'managejobs', desc: 'Edit or delete job posts', icon: '💼' },
+            { title: 'All Jobs', page: 'alljobs', desc: 'Edit or delete job posts', icon: '💼' },
             { title: 'View Applications', page: 'applications', desc: 'See all applicants', icon: '📋' },
             { title: 'Student Intern List', page: 'students', desc: 'Browse student profiles', icon: '🎓' },
             { title: 'Internship Alerts', page: 'alerts', desc: 'Send alerts to students', icon: '📢' }

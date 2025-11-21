@@ -4,7 +4,7 @@ export default function EmailModal({ person, onClose }) {
   const [message, setMessage] = useState('');
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-xl w-96">
         <h3 className="text-xl font-bold mb-4">Send Email to {person.name}</h3>
         <div className="mb-2 text-sm text-gray-600">To: {person.email}</div>

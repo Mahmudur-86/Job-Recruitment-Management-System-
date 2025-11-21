@@ -1,9 +1,10 @@
-export default function ManageJobs({ 
+export default function AllJobs({ 
   setCurrentPage, 
   jobs, 
   setJobs, 
   setSelectedJobForApplications 
 }) {
+
   return (
     <div className="min-h-screen bg-gray-100">
 
@@ -16,7 +17,7 @@ export default function ManageJobs({
         </button>
 
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Manage Jobs</h2>
+          <h2 className="text-2xl font-bold mb-6">Your Posted Jobs</h2>
 
           <div className="space-y-4">
             {jobs.map(job => (
@@ -92,6 +93,12 @@ export default function ManageJobs({
 
               </div>
             ))}
+
+            {jobs.length === 0 && (
+              <p className="text-gray-600 text-center py-6">
+                You haven't posted any jobs yet.
+              </p>
+            )}
           </div>
 
         </div>
