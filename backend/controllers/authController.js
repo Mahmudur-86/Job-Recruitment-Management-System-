@@ -2,9 +2,9 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// ==================================
+
 // REGISTER USER
-// ==================================
+
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -36,9 +36,9 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// ==================================
+
 // LOGIN USER
-// ==================================
+
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -80,9 +80,9 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-// ==================================
+
 // LOGOUT USER
-// ==================================
+
 exports.logoutUser = (req, res) => {
   res.clearCookie("token");
   return res.json({ message: "Logged out" });
