@@ -28,7 +28,7 @@ export default function JobSeekerDashboard({ onLogout }) {
   // SAFE TAB SWITCHER
   const handleTabChange = (tab) => {
     if (tab !== "profile" && !isProfileComplete()) {
-      alert("Please complete your profile first.");
+      alert("Thank you for completing the registration and it will be verified by admin.Please Logout. About twenty seconds later you can Login and then you will be able to write profile,but it is important for completing the all profile necessary information and save them.Otherwise, you can't access other features.");
       setActiveTab("profile");
       return;
     }

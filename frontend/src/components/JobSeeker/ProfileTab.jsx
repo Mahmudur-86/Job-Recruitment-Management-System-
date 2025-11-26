@@ -9,7 +9,7 @@ if (!API_BASE || API_BASE.trim() === "") {
   console.error(" API_BASE missing! Please set VITE_API_BASE in .env");
 }
 
-// Clean double slashes
+
 API_BASE = API_BASE.replace(/\/+$/, "");
 
 console.log("FINAL API_BASE =", API_BASE);

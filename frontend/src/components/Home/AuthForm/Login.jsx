@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
-// ===== API BASE =====
+//  API BASE 
 const RAW_API_BASE =
   import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
@@ -44,7 +44,7 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
         return;
       }
 
-      // ===== SAVE TOKEN =====
+      // SAVE TOKEN 
       if (data.token) {
         localStorage.setItem("token", data.token);
       }

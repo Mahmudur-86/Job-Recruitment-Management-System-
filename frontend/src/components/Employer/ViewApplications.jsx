@@ -15,7 +15,7 @@ export default function ViewApplications({
     return Math.round((correct / total) * 100);
   };
 
-  // ⭐ Dummy Applications (auto score)
+  //  Dummy Applications (auto score)
   const dummyApplications = [
     {
       id: 9991,
@@ -64,10 +64,10 @@ export default function ViewApplications({
 
         {/* BACK BUTTON */}
         <button 
-          onClick={() => setCurrentPage('alljobs')} 
+          onClick={() => setCurrentPage('dashboard')} 
           className="mb-4 text-blue-600 hover:underline"
         >
-          ← Back to Jobs
+          ← Back to Dashboard
         </button>
 
         <div className="max-w-4xl mx-auto">
