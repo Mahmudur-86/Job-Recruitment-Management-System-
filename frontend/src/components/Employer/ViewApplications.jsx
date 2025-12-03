@@ -15,44 +15,22 @@ export default function ViewApplications({
     return Math.round((correct / total) * 100);
   };
 
-  // ⭐ Dummy Applications (auto score)
+  //  Dummy Applications 
   const dummyApplications = [
     {
-      id: 9991,
-      name: "John Doe",
-      email: "john@example.com",
-      jobTitle: "Frontend Developer",
-      company: "TechZone Ltd",
-      appliedDate: "2025-02-10",
-      correctCount: 4,
-      totalQuestions: 4,
-      score: calculateScore(4, 4),
-      cv: "dummy_cv_john.pdf",
-    },
-    {
-      id: 9992,
-      name: "Sarah Miller",
-      email: "sarah@example.com",
-      jobTitle: "UI/UX Designer",
-      company: "Designify",
-      appliedDate: "2025-02-08",
+      id: 1,
+      name: "Mahmudur Rahman",
+      email: "hrid3740@gmail.com",
+      jobTitle: "Backend Developer ",
+      company: "EconoTech",
+      appliedDate: "2025-05-12",
       correctCount: 3,
       totalQuestions: 4,
       score: calculateScore(3, 4),
-      cv: "dummy_cv_sarah.pdf",
+      cv: "cv_mahmudur.pdf",
     },
-    {
-      id: 9993,
-      name: "Michael Smith",
-      email: "michael@example.com",
-      jobTitle: "Backend Engineer",
-      company: "SoftLabs",
-      appliedDate: "2025-02-09",
-      correctCount: 2,
-      totalQuestions: 4,
-      score: calculateScore(2, 4),
-      cv: "dummy_cv_mike.pdf",
-    }
+  
+  
   ];
 
   //  Merge real + dummy
@@ -64,10 +42,10 @@ export default function ViewApplications({
 
         {/* BACK BUTTON */}
         <button 
-          onClick={() => setCurrentPage('alljobs')} 
+          onClick={() => setCurrentPage('dashboard')} 
           className="mb-4 text-blue-600 hover:underline"
         >
-          ← Back to Jobs
+          ← Back to Dashboard
         </button>
 
         <div className="max-w-4xl mx-auto">

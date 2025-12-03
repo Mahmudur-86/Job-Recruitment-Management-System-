@@ -22,13 +22,13 @@ export default function JobSeekerDashboard({ onLogout }) {
 
   // CHECK IF PROFILE COMPLETE
   const isProfileComplete = () => {
-    return profile.name && profile.email && profile.phone;
+   return profile.name && profile.email && profile.phone;
   };
 
   // SAFE TAB SWITCHER
   const handleTabChange = (tab) => {
-    if (tab !== "profile" && !isProfileComplete()) {
-      alert("Please complete your profile first.");
+    if (tab!== "profile"  && !isProfileComplete()) {
+      alert("Thank you for completing the registration and it will be verified by admin.Please Logout. About twenty seconds later you can Login again  and then you will be able to write profile,but it is important that you have to complete the all necessary profile information and save them.Otherwise, you can't access other features.");
       setActiveTab("profile");
       return;
     }

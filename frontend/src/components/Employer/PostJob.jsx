@@ -10,14 +10,14 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
     requirements: "",
     salary: "",
     deadline: "",
-    department: "",
+    
   });
 
   const [mcqs, setMcqs] = useState([
     { question: "", options: ["", "", "", ""], correctOptionIndex: 0 },
     { question: "", options: ["", "", "", ""], correctOptionIndex: 0 },
     { question: "", options: ["", "", "", ""], correctOptionIndex: 0 },
-    { question: "", options: ["", "", "", ""], correctOptionIndex: 0 },
+    
   ]);
 
   const handleMcqChange = (index, field, value) => {
