@@ -1,12 +1,8 @@
 import React from 'react';
 import { MapPin, Building } from 'lucide-react';
 
-
-
-
 export default function JobCard({ job, onApplyNow }) {
-
-return (
+  return (
     <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition">
       <div className="flex justify-between items-start mb-3">
         <div>
@@ -41,8 +37,4 @@ return (
       </button>
     </div>
   );
-
-
-
-
 }

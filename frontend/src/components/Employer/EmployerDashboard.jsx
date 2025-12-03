@@ -22,9 +22,8 @@ export default function EmployerDashboard({ onLogout }) {
 
   // Students (dummy data)
   const [students] = useState([
-    { id: 1, name: 'Alice Wang', university: 'MIT', score: 95, cv: 'cv_alice.pdf', major: 'Computer Science' },
-    { id: 2, name: 'Bob Johnson', university: 'Stanford', score: 88, cv: 'cv_bob.pdf', major: 'Business' },
-    { id: 3, name: 'Carol Lee', university: 'MIT', score: 92, cv: 'cv_carol.pdf', major: 'Engineering' }
+    { id: 1, name: 'Hamid Khan', university: 'IUBAT', score: 95, cv: 'cv_hamid.pdf', major: 'BSc in CSE ' },
+   
   ]);
 
   // Email modal control
@@ -33,11 +32,12 @@ export default function EmployerDashboard({ onLogout }) {
 
   // Company profile info
   const [profile, setProfile] = useState({
-    name: 'Tech Corp Inc.',
-    address: '123 Silicon Valley, CA 94025',
-    hrContact: 'hr@techcorp.com',
-    website: 'www.techcorp.com',
-    logo: 'https://via.placeholder.com/100'
+    name: '',
+    address: '',
+    email: '',
+    phone: '',
+    website: '',
+    companyContact: ''
   });
 
   // Internship alert info

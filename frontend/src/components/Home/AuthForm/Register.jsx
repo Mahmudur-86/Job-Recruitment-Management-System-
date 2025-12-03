@@ -51,7 +51,7 @@ export default function Register({ onBack, onRegistrationSuccess }) {
         { withCredentials: true }
       );
 
-      // SUCCESS → Go to dashboard
+      // SUCCESS  Go to dashboard
       onRegistrationSuccess(form.role);
 
     } catch (error) {

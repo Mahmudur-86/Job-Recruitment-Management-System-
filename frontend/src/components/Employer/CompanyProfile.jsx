@@ -30,18 +30,18 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2 font-medium">HR Contact</label>
+              <label className="block text-gray-700 mb-2 font-medium">Company Contact</label>
               <input
                 type="text"
-                value={profile.hrContact}
-                onChange={(e) => setProfile({...profile, hrContact: e.target.value})}
+                value={profile.companyContact}
+                onChange={(e) => setProfile({...profile, companyContact: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2 font-medium">Website</label>
+              <label className="block text-gray-700 mb-2 font-medium">Website Name</label>
               <input
-                type="url"
+                type="text"
                 value={profile.website}
                 onChange={(e) => setProfile({...profile, website: e.target.value})}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"

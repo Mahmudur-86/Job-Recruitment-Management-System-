@@ -1,52 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function InterviewModal({ job, profile, onClose, onSubmit, applicationId }) {
-
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [cvLink, setCvLink] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
-  // Default MCQs
-  const defaultMcqs = [
-    {
-      question: "What is React?",
-      options: ["A JS library", "A Database", "An OS", "A framework"],
-      correctOptionIndex: 0
-    },
-    {
-      question: "What is Node.js used for?",
-      options: ["Frontend", "Backend", "CSS", "SQL"],
-      correctOptionIndex: 1
-    },
-    {
-      question: "Which one is NoSQL?",
-      options: ["MySQL", "Oracle", "MongoDB", "PostgreSQL"],
-      correctOptionIndex: 2
-    },
-    {
-      question: "Tailwind is used for?",
-      options: ["API", "Design", "Hosting", "Database"],
-      correctOptionIndex: 1
-    }
-  ];
+  const finalMcqs = job?.mcqs || [];  // Default to an empty array if no MCQs.
 
-  const finalMcqs = job?.mcqs?.length > 0 ? job.mcqs : defaultMcqs;
-  const allAnswered = finalMcqs.every((_, i) => selectedAnswers[i] !== undefined);
-
-  // Auto close after success
-  useEffect(() => {
-    if (submitted) {
-      setTimeout(() => {
-        onClose();
-      }, 1800); // 1.8 seconds
-    }
-  }, [submitted]);
-
-  const handleMcqSelect = (qIndex, optIndex) => {
-    setSelectedAnswers({ ...selectedAnswers, [qIndex]: optIndex });
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const total = finalMcqs.length;
     let correct = 0;
 
@@ -58,7 +20,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
 
     const applicationData = {
       id: applicationId,
-      jobId: job.id,
+      jobId: job._id,
       jobTitle: job.title,
       company: job.company,
       appliedDate: new Date().toLocaleDateString(),
@@ -68,18 +30,25 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
       correctCount: correct,
       totalQuestions: total,
       score: scorePercent,
-      status: scorePercent >= 80 ? "Shortlisted" : "Review"
+      status: scorePercent >= 80 ? "Pending" : "Pending"
     };
 
-    onSubmit(applicationData);
-    setSubmitted(true);
+    try {
+      await axios.post('http://localhost:5000/api/job-applications', applicationData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setSubmitted(true);
+      onSubmit(applicationData);
+    } catch (error) {
+      console.error('Error submitting application:', error);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-
-        {/* SUCCESS MESSAGE */}
         {submitted ? (
           <div className="text-center py-10 animate-fade-in">
             <div className="text-green-600 text-6xl font-bold mb-4">✔</div>
@@ -87,8 +56,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
             <p className="text-gray-600">Redirecting...</p>
           </div>
         ) : (
-          <>
-
+          <div>
             <h2 className="text-2xl font-bold mb-2">Interview Questions</h2>
             <p className="text-gray-600 mb-4">
               Applying for <strong>{job.title}</strong> at {job.company}
@@ -107,22 +75,14 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
                 onChange={(e) => setCvLink(e.target.files[0])}
                 className="hidden"
               />
-
               <label
                 htmlFor="cv-upload"
                 className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-500 transition"
               >
                 <p className="text-gray-700 text-sm">
-                  <span className="font-semibold text-blue-600">Click here</span> to upload your CV
+                  <span className="font-semibold text-blue-600">Click here</span> to upload your updated CV 
                 </p>
-                <p className="text-xs text-gray-400 mt-1">(PDF format only)</p>
               </label>
-
-              {cvLink && (
-                <p className="text-sm text-green-700 mt-2 font-medium">
-                  📄 Selected: {cvLink.name}
-                </p>
-              )}
             </div>
 
             {/* MCQs */}
@@ -139,7 +99,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
                         type="radio"
                         name={`mcq-${qIndex}`}
                         checked={selectedAnswers[qIndex] === optIndex}
-                        onChange={() => handleMcqSelect(qIndex, optIndex)}
+                        onChange={() => setSelectedAnswers({ ...selectedAnswers, [qIndex]: optIndex })}
                       />
                       {String.fromCharCode(65 + optIndex)}. {opt}
                     </label>
@@ -150,33 +110,21 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
 
             {/* Buttons */}
             <div className="flex gap-3 mt-4">
-
               <button
                 onClick={handleSubmit}
-                disabled={!allAnswered || !cvLink}
-                className={`flex-1 py-2 px-6 rounded font-semibold ${
-                  allAnswered && cvLink
-                    ? "bg-green-600 text-white hover:bg-green-700"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
+                disabled={!cvLink || Object.values(selectedAnswers).length !== finalMcqs.length}
+                className="flex-1 py-2 px-6 rounded font-semibold bg-blue-600 text-white hover:bg-blue-700"
               >
                 Submit Application
               </button>
-
               <button
-                onClick={() => {
-                  setSelectedAnswers({});
-                  setCvLink(null);
-                  onClose();
-                }}
+                onClick={onClose}
                 className="px-6 py-2 border rounded hover:bg-gray-100"
               >
                 Cancel
               </button>
-
             </div>
-
-          </>
+          </div>
         )}
       </div>
     </div>
