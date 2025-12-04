@@ -28,7 +28,11 @@ export default function JobCard({ job, onApplyNow }) {
       <p className="text-sm text-gray-600 mb-4">
         <strong>Requirements:</strong> {job.requirements}
       </p>
-      
+
+      <p className="text-sm text-gray-600 mb-4">
+        <strong>Vacancies:</strong> {job.vacancies}  {/* Display vacancy count */}
+      </p>
+
       <button
         onClick={() => onApplyNow(job)}
         className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"

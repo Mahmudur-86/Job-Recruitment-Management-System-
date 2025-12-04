@@ -1,7 +1,8 @@
+// InterviewModal.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
-export default function InterviewModal({ job, profile, onClose, onSubmit, applicationId }) {
+export default function InterviewModal({ job, profile, onClose, onSubmit }) {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [cvLink, setCvLink] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -9,28 +10,21 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
   const finalMcqs = job?.mcqs || [];  // Default to an empty array if no MCQs.
 
   const handleSubmit = async () => {
-    const total = finalMcqs.length;
-    let correct = 0;
-
-    finalMcqs.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.correctOptionIndex) correct++;
-    });
-
-    const scorePercent = Math.round((correct / total) * 100);
+    const mcqHistory = finalMcqs.map((q, index) => ({
+      question: q.question,
+      selectedOption: q.options[selectedAnswers[index]]
+    }));
 
     const applicationData = {
-      id: applicationId,
       jobId: job._id,
       jobTitle: job.title,
       company: job.company,
       appliedDate: new Date().toLocaleDateString(),
       name: profile?.name || "Anonymous",
       email: profile?.email || "N/A",
-      cv: cvLink?.name || "PDF File",
-      correctCount: correct,
-      totalQuestions: total,
-      score: scorePercent,
-      status: scorePercent >= 80 ? "Pending" : "Pending"
+      cvName: cvLink?.name || "UploadedCV.pdf",  // Save CV name
+      mcqHistory,  // Save selected answers
+      status: "Pending"
     };
 
     try {
@@ -39,6 +33,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
+
       setSubmitted(true);
       onSubmit(applicationData);
     } catch (error) {
@@ -67,7 +62,6 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
               <label className="text-sm font-semibold text-gray-700 mb-1 block">
                 Upload Your CV (PDF Only)
               </label>
-
               <input
                 id="cv-upload"
                 type="file"
@@ -92,7 +86,6 @@ export default function InterviewModal({ job, profile, onClose, onSubmit, applic
                   <p className="font-medium text-gray-800 mb-2">
                     {qIndex + 1}. {q.question}
                   </p>
-
                   {q.options.map((opt, optIndex) => (
                     <label key={optIndex} className="flex items-center gap-2 text-sm cursor-pointer">
                       <input

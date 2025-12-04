@@ -3,7 +3,7 @@ export default function JobCard({
   company,
   tag,
   title,
-  image,
+  
   location,
   department,
   salary,
@@ -13,9 +13,7 @@ export default function JobCard({
   return (
     <div className="rounded-2xl bg-zinc-400 p-4 shadow">
       {/* Banner image */}
-      <div className="overflow-hidden rounded-xl">
-        <img src={image} alt={title} className="h-28 w-full object-cover" />
-      </div>
+     
 
       {/* Company & Title */}
       <div className="mt-3 text-base font-semibold text-stone-900">
