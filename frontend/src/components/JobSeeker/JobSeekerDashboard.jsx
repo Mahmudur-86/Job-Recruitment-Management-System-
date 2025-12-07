@@ -28,7 +28,7 @@ export default function JobSeekerDashboard({ onLogout }) {
   // SAFE TAB SWITCHER
   const handleTabChange = (tab) => {
     if (tab!== "profile"  && !isProfileComplete()) {
-      alert("Thank you for completing the registration and it will be verified by admin.Please Logout. About twenty seconds later you can Login again  and then you will be able to write profile,but it is important that you have to complete the all necessary profile information and save them.Otherwise, you can't access other features.");
+      alert("Thank you for completing the registration and it will be verified by admin.Please Logout. About ten seconds later you can Login again  and then you will be able to write profile,but it is important that you have to complete the all necessary profile information and save them.Otherwise, you can't access other features.");
       setActiveTab("profile");
       return;
     }
@@ -73,7 +73,7 @@ export default function JobSeekerDashboard({ onLogout }) {
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Job Seeker Dashboard</h1>
-            <p className="mt-2">Welcome, {profile.name || "User"}!</p>
+            <p className="mt-2">Welcome, {profile.name || "User"}.</p>
           </div>
 
           <button

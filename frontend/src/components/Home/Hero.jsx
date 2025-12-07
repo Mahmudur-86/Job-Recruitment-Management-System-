@@ -13,12 +13,7 @@ export default function Hero() {
         <SearchBar />
       </div>
 
-      <div className="mt-10 flex justify-center">
-       <button className="rounded-xl bg-green-800 px-8 py-3 text-lg text-white shadow transition hover:bg-yellow-400">
-          More Jobs
-        </button>
-        
-      </div>
+     
     </section>
     
   );
