@@ -7,7 +7,7 @@ const path = require("path");
 
 dotenv.config();
 
-// ================== DB CONNECTION ==================
+// DB CONNECTION 
 mongoose
   .connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
   .then(() => console.log("MongoDB Connected"))
@@ -28,7 +28,7 @@ app.use(
 // Static folder (CV, images, uploads)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ================== IMPORT ROUTES ==================
+// IMPORT ROUTES 
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
@@ -40,7 +40,7 @@ const internRoutes = require("./routes/internRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminApplicantRoutes = require("./routes/adminApplicantRoutes");
 
-// ================== USE ROUTES ==================
+//  USE ROUTES 
 
 // Admin
 app.use("/api/admin", adminRoutes);
@@ -71,6 +71,6 @@ app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
-// ================== SERVER LISTEN ==================
+// SERVER LISTEN 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
