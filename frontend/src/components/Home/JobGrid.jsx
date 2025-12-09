@@ -10,7 +10,7 @@ const jobs = [
     location: "Dhaka, Bangladesh",
     department: "Software Development",
     salary: "50k - 70k",
-    deadline: "2025-12-31",
+    
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const jobs = [
     location: "Banani, Dhaka, Bangladesh",
     department: "Design",
     salary: "40k - 60k",
-    deadline: "2025-11-30",
+   
   },
   // More jobs can be added here for testing
   {
@@ -31,7 +31,7 @@ const jobs = [
     location: "Gulshan, Dhaka, Bangladesh",
     department: "Development",
     salary: "60k - 80k",
-    deadline: "2026-01-15",
+    
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const jobs = [
     location: "Mohakhali, Dhaka, Bangladesh",
     department: "Engineering",
     salary: "55k - 75k",
-    deadline: "2025-12-31",
+   
   },
 ];
 

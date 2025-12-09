@@ -360,7 +360,7 @@ export default function ProfileTab({ profile, setProfile }) {
               <p><strong>LinkedIn:</strong> {profile.linkedin || ""}</p>
              
               {profile.cvUrl && (
-                <p><strong>CV:</strong> <a href={`${API_BASE}${profile.cvUrl}`} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">Download CV</a></p>
+                <p><strong>CV:</strong> <a href={`${API_BASE}${profile.cvUrl}`} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">View CV</a></p>
               )}
               <button onClick={closeModal} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg">Close</button>
             </div>

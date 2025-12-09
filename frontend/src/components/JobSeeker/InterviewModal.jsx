@@ -1,5 +1,5 @@
 // InterviewModal.jsx
-import React, { useState } from 'react';
+{/*import React, { useState } from 'react';
 import axios from 'axios';
 
 export default function InterviewModal({ job, profile, onClose, onSubmit }) {
@@ -57,7 +57,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit }) {
               Applying for <strong>{job.title}</strong> at {job.company}
             </p>
 
-            {/* CV Upload */}
+            
             <div className="mb-6">
               <label className="text-sm font-semibold text-gray-700 mb-1 block">
                 Upload Your CV (PDF Only)
@@ -79,7 +79,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit }) {
               </label>
             </div>
 
-            {/* MCQs */}
+          
             <div className="space-y-5 mb-4">
               {finalMcqs.map((q, qIndex) => (
                 <div key={qIndex} className="border-b pb-4">
@@ -101,7 +101,7 @@ export default function InterviewModal({ job, profile, onClose, onSubmit }) {
               ))}
             </div>
 
-            {/* Buttons */}
+           
             <div className="flex gap-3 mt-4">
               <button
                 onClick={handleSubmit}
@@ -122,4 +122,4 @@ export default function InterviewModal({ job, profile, onClose, onSubmit }) {
       </div>
     </div>
   );
-}
+} */}

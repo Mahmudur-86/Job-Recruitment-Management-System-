@@ -10,10 +10,10 @@ export default function ViewApplications({
 }) {
 
   //  Auto score calculation
-  const calculateScore = (correct, total) => {
+  {/*const calculateScore = (correct, total) => {
     if (total === 0) return 0;
     return Math.round((correct / total) * 100);
-  };
+  };*/}
 
   //  Dummy Applications 
   const dummyApplications = [
@@ -24,9 +24,9 @@ export default function ViewApplications({
       jobTitle: "Backend Developer ",
       company: "EconoTech",
       appliedDate: "2025-05-12",
-      correctCount: 3,
-      totalQuestions: 4,
-      score: calculateScore(3, 4),
+      //correctCount: 3,
+      //totalQuestions: 4,
+      //score: calculateScore(3, 4),
       cv: "cv_mahmudur.pdf",
     },
   
@@ -73,7 +73,7 @@ export default function ViewApplications({
                     </p>
 
                     {/* SCORE SECTION */}
-                    <div className="mt-3 flex items-center gap-2">
+                   {/* <div className="mt-3 flex items-center gap-2">
                       <span className="text-sm text-gray-500">Interview Score:</span>
 
                       <span
@@ -93,7 +93,7 @@ export default function ViewApplications({
                           FAIL
                         </span>
                       )}
-                    </div>
+                    </div>*/}
 
                     <p className="text-xs text-gray-400 mt-2">
                       📄 CV: {app.cv || 'Not provided'}

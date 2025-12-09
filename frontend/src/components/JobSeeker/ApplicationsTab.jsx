@@ -1,4 +1,3 @@
-// ApplicationsTab.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -10,7 +9,6 @@ export default function ApplicationsTab() {
       try {
         const token = localStorage.getItem("token");
 
-        // Fetching applications for the logged-in user
         const response = await axios.get(
           "http://localhost:5000/api/job-applications/me",
           {
@@ -20,7 +18,7 @@ export default function ApplicationsTab() {
           }
         );
 
-        setApplications(response.data); // Store applications with MCQ history
+        setApplications(response.data); // Store applications with CV info
       } catch (error) {
         console.error("Error fetching applications:", error);
       }
@@ -31,7 +29,7 @@ export default function ApplicationsTab() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">My Applications</h2>
+      <h2 className="text-xl font-bold mb-4">Job List</h2>
 
       {applications.length > 0 ? (
         applications.map((app) => (
@@ -39,7 +37,10 @@ export default function ApplicationsTab() {
             <h3 className="text-lg font-semibold">{app.jobTitle}</h3>
             <p className="text-gray-600">Company: {app.company}</p>
             <p className="text-gray-600">Applied Date: {new Date(app.appliedDate).toLocaleDateString()}</p>
-            <p className="text-gray-600">CV: {app.cvName}</p> {/* Display CV name */}
+
+            <p className="text-gray-600">
+            CV: {app.cvName || "No CV Uploaded"}
+            </p>
 
             <span
               className={`px-3 py-1 rounded text-sm font-semibold mt-2 inline-block ${
@@ -47,23 +48,13 @@ export default function ApplicationsTab() {
                   ? "bg-yellow-100 text-yellow-700"
                   : app.status === "Approved"
                   ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                  : app.status === "Rejected"
+                  ? "bg-red-100 text-red-700"
+                  : ""
               }`}
             >
               {app.status}
             </span>
-
-            {/* MCQ History: Display each selected answer */}
-            <div className="mt-4">
-              <h4 className="font-semibold mb-2">Your Answers:</h4>
-
-              {app.mcqHistory?.map((q, i) => (
-                <div key={i} className="mb-2 p-2 bg-gray-50 border rounded">
-                  <p><strong>{i + 1}. {q.question}</strong></p>
-                  <p>Your Answer: {q.selectedOption}</p>
-                </div>
-              ))}
-            </div>
           </div>
         ))
       ) : (

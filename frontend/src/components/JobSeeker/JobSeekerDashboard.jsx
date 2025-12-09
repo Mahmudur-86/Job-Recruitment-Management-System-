@@ -6,7 +6,7 @@ import BrowseJobsTab from './BrowseJobsTab';
 import ApplicationsTab from './ApplicationsTab';
 import NotificationsTab from './NotificationsTab';
 import InternTab from './InternTab';
-import InterviewModal from './InterviewModal';
+//import InterviewModal from './InterviewModal';
 
 export default function JobSeekerDashboard({ onLogout }) {
 
@@ -112,7 +112,7 @@ export default function JobSeekerDashboard({ onLogout }) {
               activeTab === "applications" ? "bg-blue-600 text-white" : "bg-white"
             }`}
           >
-            <FileText size={18} /> Applications
+            <FileText size={18} /> Job Applied
           </button>
 
           <button
