@@ -1,5 +1,5 @@
 const InternRequest = require("../models/InternRequest");
-const Notification = require("../models/Notification");
+//const Notification = require("../models/Notification");
 
 exports.submitInternRequest = async (req, res) => {
   const intern = await InternRequest.create({
@@ -7,12 +7,7 @@ exports.submitInternRequest = async (req, res) => {
     ...req.body
   });
 
-  await Notification.create({
-    user: req.user.id,
-    message: "Your internship request has been submitted.",
-    date: new Date().toLocaleDateString(),
-    notifyType: "intern",
-  });
+ 
 
   res.json(intern);
 };

@@ -2,13 +2,36 @@ import React from 'react';
 
 export default function InternshipAlerts() {
   const internships = [
-  
+   {
+      
+      company : "EconoTech",
+      title: "Backend Developer Intern",
+      department: "CSE",
+      university: "MIT",
+      status: "Pending",
+      role: "Backend Developer",
+      duration: "3 months",
+      description: "This internship involves working on backend development using Node.js and MongoDB.",
+      websiteName: "www.econotech.com"
+    },
+    {
+      
+      company: "Tech Innovators",
+      title: "Frontend Developer Intern",
+      department: "UI/UX Design",
+      university: "Stanford",
+      status: "Approved",
+      role: "Frontend Developer",
+      duration: "6 months",
+      description: "Work with the design team to build interactive UI components using React.",
+      websiteName: "www.techinnovators.com"
+    },
    
   ];
 
   return (
     <div>
-      <h3 className="text-xl font-semibold mb-6 text-gray-800">View Internship Alerts</h3>
+      <h3 className="text-xl font-semibold mb-6 text-gray-800"> Internship Alerts</h3>
       <p className="text-gray-600 mb-6">Admin verifies and approves employer-submitted internships alerts before sending to specific universities.</p>
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="w-full">

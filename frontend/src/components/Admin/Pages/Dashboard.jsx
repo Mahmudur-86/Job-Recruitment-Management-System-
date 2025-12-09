@@ -54,7 +54,7 @@ export default function Dashboard() {
 
         {/* Total Applications */}
         <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Applications</h3>
+          <h3 className="text-xl font-bold text-gray-700 mb-2">Applicants</h3>
           <p className="text-3xl font-semibold text-blue-800">{stats.totalApplications}</p>
         </div>
 

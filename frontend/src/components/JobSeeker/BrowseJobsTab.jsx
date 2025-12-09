@@ -21,7 +21,7 @@ export default function BrowseJobsTab({ onApplyNow }) {
 
   return (
     <div>
-      <h2>Browse Jobs</h2>
+      
       <div>
         {jobs.length > 0 ? (
           jobs.map((job) => (

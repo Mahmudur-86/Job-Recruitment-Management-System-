@@ -9,7 +9,7 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
     description: "",
     requirements: "",
     salary: "",
-    deadline: "",
+   
     
   });
 
@@ -164,7 +164,7 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
             </div>
 
             {/* Deadline */}
-            <div className="mb-4">
+           {/* <div className="mb-4">
               <label className="block text-gray-700 mb-2 font-medium">
                 Deadline
               </label>
@@ -177,10 +177,10 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
                 className="w-full px-3 py-2 border rounded-lg"
                 required
               />
-            </div>
+            </div>*/}
 
             {/* Department */}
-            <div className="mb-6">
+           {/* <div className="mb-6">
               <label className="block text-gray-700 mb-2 font-medium">
                 Department
               </label>
@@ -193,7 +193,7 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
                 className="w-full px-3 py-2 border rounded-lg"
                 required
               />
-            </div>
+            </div> */}
 
             {/* MCQ Section */}
             <div className="mb-6 border-t pt-4">
