@@ -18,7 +18,7 @@ exports.adminLogin = async (req, res) => {
   const token = jwt.sign(
     { id: admin._id, role: "admin" },
     process.env.JWT_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "127d" }
   );
 
   return res.json({
@@ -53,7 +53,7 @@ exports.deleteUser = async (req, res) => {
 };
 
 
-// ADD USER (ADMIN CREATE USER)
+// ADD USER 
 
 exports.addUser = async (req, res) => {
   const { name, email, password, role } = req.body;

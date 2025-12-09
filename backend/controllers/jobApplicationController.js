@@ -1,11 +1,11 @@
 // controllers/jobApplicationController.js
 const JobApplication = require("../models/JobApplication");
-const Notification = require("../models/Notification");
+//const Notification = require("../models/Notification");
 
-// USER APPLY (Including MCQ answers and CV)
+// USER APPLY (CV)
 exports.submitApplication = async (req, res) => {
   try {
-    const { jobId, jobTitle, company, appliedDate, cvName, mcqHistory } = req.body;
+    const { jobId, jobTitle, company, appliedDate, cvName, } = req.body;
 
   
     const appliedDateFormatted = new Date().toLocaleDateString();  // Use the current date and time
@@ -18,26 +18,20 @@ exports.submitApplication = async (req, res) => {
       company,
       appliedDate: appliedDateFormatted,  // Store the current applied date
       cvName,
-      mcqHistory,           // Store MCQ answers
+               
       status: "Pending",     // Default application status
     });
 
     // Create a notification for the jobseeker after applying
-    const notification = await Notification.create({
-      user: req.user.id,
-      message: `You applied for ${jobTitle} at ${company}.`,
-      type: "job",  // Notification type
-      seen: false,   // Mark the notification as unseen initially
-      date: new Date().toLocaleDateString(),  // Notification date (current date)
-    });
+   
 
     // Send back the application and notification details
-    res.json({ application, notification });
+    res.json({ application});
   } catch (err) {
     console.error("Error in submitting application: ", err);
     res.status(500).json({ message: "Submit failed", error: err.message });
   }
-};
+}; 
 
 // Fetch job applications for the logged-in Jobseeker
 exports.getMyApplications = async (req, res) => {
@@ -65,4 +59,4 @@ exports.getAllApplications = async (req, res) => {
     console.error("Error fetching all applications: ", err);
     res.status(500).json({ message: "Failed to fetch applications", error: err.message });
   }
-};
+}; 

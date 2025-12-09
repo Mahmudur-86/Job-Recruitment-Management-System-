@@ -37,7 +37,7 @@ const profileRoutes = require("./routes/profileRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const jobApplicationRoutes = require("./routes/jobApplicationRoutes");
 const internRoutes = require("./routes/internRoutes");
-const notificationRoutes = require("./routes/notificationRoutes");
+//const notificationRoutes = require("./routes/notificationRoutes");
 const adminApplicantRoutes = require("./routes/adminApplicantRoutes");
 
 //  USE ROUTES 
@@ -55,7 +55,7 @@ app.use("/api/job-applications", jobApplicationRoutes);
 app.use("/api/interns", internRoutes);
 
 // Jobseeker: Notifications
-app.use("/api/notifications", notificationRoutes);
+//app.use("/api/notifications", notificationRoutes);
 
 // Admin: Manage applicants
 app.use("/api/admin/applicants", adminApplicantRoutes);

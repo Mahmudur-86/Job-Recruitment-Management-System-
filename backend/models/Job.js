@@ -9,13 +9,7 @@ const jobSchema = new mongoose.Schema(
     salary: { type: String, default: "Negotiable" },
     description: String,
     requirements: String,
-    mcqs: [
-      {
-        question: String,
-        options: [String],
-        correctOptionIndex: Number,
-      },
-    ],
+   
     vacancies: { type: Number, default: 2 },  
   },
   { timestamps: true }

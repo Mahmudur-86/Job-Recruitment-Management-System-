@@ -1,4 +1,3 @@
-// models/JobApplication.js
 const mongoose = require("mongoose");
 
 const jobApplicationSchema = new mongoose.Schema(
@@ -9,15 +8,10 @@ const jobApplicationSchema = new mongoose.Schema(
     company: { type: String, required: true },
     appliedDate: { type: Date, required: true },
     cvName: { type: String, required: true },
-    mcqHistory: [
-      {
-        question: { type: String, required: true },
-        selectedOption: { type: String, required: true },
-      }
-    ],
-    status: { type: String, default: "Pending" }, // Track the application status (pending, approved, etc.)
+    status: { type: String, default: "Pending" }, 
+      
   },
-  { timestamps: true } // To automatically include createdAt and updatedAt fields
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("JobApplication", jobApplicationSchema);
