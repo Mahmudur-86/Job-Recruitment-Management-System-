@@ -10,6 +10,8 @@ import StudentInternList from './StudentInternList';
 import StudentInternshipAlert from './StudentInternshipAlert';
 import EmailModal from './EmailModal';
 
+import AddMCQs from './AddMCQs';
+
 export default function EmployerDashboard({ onLogout }) {
 
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -22,7 +24,7 @@ export default function EmployerDashboard({ onLogout }) {
 
   // Students (dummy data)
   const [students] = useState([
-    { id: 1, name: 'Hamid Khan', university: 'IUBAT', score: 95, cv: 'cv_hamid.pdf', major: 'BSc in CSE ' },
+    { id: 1, name: 'Hamid Khan', university: '',  cv: '' },
    
   ]);
 
@@ -30,14 +32,23 @@ export default function EmployerDashboard({ onLogout }) {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
 
+  const [selectedJob, setSelectedJob] = useState(null);
+
   // Company profile info
   const [profile, setProfile] = useState({
-    name: '',
-    address: '',
+    EmployerName: '',
+    CompanyName:'',
     email: '',
+    address: '',
+  
     phone: '',
     website: '',
-    companyContact: ''
+companyLogo: "",
+  companyLogoFile: null,
+
+
+
+    
   });
 
   // Internship alert info
@@ -52,7 +63,7 @@ export default function EmployerDashboard({ onLogout }) {
   });
 
   const [isAlertActive, setIsAlertActive] = useState(false);
-  const [universityFilter, setUniversityFilter] = useState('');
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -72,21 +83,24 @@ export default function EmployerDashboard({ onLogout }) {
           />
         )}
 
-        {currentPage === 'postjob' && (
-          <PostJob 
-            setCurrentPage={setCurrentPage} 
-            jobs={jobs} 
-            setJobs={setJobs} 
-          />
-        )}
+       {/* POST JOB PAGE */}
+      {currentPage === "postjob" && (
+        <PostJob
+          setCurrentPage={setCurrentPage}
+          jobs={jobs}
+          setJobs={setJobs}
+        />
+      )}
 
-        {currentPage === 'alljobs' && (
-          <AllJobs 
-            setCurrentPage={setCurrentPage} 
-            jobs={jobs} 
-            setJobs={setJobs} 
-          />
-        )}
+       {/* ALL JOBS PAGE */}
+      {currentPage === "alljobs" && (
+        <AllJobs
+          setCurrentPage={setCurrentPage}
+          jobs={jobs}
+          setJobs={setJobs}
+          setSelectedJob={setSelectedJob}
+        />
+      )}
 
         {currentPage === 'applications' && (
           <ViewApplications 
@@ -103,8 +117,8 @@ export default function EmployerDashboard({ onLogout }) {
           <StudentInternList 
             setCurrentPage={setCurrentPage} 
             students={students}
-            universityFilter={universityFilter}
-            setUniversityFilter={setUniversityFilter}
+            
+           
           />
         )}
 
@@ -124,7 +138,15 @@ export default function EmployerDashboard({ onLogout }) {
             onClose={() => setShowEmailModal(false)} 
           />
         )}
-
+{/* ADD MCQs PAGE */}
+      {currentPage === "mcq" && selectedJob && (
+        <AddMCQs
+          setCurrentPage={setCurrentPage}
+          jobs={jobs}
+          setJobs={setJobs}
+          selectedJob={selectedJob}
+        />
+      )}
       </div>
     </div>
   );

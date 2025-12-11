@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
-  const [statusToUpdate, setStatusToUpdate] = useState(null); // Track the user being updated
-  const [status, setStatus] = useState(""); // Store the status for that specific user
-  const [showUpdate, setShowUpdate] = useState(null); // Show the "Update" button per user
-  const [showDropdown, setShowDropdown] = useState(null); // Track which user's dropdown is open
-  const [showConfirm, setShowConfirm] = useState(false); // For the delete confirmation modal
-  const [userToDelete, setUserToDelete] = useState(null); // For the user to delete
+  const [statusToUpdate, setStatusToUpdate] = useState(null);
+  const [status, setStatus] = useState("");
+  const [showUpdate, setShowUpdate] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
-
-
+  // Details modal
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const adminToken = localStorage.getItem("adminToken");
 
-  // Load all users
   const loadUsers = async () => {
     try {
       const { data } = await axios.get(
@@ -37,22 +36,20 @@ export default function ManageUsers() {
     loadUsers();
   }, []);
 
-  // Handle status change for specific user
   const setStatusChange = (userId, statusValue) => {
     setStatusToUpdate(userId);
     setStatus(statusValue);
-    setShowUpdate(userId); // Show the Update button for the selected user
+    setShowUpdate(userId);
   };
 
-  // Update user status
   const updateStatus = (userId) => {
     if (statusToUpdate === userId) {
       axios
         .post(
           `${import.meta.env.VITE_API_URL}/api/admin/user/status`,
           {
-            userId: userId,
-            status: status,
+            userId,
+            status,
           },
           {
             headers: {
@@ -62,29 +59,22 @@ export default function ManageUsers() {
         )
         .then(() => {
           loadUsers();
-          setShowUpdate(null); // Hide the Update button after update
-          setShowDropdown(null); // Close the dropdown after update
+          setShowUpdate(null);
+          setShowDropdown(null);
         })
         .catch((err) => console.log(err));
     }
   };
 
-  // Toggle the dropdown for status change
   const toggleDropdown = (userId) => {
-    if (showDropdown === userId) {
-      setShowDropdown(null); // Close the dropdown if already open
-    } else {
-      setShowDropdown(userId); // Open the dropdown for the specific user
-    }
+    setShowDropdown((prev) => (prev === userId ? null : userId));
   };
 
-  // Open the delete confirmation modal
   const openDeleteModal = (id) => {
     setUserToDelete(id);
     setShowConfirm(true);
   };
 
-  // Confirm delete
   const confirmDelete = async () => {
     try {
       await axios.delete(
@@ -104,10 +94,48 @@ export default function ManageUsers() {
     }
   };
 
-  // Cancel delete
   const cancelDelete = () => {
     setShowConfirm(false);
     setUserToDelete(null);
+  };
+
+  // ==========================================
+  // NEW FUNCTION → Fetch FULL_DETAILS API
+  // ==========================================
+  const fetchUserDetails = async (userId) => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/admin/user/${userId}/details`,
+        {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        }
+      );
+
+      const { user, profile } = res.data;
+
+      setSelectedUser({
+        ...user,
+        ...profile,
+        companyLogo: profile?.companyLogo
+          ? `${import.meta.env.VITE_API_URL}/${profile.companyLogo}`
+          : "",
+        profileImage: profile?.profileImageUrl
+          ? `${import.meta.env.VITE_API_URL}${profile.profileImageUrl}`
+          : "",
+        cvUrl: profile?.cvUrl
+          ? `${import.meta.env.VITE_API_URL}${profile.cvUrl}`
+          : "",
+      });
+
+      setShowDetails(true);
+    } catch (err) {
+      console.log("DETAILS FETCH ERROR:", err);
+    }
+  };
+
+  const closeDetailsModal = () => {
+    setSelectedUser(null);
+    setShowDetails(false);
   };
 
   return (
@@ -117,7 +145,7 @@ export default function ManageUsers() {
 
       {/* Delete Confirmation Modal */}
       {showConfirm && (
-        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50">
+        <div className="fixed inset-0 z-40 flex items-start justify-center pt-24 bg-black/40">
           <div className="bg-white p-6 rounded-lg shadow-xl border w-80">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Are you sure you want to delete this user?
@@ -142,9 +170,134 @@ export default function ManageUsers() {
         </div>
       )}
 
-      {/* Users Table */}
-      <div className="bg-white rounded-lg shadow ">
-        <table className="w-full  border-2">
+      {/* DETAILS MODAL (EMPLOYER / JOBSEEKER) */}
+      {showDetails && selectedUser && (
+        <div className="fixed inset-0 z-40 flex items-start justify-center pt-10 bg-black/40">
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl mx-4 p-8 relative">
+            {/* EMPLOYER VIEW */}
+            {["employer", "Employer", "EMPLOYER"].includes(selectedUser.role) ? (
+              <>
+                <div className="flex justify-center mb-6">
+                  {selectedUser.companyLogo ? (
+                    <img
+                      src={selectedUser.companyLogo}
+                      alt="Company Logo"
+                      className="w-32 h-32 rounded-full border object-cover shadow-md"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                      No Logo
+                    </div>
+                  )}
+                </div>
+
+                <h2 className="text-2xl font-bold text-center mb-8">
+                  Company Profile
+                </h2>
+
+                <div className="space-y-3 text-sm sm:text-base">
+                  <p>
+                    <span className="font-semibold">Company Name: </span>
+                    {selectedUser.CompanyName || ""}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Address: </span>
+                    {selectedUser.address || ""}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Company Contact: </span>
+                    {selectedUser.phone || ""}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Website: </span>
+                    {selectedUser.website ? (
+                      <a
+                        href={selectedUser.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        {selectedUser.website}
+                      </a>
+                    ) : (
+                      ""
+                    )}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* JOBSEEKER VIEW */}
+                <div className="flex justify-center mb-6">
+                  <img
+                    src={selectedUser.profileImage}
+                    alt=""
+                    className="w-30 h-38 rounded-full border object-cover shadow-md"
+                  />
+                </div>
+
+                <h2 className="text-xl font-semibold mb-6">Profile Details</h2>
+
+                <div className="space-y-2 text-sm sm:text-base">
+                  <p><span className="font-semibold">Name: </span>{selectedUser.name}</p>
+                  <p><span className="font-semibold">Email: </span>{selectedUser.email}</p>
+                  <p><span className="font-semibold">Phone: </span>{selectedUser.phone}</p>
+                  <p><span className="font-semibold">Address: </span>{selectedUser.address}</p>
+                  <p><span className="font-semibold">Age: </span>{selectedUser.age}</p>
+                  <p><span className="font-semibold">Gender: </span>{selectedUser.gender}</p>
+                  <p><span className="font-semibold">Job Interest: </span>{selectedUser.jobInterest}</p>
+                  <p><span className="font-semibold">Bio: </span>{selectedUser.bio}</p>
+
+                  <p><span className="font-semibold">Portfolio: </span>
+                    {selectedUser.portfolio && (
+                      <a href={selectedUser.portfolio} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                        {selectedUser.portfolio}
+                      </a>
+                    )}
+                  </p>
+
+                  <p><span className="font-semibold">GitHub: </span>
+                    {selectedUser.github && (
+                      <a href={selectedUser.github} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                        {selectedUser.github}
+                      </a>
+                    )}
+                  </p>
+
+                  <p><span className="font-semibold">LinkedIn: </span>
+                    {selectedUser.linkedin && (
+                      <a href={selectedUser.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                        {selectedUser.linkedin}
+                      </a>
+                    )}
+                  </p>
+
+                  <p><span className="font-semibold">CV: </span>
+                    {selectedUser.cvUrl && (
+                      <a href={selectedUser.cvUrl} target="_blank" rel="noreferrer" className="text-blue-600 underline">
+                        View CV
+                      </a>
+                    )}
+                  </p>
+                </div>
+              </>
+            )}
+
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={closeDetailsModal}
+                className="px-5 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* USERS TABLE */}
+      <div className="bg-white rounded-lg shadow">
+        <table className="w-full border-2">
           <thead className="bg-gray-50">
             <tr className="border-b-2">
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase border-r-2">
@@ -160,6 +313,9 @@ export default function ManageUsers() {
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase border-r-2">
+                Details
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase border-r-2">
                 Actions
               </th>
             </tr>
@@ -168,12 +324,8 @@ export default function ManageUsers() {
           <tbody className="divide-y divide-gray-200">
             {users.map((u) => (
               <tr key={u._id}>
-                <td className="px-6 py-4 text-sm text-gray-800 border-2">
-                  {u.name}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-700 border-2">
-                  {u.email}
-                </td>
+                <td className="px-6 py-4 text-sm text-gray-800 border-2">{u.name}</td>
+                <td className="px-6 py-4 text-sm text-gray-700 border-2">{u.email}</td>
                 <td className="px-6 py-4 text-sm border-2">
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
                     {u.role}
@@ -182,15 +334,13 @@ export default function ManageUsers() {
 
                 <td className="px-6 py-4 text-sm border-2">
                   <div className="relative inline-block">
-                    {/* View Button (No Eye Icon) */}
                     <button
                       onClick={() => toggleDropdown(u._id)}
-                      className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium transition-shadow "
+                      className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium transition-shadow"
                     >
                       View
                     </button>
 
-                    {/* Dropdown for Active/Blocked */}
                     {showDropdown === u._id && (
                       <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-2xl z-50 overflow-hidden">
                         <select
@@ -215,6 +365,16 @@ export default function ManageUsers() {
                   </div>
                 </td>
 
+                {/* UPDATED BUTTON — FETCH FROM API */}
+                <td className="px-6 py-4 text-sm border-2">
+                  <button
+                    onClick={() => fetchUserDetails(u._id)}
+                    className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-medium hover:bg-indigo-600"
+                  >
+                    View Details
+                  </button>
+                </td>
+
                 <td className="px-6 py-4 text-sm border-2">
                   <button
                     onClick={() => openDeleteModal(u._id)}
@@ -228,10 +388,7 @@ export default function ManageUsers() {
 
             {users.length === 0 && (
               <tr>
-                <td
-                  className="px-6 py-6 text-center text-gray-500"
-                  colSpan="5"
-                >
+                <td className="px-6 py-6 text-center text-gray-500" colSpan="6">
                   No users found
                 </td>
               </tr>
@@ -239,10 +396,6 @@ export default function ManageUsers() {
           </tbody>
         </table>
       </div>
-
-
-
-      
     </div>
   );
 }

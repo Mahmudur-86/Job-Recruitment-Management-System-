@@ -8,12 +8,13 @@ export default function Dashboard({ setCurrentPage }) {
         <h2 className="text-3xl font-bold mb-8">Dashboard</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: 'Company Profile', page: 'profile', desc: 'Manage company information', icon: '' },
-            { title: 'Post Job', page: 'postjob', desc: 'Create new job posting', icon: '' },
-            { title: 'All Jobs', page: 'alljobs', desc: 'Edit or delete job posts', icon: '' },
-            { title: 'View Applications', page: 'applications', desc: 'See all applicants', icon: '' },
-            { title: 'Student Intern List', page: 'students', desc: 'Browse student profiles', icon: '' },
-            { title: 'Internship Alerts', page: 'alerts', desc: 'Send alerts to students', icon: '' }
+            { title: 'Company Profile', page: 'profile',   },
+            { title: 'Post Job', page: 'postjob',  },
+            { title: 'All Jobs', page: 'alljobs',  },
+            { title: 'View Applications', page: 'applications',   },
+            { title: 'Student Intern List', page: 'students',  },
+            { title: 'Internship Alerts', page: 'alerts',   },
+            
           ].map((feature, idx) => (
             <button
               key={idx}
