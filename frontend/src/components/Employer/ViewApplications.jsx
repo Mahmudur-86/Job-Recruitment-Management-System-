@@ -1,4 +1,8 @@
+import { useState } from 'react';
+
+
 import EmailModal from './EmailModal';
+import InterviewModal from './InterviewModal';
 
 export default function ViewApplications({ 
   setCurrentPage, 
@@ -6,34 +10,49 @@ export default function ViewApplications({
   showEmailModal, 
   setShowEmailModal, 
   selectedPerson, 
-  setSelectedPerson 
+  setSelectedPerson
 }) {
 
-  //  Auto score calculation
-  {/*const calculateScore = (correct, total) => {
-    if (total === 0) return 0;
-    return Math.round((correct / total) * 100);
-  };*/}
+  const [showInterviewModal, setShowInterviewModal] = useState(false);
 
-  //  Dummy Applications 
+  // Dummy Applications 
   const dummyApplications = [
     {
       id: 1,
-      name: "Mahmudur Rahman",
+      name: "Md. Mahmudur Rahman",
       email: "hrid3740@gmail.com",
-      jobTitle: "Backend Developer ",
+      jobTitle: "Backend Developer",
       company: "EconoTech",
-      appliedDate: "2025-05-12",
-      //correctCount: 3,
-      //totalQuestions: 4,
-      //score: calculateScore(3, 4),
-      cv: "cv_mahmudur.pdf",
+      appliedDate: "9-12-2025",
+      cvUrl: "/assets/cvfile/CV.pdf",
+
+      // NEW: Dummy answers for interview
+      interviewAnswers: [
+        {
+          question: "1. Which HTTP method is commonly used to update a resource?",
+          options: ["GET", "POST", "PUT", "DELETE"],
+          answer: "PUT"
+        },
+        {
+          question: "2. Which database is a NoSQL Database?",
+          options: ["MySQL", "PostgreSQL", "MongoDB", "Oracle"],
+          answer: "MongoDB"
+        },
+        {
+          question: "3. What is the purpose of middleware in Express.js?",
+          options: [
+            "To handle CSS files",
+            "To modify request/response objects",
+            "To store images",
+            "To create database tables"
+          ],
+          answer: "To modify request/response objects"
+        }
+      ]
     },
-  
-  
   ];
 
-  //  Merge real + dummy
+  // Merge real + dummy
   const allApplications = [...applications, ...dummyApplications];
 
   return (
@@ -61,57 +80,37 @@ export default function ViewApplications({
                   {/* LEFT SIDE */}
                   <div>
                     <h3 className="text-xl font-bold">{app.name}</h3>
-                    <p className="text-gray-600">{app.email}</p>
+                    <p className="text-gray-700">{app.email}</p>
 
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-700 mt-1">
                       Applied for: <span className="font-semibold">{app.jobTitle}</span>  
                       at {app.company}
                     </p>
 
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-700 mt-1">
                       Applied on: {app.appliedDate}
                     </p>
 
-                    {/* SCORE SECTION */}
-                   {/* <div className="mt-3 flex items-center gap-2">
-                      <span className="text-sm text-gray-500">Interview Score:</span>
-
-                      <span
-                        className={`font-bold ${
-                          app.score >= 75 ? 'text-green-600' : 'text-red-600'
-                        }`}
-                      >
-                        {app.score}% ({app.correctCount}/{app.totalQuestions})
-                      </span>
-
-                      {app.score >= 75 ? (
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                          PASS
-                        </span>
-                      ) : (
-                        <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-                          FAIL
-                        </span>
-                      )}
-                    </div>*/}
-
-                    <p className="text-xs text-gray-400 mt-2">
-                      📄 CV: {app.cv || 'Not provided'}
+                    <p className="text-xs text-gray-700 mt-2">
+                       CV: {app.cvUrl || 'Not provided'}
                     </p>
                   </div>
 
                   {/* RIGHT BUTTONS */}
                   <div className="flex gap-2">
+
+                    {/* VIEW CV BUTTON */}
                     <button 
                       className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                       onClick={() => {
-                        if (app.cv) window.open(app.cv, "_blank");
+                        if (app.cvUrl) window.open(app.cvUrl, "_blank");
                         else alert("No CV available.");
                       }}
                     >
                       View CV
                     </button>
 
+                    {/* EMAIL BUTTON */}
                     <button 
                       onClick={() => {
                         setSelectedPerson({ name: app.name, email: app.email });
@@ -121,10 +120,20 @@ export default function ViewApplications({
                     >
                       Email
                     </button>
+
+                    {/* NEW: VIEW INTERVIEW ANSWERS BUTTON */}
+                    <button
+                      onClick={() => {
+                        setSelectedPerson(app);
+                        setShowInterviewModal(true);
+                      }}
+                      className="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700"
+                    >
+                      View Answers
+                    </button>
+
                   </div>
-
                 </div>
-
               </div>
             ))}
 
@@ -132,10 +141,19 @@ export default function ViewApplications({
         </div>
       </div>
 
+      {/* EMAIL MODAL */}
       {showEmailModal && selectedPerson && (
         <EmailModal 
           person={selectedPerson} 
           onClose={() => setShowEmailModal(false)} 
+        />
+      )}
+
+      {/* INTERVIEW ANSWERS MODAL */}
+      {showInterviewModal && selectedPerson && (
+        <InterviewModal 
+          person={selectedPerson}
+          onClose={() => setShowInterviewModal(false)}
         />
       )}
     </div>

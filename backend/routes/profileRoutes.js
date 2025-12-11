@@ -4,33 +4,50 @@ const multer = require("multer");
 const fs = require("fs");
 
 const auth = require("../middleware/authMiddleware");
-const { getMyProfile, updateMyProfile } = require("../controllers/jobSeekerProfileController");
+const {
+  getMyProfile,
+  updateMyProfile,
+} = require("../controllers/jobSeekerProfileController");
 
 const router = express.Router();
 
-// Ensure uploads/cv folder exists 
-const cvFolder = path.join(__dirname, "..", "uploads", "cv");
-if (!fs.existsSync(cvFolder)) {
-  fs.mkdirSync(cvFolder, { recursive: true });
-}
+// root uploads folder
+const uploadsRoot = path.join(__dirname, "..", "uploads");
 
-// Multer setup
+// ensure subfolders exist
+const cvFolder = path.join(uploadsRoot, "cv");
+const profileImgFolder = path.join(uploadsRoot, "profile-images");
+
+[uploadsRoot, cvFolder, profileImgFolder].forEach((folder) => {
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
+});
+
+// Multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    let dest = uploadsRoot;
 
-    // Ensure folder exists AGAIN (safe for every OS)
-    if (!fs.existsSync(cvFolder)) {
-      fs.mkdirSync(cvFolder, { recursive: true });
+    if (file.fieldname === "cv") {
+      dest = cvFolder; // same as before
+    } else if (file.fieldname === "profileImage") {
+      dest = profileImgFolder;
     }
 
-    cb(null, cvFolder);
+    cb(null, dest);
   },
 
   filename: (req, file, cb) => {
-    cb(
-      null,
-      "cv_" + req.user.id + "_" + Date.now() + path.extname(file.originalname)
-    );
+    const ext = path.extname(file.originalname);
+
+    if (file.fieldname === "cv") {
+      cb(null, "cv_" + req.user.id + "_" + Date.now() + ext);
+    } else if (file.fieldname === "profileImage") {
+      cb(null, "img_" + req.user.id + "_" + Date.now() + ext);
+    } else {
+      cb(null, "file_" + req.user.id + "_" + Date.now() + ext);
+    }
   },
 });
 
@@ -38,6 +55,16 @@ const upload = multer({ storage });
 
 // Routes
 router.get("/me", auth, getMyProfile);
-router.post("/", auth, upload.single("cv"), updateMyProfile);
+
+// ✅ accept both cv and profileImage (same endpoint)
+router.post(
+  "/",
+  auth,
+  upload.fields([
+    { name: "cv", maxCount: 1 },
+    { name: "profileImage", maxCount: 1 },
+  ]),
+  updateMyProfile
+);
 
 module.exports = router;

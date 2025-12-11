@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { User, FileText, Download, Pencil, X, Check } from "lucide-react";
+import { User, FileText, Download, Pencil,  } from "lucide-react";
 
 // API BASE HANDLER 
 let API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL;
@@ -15,6 +15,10 @@ export default function ProfileTab({ profile, setProfile }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isViewing, setIsViewing] = useState(true);  // State to manage view-only mode
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
+
+  //  NEW: local image state (only for frontend preview)
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
 
   // Load profile
   useEffect(() => {
@@ -36,6 +40,11 @@ export default function ProfileTab({ profile, setProfile }) {
           cvName: data.cvUrl ? data.cvUrl.split("/").pop() : "",
           cvFile: undefined,
         });
+
+        //  if backend later sends an image URL, show it
+        if (data.profileImageUrl) {
+          setProfileImagePreview(`${API_BASE}${data.profileImageUrl}`);
+        }
       } catch (error) {
         console.error("Error loading profile:", error);
       }
@@ -64,6 +73,23 @@ export default function ProfileTab({ profile, setProfile }) {
     }
   };
 
+  //   handle profile image upload (frontend preview only)
+  const handleProfileImageChange = (e) => {
+    if (!isEditing) return;
+
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Only image files are allowed.");
+      return;
+    }
+
+    const previewURL = URL.createObjectURL(file);
+    setProfileImageFile(file);
+    setProfileImagePreview(previewURL);
+  };
+
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     if (!token || !API_BASE) return;
@@ -83,6 +109,11 @@ export default function ProfileTab({ profile, setProfile }) {
 
       if (profile.cvFile) formData.append("cv", profile.cvFile);
 
+      //  NEW: send profile image along with form (backend work you’ll do later)
+      if (profileImageFile) {
+        formData.append("profileImage", profileImageFile);
+      }
+
       const res = await fetch(`${API_BASE}/api/profile`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -101,6 +132,12 @@ export default function ProfileTab({ profile, setProfile }) {
         cvFile: undefined,
       }));
 
+      //  NEW: if backend returns image URL, update preview
+      if (data.profile && data.profile.profileImageUrl) {
+        setProfileImagePreview(`${API_BASE}${data.profile.profileImageUrl}`);
+        setProfileImageFile(null);
+      }
+
       setIsEditing(false);
       setIsViewing(true);  // Make sure we return to viewing mode after saving
     } catch (error) {
@@ -108,11 +145,11 @@ export default function ProfileTab({ profile, setProfile }) {
     }
   };
 
- {/* const toggleViewMode = () => {
+ { /* const toggleViewMode = () => {
     setIsViewing(!isViewing);  // Toggle between view-only and edit modes
     setIsEditing(false); // Make sure editing is turned off when switching to view mode
     setIsModalOpen(false); // Close modal when switching back to edit mode
-  }; */}
+  }; */ }
 
   const openModal = () => setIsModalOpen(true); // Open modal
   const closeModal = () => setIsModalOpen(false); // Close modal
@@ -159,12 +196,36 @@ export default function ProfileTab({ profile, setProfile }) {
             >
                Back
             </button>
-
-
-
-
           )}
         </div>
+      </div>
+
+      {/*  NEW: PROFILE IMAGE SECTION (page top) */}
+      <div className="flex justify-center mb-6">
+        <label className="relative cursor-pointer group">
+          <img
+            src={
+              profileImagePreview 
+              
+            }
+            alt=""
+            className="w-30 h-38 rounded-full border object-cover shadow-md"
+          />
+
+          {isEditing && (
+            <>
+              <div className="absolute -inset-8 bg-black/50 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition duration-300">
+                <span className="text-white text-xs">Change Photo</span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfileImageChange}
+                className="hidden"
+              />
+            </>
+          )}
+        </label>
       </div>
 
       <div className="space-y-6">
@@ -345,6 +406,19 @@ export default function ProfileTab({ profile, setProfile }) {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full">
+
+            {/*  Show same profile image in modal */}
+            <div className="flex justify-center mb-4">
+              <img
+                src={
+                  profileImagePreview 
+                  
+                }
+                alt=""
+                className="w-30 h-38  rounded-full border object-cover shadow"
+              />
+            </div>
+
             <h3 className="font-semibold text-xl mb-4">Profile Details</h3>
             <div className="space-y-4">
               <p><strong>Name:</strong> {profile.name}</p>
@@ -355,9 +429,9 @@ export default function ProfileTab({ profile, setProfile }) {
  <p><strong>Gender:</strong> {profile.gender || ""}</p>
               <p><strong>Job Interest:</strong> {profile.jobInterest || ""}</p>
               <p><strong>Bio:</strong> {profile.bio || ""}</p>
-              <p><strong>Portfolio:</strong> {profile.portfolio || ""}</p>
-              <p><strong>GitHub:</strong> {profile.github || ""}</p>
-              <p><strong>LinkedIn:</strong> {profile.linkedin || ""}</p>
+              <p><strong>Portfolio:</strong> {profile.portfolio}</p>
+              <p><strong>GitHub:</strong> {profile.github}</p>
+              <p><strong>LinkedIn:</strong> {profile.linkedin}</p>
              
               {profile.cvUrl && (
                 <p><strong>CV:</strong> <a href={`${API_BASE}${profile.cvUrl}`} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">View CV</a></p>

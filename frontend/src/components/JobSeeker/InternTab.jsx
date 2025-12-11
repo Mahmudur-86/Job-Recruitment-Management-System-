@@ -116,12 +116,12 @@ export default function InternTab({ onSubmit, internRequests }) {
           <label className="flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-3 cursor-pointer hover:bg-gray-50 transition">
             <Upload size={20} className="text-blue-600" />
             <span className="text-gray-600">
-              {formData.cv ? formData.cv.name : "Choose a file (.pdf, .doc, .docx)"}
+              {formData.cv ? formData.cv.name : "Choose a file (.pdf)"}
             </span>
             <input
               type="file"
               name="cv"
-              accept=".pdf,.doc,.docx"
+              accept=".pdf"
               onChange={handleChange}
               required
               className="hidden"

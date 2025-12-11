@@ -67,7 +67,7 @@ export default function JobCard({ job, profile }) {
       <p className="text-sm mb-2">Location: {jobDetails.location}</p>
       <p className="text-sm mb-2">Category: {jobDetails.category}</p>
       <p className="text-sm mb-2">Salary: {jobDetails.salary}</p>
-      <p className="text-sm mb-2">{jobDetails.description}</p>
+      <p className="text-sm mb-2">Description: {jobDetails.description}</p>
       <p className="text-sm mb-4">Requirements: {jobDetails.requirements}</p>
       <p className="text-sm mb-4">Vacancies: {job.vacancies}</p>
 
