@@ -3,9 +3,13 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+// MODELS FOR DETAILS
+const EmployerProfile = require("../models/EmployerProfile");
+const JobSeekerProfile = require("../models/JobSeekerProfile");
 
+// ==============================
 // ADMIN LOGIN
-
+// ==============================
 exports.adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -36,6 +40,31 @@ exports.getAllUsers = async (req, res) => {
 };
 
 
+// GET FULL DETAILS FOR EACH USER
+
+exports.getUserFullDetails = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let profile = null;
+
+    if (user.role === "employer") {
+      profile = await EmployerProfile.findOne({ employerId: userId });
+    } else {
+      profile = await JobSeekerProfile.findOne({ user: userId });
+    }
+
+    return res.json({ user, profile });
+  } catch (err) {
+    console.log("DETAIL ERROR:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 // UPDATE USER STATUS
 
 exports.updateUserStatus = async (req, res) => {
@@ -53,7 +82,7 @@ exports.deleteUser = async (req, res) => {
 };
 
 
-// ADD USER 
+// ADD USER
 
 exports.addUser = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -71,24 +100,19 @@ exports.addUser = async (req, res) => {
 };
 
 
-// GET DASHBOARD STATS
+// DASHBOARD STATS
 
 exports.getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const employers = await User.countDocuments({ role: "employer" });
 
-    const totalJobs = 0; 
-    const totalApplications = 0;
-
-const  totalInternshipsAlert =0;
-
     res.json({
       totalUsers,
       employers,
-      totalJobs,
-      totalApplications,
-      totalInternshipsAlert,
+      totalJobs: 0,
+      totalApplications: 0,
+      totalInternshipsAlert: 0,
     });
 
   } catch (err) {

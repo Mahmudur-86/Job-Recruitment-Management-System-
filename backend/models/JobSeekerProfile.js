@@ -26,6 +26,10 @@ const jobSeekerProfileSchema = new mongoose.Schema(
     github: String,
     linkedin: String,
 
+    //  profile image URL 
+    profileImageUrl: String,
+
+    // existing CV URL
     cvUrl: String,
   },
   { timestamps: true }

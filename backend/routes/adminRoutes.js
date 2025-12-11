@@ -4,9 +4,9 @@ const router = express.Router();
 const {
   adminLogin,
   getAllUsers,
+  getUserFullDetails,
   updateUserStatus,
   deleteUser,
-  addUser,
   getDashboardStats
 } = require("../controllers/adminController");
 
@@ -15,13 +15,22 @@ const auth = require("../middleware/authMiddleware");
 // Admin login
 router.post("/login", adminLogin);
 
-// All other admin features 
+// Protected admin routes
 router.use(auth);
 
+// Get all users
 router.get("/users", getAllUsers);
+
+// NEW — GET FULL USER DETAILS
+router.get("/user/:id/details", getUserFullDetails);
+
+// Update user status
 router.post("/user/status", updateUserStatus);
+
+// Delete user
 router.delete("/user/:id", deleteUser);
-router.post("/user/add", addUser);
+
+// Dashboard stats
 router.get("/stats", getDashboardStats);
 
 module.exports = router;
