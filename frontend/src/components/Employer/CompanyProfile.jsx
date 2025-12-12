@@ -24,7 +24,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
           localStorage.getItem("token");
 
         if (!token) {
-          setError("Please login as employer first.");
+          setError("Congratulations for registering and Please logout now and login  again .");
           setLoading(false);
           return;
         }
@@ -98,7 +98,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         localStorage.getItem("token");
 
       if (!token) {
-        alert("Please login as employer first.");
+        alert("Congratulations for registering and Please logout now and login  again .");
         setSaving(false);
         return;
       }
@@ -182,7 +182,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         </button>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 border border-red-300">
+          <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 border border-green-300">
             {error}
           </div>
         )}

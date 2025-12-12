@@ -1,36 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import JobCard from './JobCard';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import JobCard from "./JobCard";
 
-export default function BrowseJobsTab({ onApplyNow }) {
+export default function BrowseJobsTab({ profile }) {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch jobs from the backend
     const fetchJobs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/jobs');
-        setJobs(response.data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
+        const res = await axios.get("http://localhost:5000/api/jobs");
+        setJobs(res.data);
+      } catch (err) {
+        console.error("Failed to load jobs:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchJobs();
   }, []);
 
-  return (
-    <div>
-      
-      <div>
-        {jobs.length > 0 ? (
-          jobs.map((job) => (
-            <JobCard key={job._id} job={job} onApplyNow={onApplyNow} />
-          ))
-        ) : (
-          <p>No jobs available.</p>
-        )}
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <p className="text-gray-600 font-medium">Loading jobs...</p>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-100 rounded-lg p-4">
+      {jobs.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {jobs.map((job) => (
+            <JobCard key={job._id} job={job} profile={profile} />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg p-6 text-center shadow">
+          <p className="text-gray-600 font-medium">No jobs available.</p>
+        </div>
+      )}
     </div>
   );
 }
