@@ -1,10 +1,25 @@
-import React, { useState} from 'react';
-import axios from 'axios';
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function JobCard({ job, profile }) {
-  const [applyNow, setApplyNow] = useState(false); // State to track if 'Apply Now' is clicked
-  const [cvLink, setCvLink] = useState(null); // State to store the CV file
-  const [isSubmitting, setIsSubmitting] = useState(false); // State to track submission status
+  const [showRequestBox, setShowRequestBox] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // none | Pending | Approved | Rejected
+  const [requestStatus, setRequestStatus] = useState("none");
+
+  // ✅ store my application id for this job (needed for remove)
+  const [myAppId, setMyAppId] = useState(null);
+
+  // ✅ Success modal
+  const [successModal, setSuccessModal] = useState(false);
+
+  // ✅ Toast popup state
+  const [toast, setToast] = useState({ open: false, type: "info", message: "" });
+
+  const token = useMemo(() => localStorage.getItem("token"), []);
 
   const jobDetails = {
     title: job?.title || "Job Title",
@@ -14,117 +29,287 @@ export default function JobCard({ job, profile }) {
     salary: job?.salary || "Negotiable",
     description: job?.description || "Job Description",
     requirements: job?.requirements || "Requirements",
-      vacancies: job?.vacancies || "N/A" 
+    vacancies: job?.vacancies || "N/A",
   };
 
-  // Function to toggle the "Apply Now" form visibility
-  const handleApplyNow = () => {
-    setApplyNow(!applyNow);
+  const cvName =
+    profile?.cvName || (profile?.cvUrl ? profile.cvUrl.split("/").pop() : "");
+
+  const cvLink =
+    profile?.cvUrl && profile.cvUrl.startsWith("http")
+      ? profile.cvUrl
+      : profile?.cvUrl
+      ? `${API_BASE}${profile.cvUrl}`
+      : "";
+
+  const showToast = (type, message) => {
+    setToast({ open: true, type, message });
+    setTimeout(() => setToast((t) => ({ ...t, open: false })), 2200);
   };
 
-  // Function to handle job application submission
-  const handleSubmitApplication = async () => {
-    if (!cvLink) {
-      alert("Please upload your CV before applying.");
-      return;
-    }
+  const badgeClass = (status) => {
+    if (status === "Pending") return "bg-yellow-100 text-yellow-700";
+    if (status === "Approved") return "bg-green-100 text-green-700";
+    if (status === "Rejected") return "bg-red-100 text-red-700";
+    return "";
+  };
 
-    setIsSubmitting(true); // Set submitting state to true
+  // ✅ Load my applications → set status + myAppId for this job
+  useEffect(() => {
+    const loadMyStatus = async () => {
+      try {
+        if (!token || !job?._id) return;
 
-    const applicationData = {
-      jobId: job._id,
-      jobTitle: jobDetails.title,
-      company: jobDetails.company,
-      appliedDate: new Date().toLocaleDateString(),
-      name: profile?.name || "Anonymous",
-      email: profile?.email || "N/A",
-      cvName: cvLink?.name || "UploadedCV.pdf", // Save CV name
-      status: "Pending",
+        const { data } = await axios.get(`${API_BASE}/api/applications/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const found = (data.applications || []).find(
+          (a) => a?.jobId?._id === job._id
+        );
+
+        setRequestStatus(found?.status || "none");
+        setMyAppId(found?._id || null);
+      } catch {
+        // ignore
+      }
     };
 
+    loadMyStatus();
+  }, [token, job?._id]);
+
+  const handleToggle = () => setShowRequestBox((p) => !p);
+
+  const closeSuccessModal = () => setSuccessModal(false);
+
+  const handleSubmitJobRequest = async () => {
+    if (!token) return showToast("error", "Please login first.");
+    if (!profile?.cvUrl)
+      return showToast("error", "Upload your CV in Profile first.");
+
     try {
-      // Send the application data to the backend
-      await axios.post('http://localhost:5000/api/job-applications', applicationData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+      setIsSubmitting(true);
+
+      // ✅ check limit: max 2 different applications
+      const { data: myData } = await axios.get(`${API_BASE}/api/applications/my`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert("Application submitted successfully. Wait for admin approval.");
-      setIsSubmitting(false); // Reset submitting state
-      setApplyNow(false); // Hide the apply form after submission
-    } catch (error) {
-      console.error("Error submitting application:", error);
+      const myApps = myData.applications || [];
+      const alreadyApplied = myApps.some((a) => a?.jobId?._id === job._id);
+
+      if (!alreadyApplied && myApps.length >= 2) {
+        showToast("error", "You can't apply more than 2 jobs.");
+        setShowRequestBox(false);
+        return;
+      }
+
+      // ✅ create application
+      const { data } = await axios.post(
+        `${API_BASE}/api/applications`,
+        { jobId: job._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setRequestStatus("Pending");
+      setMyAppId(data?.application?._id || null);
+
+      setShowRequestBox(false);
+      setSuccessModal(true);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        (err?.response?.status === 409
+          ? "You already applied for this job."
+          : "Failed to apply.");
+
+      showToast("error", msg);
+    } finally {
       setIsSubmitting(false);
-      alert("Error submitting application. Please try again.");
+    }
+  };
+
+  // ✅ REMOVE Job Request (delete application from DB)
+  const handleRemoveJobRequest = async () => {
+    if (!token) return showToast("error", "Please login first.");
+    if (!myAppId) return showToast("error", "Application not found.");
+
+    try {
+      setIsSubmitting(true);
+
+      await axios.delete(`${API_BASE}/api/applications/${myAppId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setRequestStatus("none");
+      setMyAppId(null);
+      setShowRequestBox(false);
+
+      showToast("info", "Job request removed. Now you can apply another job.");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to remove request.";
+      showToast("error", msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto">
+    <div className="relative bg-white p-6 rounded-lg shadow-lg w-full">
+      {/* ✅ Toast */}
+      {toast.open && (
+        <div className="absolute top-3 right-3 z-50">
+          <div
+            className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium border
+              ${
+                toast.type === "success"
+                  ? "bg-green-50 text-green-700 border-green-200"
+                  : toast.type === "error"
+                  ? "bg-red-50 text-red-700 border-red-200"
+                  : "bg-blue-50 text-blue-700 border-blue-200"
+              }`}
+          >
+            {toast.message}
+          </div>
+        </div>
+      )}
+
+      {/* ✅ SUCCESS MODAL POPUP */}
+      {successModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={closeSuccessModal} />
+
+          <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl">
+            <div className="flex items-start justify-between border-b p-5">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">
+                  Job Request Sent ✅
+                </h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  Please wait for admin approval.
+                </p>
+              </div>
+
+              <button
+                onClick={closeSuccessModal}
+                className="rounded-lg px-3 py-1 text-gray-600 hover:bg-gray-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <div className="rounded-xl bg-green-50 border border-green-200 p-4">
+                <p className="text-sm text-green-800">
+                  Your application for <b>{jobDetails.title}</b> at{" "}
+                  <b>{jobDetails.company}</b> has been submitted successfully.
+                </p>
+              </div>
+
+              <div className="text-sm text-gray-700">
+                <p>
+                  Status:{" "}
+                  <span className="font-semibold text-yellow-700">Pending</span>
+                </p>
+                <p className="mt-1">
+                  CV Submitted:{" "}
+                  <span className="font-semibold">{cvName || "Your CV"}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 border-t p-5">
+              <button
+                onClick={closeSuccessModal}
+                className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* UI */}
       <h2 className="text-2xl font-semibold mb-4">{jobDetails.title}</h2>
       <p className="text-lg mb-6">Company: {jobDetails.company}</p>
+
       <p className="text-sm mb-2">Location: {jobDetails.location}</p>
       <p className="text-sm mb-2">Category: {jobDetails.category}</p>
       <p className="text-sm mb-2">Salary: {jobDetails.salary}</p>
       <p className="text-sm mb-2">Description: {jobDetails.description}</p>
       <p className="text-sm mb-4">Requirements: {jobDetails.requirements}</p>
-      <p className="text-sm mb-4">Vacancies: {job.vacancies}</p>
+      <p className="text-sm mb-4">Vacancies: {jobDetails.vacancies}</p>
 
-      {/* Apply Now Button */}
+      {requestStatus !== "none" && (
+        <div className="mb-3">
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${badgeClass(
+              requestStatus
+            )}`}
+          >
+            {requestStatus}
+          </span>
+        </div>
+      )}
+
       <button
-        onClick={handleApplyNow}
+        onClick={handleToggle}
         className="bg-blue-600 text-white py-2 px-4 rounded-full"
       >
-        Apply Now
+        Job Request
       </button>
 
-      {/* CV Upload Form (Visible after clicking Apply Now) */}
-      {applyNow && (
-        <div className="mt-6">
-          <div className="mb-6">
-            <label className="text-sm font-semibold text-gray-700 mb-1 block">
-              Upload Your CV (PDF Only)
-            </label>
-            <input
-              id="cv-upload"
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setCvLink(e.target.files[0])}
-              className="hidden"
-            />
-            <label
-              htmlFor="cv-upload"
-              className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-500 transition"
-            >
-              <p className="text-gray-700 text-sm">
-                <span className="font-semibold text-blue-600">Click here</span> to upload your updated CV
+      {showRequestBox && (
+        <div className="mt-6 border-t pt-4">
+          {profile?.cvUrl ? (
+            <div className="mb-4">
+              <p className="text-sm text-green-700">
+                CV : <b>{cvName}</b>
               </p>
-            </label>
-          </div>
-          {cvLink && (
-            <div className="mt-4">
-              <p className="text-sm text-green-600">
-                CV uploaded successfully: {cvLink.name}
-              </p>
+
               <a
-      href={URL.createObjectURL(cvLink)} // View the temporary CV URL
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-500 hover:underline"
-    >
-      Preview CV
-    </a>
+                href={cvLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-sm text-blue-600 underline"
+              >
+                Preview CV
+              </a>
             </div>
+          ) : (
+            <p className="text-sm text-red-600 mb-4">
+              No CV found. Upload CV first.
+            </p>
           )}
-          <div className="mt-4">
-            {/* Submit Application Button */}
+
+          <div className="flex gap-3 flex-wrap">
+            {/* Send button disabled if already applied */}
             <button
-              onClick={handleSubmitApplication}
-              disabled={isSubmitting}
-              className="bg-green-600 text-white py-2 px-6 rounded-full "
+              onClick={handleSubmitJobRequest}
+              disabled={isSubmitting || !profile?.cvUrl || requestStatus !== "none"}
+              className="bg-green-600 text-white py-2 px-6 rounded-full disabled:opacity-60"
             >
-              {isSubmitting ? "Submitting..." : "Submit "}
+              {isSubmitting ? "Sending..." : "Send Job Request"}
+            </button>
+
+            {/* ✅ Remove only if Pending (recommended) */}
+            {requestStatus === "Pending" && (
+              <button
+                onClick={handleRemoveJobRequest}
+                disabled={isSubmitting}
+                className="bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700 disabled:opacity-60"
+              >
+                {isSubmitting ? "Removing..." : "Remove Job Request"}
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowRequestBox(false)}
+              disabled={isSubmitting}
+              className="bg-gray-500 text-white py-2 px-6 rounded-full hover:bg-gray-600 disabled:opacity-60"
+            >
+              Cancel
             </button>
           </div>
         </div>
