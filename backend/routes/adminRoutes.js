@@ -7,10 +7,17 @@ const {
   getUserFullDetails,
   updateUserStatus,
   deleteUser,
-  getDashboardStats
+  getDashboardStats,
 } = require("../controllers/adminController");
 
 const auth = require("../middleware/authMiddleware");
+
+// ✅ NEW controllers for applicants
+const {
+  getAllApplications,
+  updateApplicationStatus,
+  deleteApplication,
+} = require("../controllers/adminApplicantsController");
 
 // Admin login
 router.post("/login", adminLogin);
@@ -21,7 +28,7 @@ router.use(auth);
 // Get all users
 router.get("/users", getAllUsers);
 
-// NEW — GET FULL USER DETAILS
+// GET FULL USER DETAILS
 router.get("/user/:id/details", getUserFullDetails);
 
 // Update user status
@@ -32,5 +39,10 @@ router.delete("/user/:id", deleteUser);
 
 // Dashboard stats
 router.get("/stats", getDashboardStats);
+
+// ✅ Manage Applicants (Applications)
+router.get("/applications", getAllApplications);
+router.patch("/applications/:id/status", updateApplicationStatus);
+router.delete("/applications/:id", deleteApplication);
 
 module.exports = router;
