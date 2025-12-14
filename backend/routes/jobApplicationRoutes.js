@@ -16,7 +16,7 @@ router.post("/", createApplication);
 // Jobseeker my applications
 router.get("/my", getMyApplications);
 
-// ✅ Jobseeker remove job request
+//  Jobseeker remove job request
 router.delete("/:id", deleteMyApplication);
 
 module.exports = router;

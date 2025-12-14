@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const EmployerProfile = require("../models/EmployerProfile");
 const JobSeekerProfile = require("../models/JobSeekerProfile");
 
-// ✅ add these for stats
+//  add these for stats
 const Job = require("../models/Job");
 const Application = require("../models/Application");
 
@@ -103,7 +103,7 @@ exports.addUser = async (req, res) => {
 };
 
 // ==============================
-// ✅ DASHBOARD STATS (REAL)
+//  DASHBOARD STATS (REAL)
 // ==============================
 exports.getDashboardStats = async (req, res) => {
   try {
