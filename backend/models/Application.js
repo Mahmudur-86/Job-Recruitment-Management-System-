@@ -15,10 +15,10 @@ const applicationSchema = new mongoose.Schema(
       default: "Pending",
     },
 
-    // later you’ll use for interview part
+    //  use for interview part
     interviewSent: { type: Boolean, default: false },
-    interviewSentAt: { type: Date, default: null },
-    interviewLink: { type: String, default: "" },
+interviewSentAt: { type: Date },
+interviewSetId: { type: mongoose.Schema.Types.ObjectId, ref: "InterviewSet" },
   },
   { timestamps: true }
 );

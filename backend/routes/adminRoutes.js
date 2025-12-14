@@ -12,11 +12,12 @@ const {
 
 const auth = require("../middleware/authMiddleware");
 
-// ✅ NEW controllers for applicants
+//  NEW controllers for applicants
 const {
   getAllApplications,
   updateApplicationStatus,
   deleteApplication,
+  sendInterview,
 } = require("../controllers/adminApplicantsController");
 
 // Admin login
@@ -40,9 +41,10 @@ router.delete("/user/:id", deleteUser);
 // Dashboard stats
 router.get("/stats", getDashboardStats);
 
-// ✅ Manage Applicants (Applications)
+//  Manage Applicants (Applications)
 router.get("/applications", getAllApplications);
 router.patch("/applications/:id/status", updateApplicationStatus);
 router.delete("/applications/:id", deleteApplication);
+router.post("/applications/:id/send-interview", sendInterview);
 
 module.exports = router;

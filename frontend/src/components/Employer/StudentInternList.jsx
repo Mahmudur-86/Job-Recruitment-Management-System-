@@ -1,9 +1,6 @@
 import { useState } from "react";
 
-export default function StudentInternList({
-  setCurrentPage,
-  students = [],              // default empty array
-}) {
+export default function StudentInternList({ setCurrentPage, students = [] }) {
   const [showMailBox, setShowMailBox] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -13,7 +10,8 @@ export default function StudentInternList({
   };
 
   const sendMail = () => {
-    const name = selectedStudent?.studentName || selectedStudent?.name || "Student";
+    const name =
+      selectedStudent?.studentName || selectedStudent?.name || "Student";
     alert(`Interview mail sent to ${name}`);
     setShowMailBox(false);
     setSelectedStudent(null);
@@ -40,7 +38,9 @@ export default function StudentInternList({
               <div>
                 <p className="text-sm text-gray-500">Student:</p>
                 <p className="text-base font-medium">
-                  {selectedStudent.studentName || selectedStudent.name}
+                  {selectedStudent.studentName ||
+                    selectedStudent.name ||
+                    "Student"}
                 </p>
               </div>
 
@@ -57,7 +57,9 @@ export default function StudentInternList({
                   className="w-full border rounded-md p-2 bg-gray-50 text-gray-700"
                   rows={4}
                   defaultValue={`Dear ${
-                    selectedStudent.studentName || selectedStudent.name || "Student"
+                    selectedStudent.studentName ||
+                    selectedStudent.name ||
+                    "Student"
                   },
 
 You have been shortlisted for an interview regarding our Internship Program.
@@ -70,7 +72,6 @@ Employer Team`}
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end gap-3 mt-5">
               <button
                 onClick={() => setShowMailBox(false)}
@@ -102,51 +103,90 @@ Employer Team`}
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">Student Intern List</h2>
 
-          {/* Student Cards */}
           <div className="space-y-4">
-            {(students || []).map((student) => (
-              <div
-                key={student.id}
-                className="bg-white p-6 rounded-lg shadow-md"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-bold">
-                      {student.studentName || student.name || "Unnamed Student"}
-                    </h3>
+            {(students || []).map((student, index) => {
+              const name = student.studentName || student.name || "Unnamed Student";
+              const id = student.studentId || student.id || "";
+              const university = student.university || "Not provided";
+              const batch = student.batch || "Not provided";
+              const department = student.department || "Not provided";
+              const email = student.email || "Not provided";
+              const cvName = student.cvName || student.cv || "Not provided";
+              const status = student.status || "pending";
+              const submittedDate = student.submittedDate || "N/A";
 
-                    <p className="text-sm text-gray-800 mt-1">
-                      University: {student.university || "Not provided"}
-                    </p>
+              return (
+                <div
+                  key={student._id || student.id || student.studentId || index}
+                  className="bg-white p-6 rounded-lg shadow-md"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-xl font-bold">{name}</h3>
 
-                    <p className="text-sm text-gray-800 mt-1">
-                      Department: {student.department || "Not provided"}
-                    </p>
+                      <p className="text-sm text-gray-800 mt-1">
+                        Student ID: {id || "Not provided"}
+                      </p>
 
-                    <p className="text-sm text-gray-800 mt-1">
-                      Email: {student.email || "Not provided"}
-                    </p>
+                      <p className="text-sm text-gray-800 mt-1">
+                        University: {university}
+                      </p>
 
-                    <p className="text-xs text-gray-800 mt-2">
-                      CV: {student.cvName || student.cv || "Not Provided"}
-                    </p>
-                  </div>
+                      <p className="text-sm text-gray-800 mt-1">
+                        Department: {department}
+                      </p>
 
-                  <div className="flex gap-2">
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                      View CV
-                    </button>
+                      <p className="text-sm text-gray-800 mt-1">
+                        Batch: {batch}
+                      </p>
 
-                    <button
-                      onClick={() => openMailBox(student)}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                      Send Interview
-                    </button>
+                      <p className="text-sm text-gray-800 mt-1">
+                        Email: {email}
+                      </p>
+
+                      <p className="text-xs text-gray-800 mt-2">
+                        CV: {cvName}
+                      </p>
+
+                      <div className="mt-2 flex gap-3 text-xs">
+                        <span className="px-2 py-1 rounded bg-gray-100 text-gray-700">
+                          Status: {String(status).toUpperCase()}
+                        </span>
+                        <span className="px-2 py-1 rounded bg-gray-100 text-gray-700">
+                          Submitted: {submittedDate}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={() => {
+                          // If backend later provides cvUrl, open it
+                          if (student.cvUrl) window.open(student.cvUrl, "_blank");
+                          else alert("CV file link not available yet.");
+                        }}
+                      >
+                        View CV
+                      </button>
+
+                      <button
+                        onClick={() => openMailBox(student)}
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                      >
+                        Send Interview
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
+            {(!students || students.length === 0) && (
+              <p className="text-gray-600 text-center py-6">
+                No internship requests found yet.
+              </p>
+            )}
           </div>
         </div>
       </div>

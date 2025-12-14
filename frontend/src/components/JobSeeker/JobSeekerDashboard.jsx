@@ -1,21 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { User, Bell, GraduationCap, Search, LogOut } from "lucide-react";
+import axios from "axios";
 
 import ProfileTab from "./ProfileTab";
 import BrowseJobsTab from "./BrowseJobsTab";
 import InternTab from "./InternTab";
 import NotificationsTab from "./NotificationsTab";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function JobSeekerDashboard({ onLogout }) {
+  const token = useMemo(() => localStorage.getItem("token"), []);
+
   const [profile, setProfile] = useState({});
   const [activeTab, setActiveTab] = useState("profile");
 
-  const notificationsEnabled = false;
-  const notifications = [];
+  // ✅ notifications state
+  const [unreadCount, setUnreadCount] = useState(0);
 
+  // keep your intern state
   const [internRequests, setInternRequests] = useState([]);
 
   const isProfileComplete = () => profile.name && profile.email && profile.phone;
+
+  // ✅ Load unread notifications count
+  const loadUnreadCount = async () => {
+    try {
+      const { data } = await axios.get(`${API_BASE}/api/notifications/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUnreadCount(data.unreadCount || 0);
+    } catch  {
+      // if token missing / API fail, just show 0
+      setUnreadCount(0);
+    }
+  };
+
+  // ✅ on first render load unread count
+  useEffect(() => {
+    loadUnreadCount();
+    // eslint-disable-next-line
+  }, []);
 
   const handleTabChange = (tab) => {
     if (tab !== "profile" && !isProfileComplete()) {
@@ -25,7 +50,13 @@ export default function JobSeekerDashboard({ onLogout }) {
       setActiveTab("profile");
       return;
     }
+
     setActiveTab(tab);
+
+    // ✅ when user opens notifications tab, refresh unread count
+    if (tab === "notifications") {
+      loadUnreadCount();
+    }
   };
 
   const handleInternSubmit = (internData) => {
@@ -78,9 +109,11 @@ export default function JobSeekerDashboard({ onLogout }) {
             }`}
           >
             <Bell size={18} /> Notifications
-            {!notificationsEnabled && (
-              <span >
-               
+
+            {/* ✅ Unread badge */}
+            {unreadCount > 0 && (
+              <span className="ml-2 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
+                {unreadCount}
               </span>
             )}
           </button>
@@ -99,12 +132,11 @@ export default function JobSeekerDashboard({ onLogout }) {
           <ProfileTab profile={profile} setProfile={setProfile} />
         )}
 
-        {activeTab === "browse" && (
-          <BrowseJobsTab profile={profile} />
-        )}
+        {activeTab === "browse" && <BrowseJobsTab profile={profile} />}
 
+        {/* ✅ IMPORTANT: NotificationsTab should fetch from backend by itself */}
         {activeTab === "notifications" && (
-          <NotificationsTab notifications={notifications} />
+          <NotificationsTab onUpdateUnread={loadUnreadCount} />
         )}
 
         {activeTab === "intern" && (

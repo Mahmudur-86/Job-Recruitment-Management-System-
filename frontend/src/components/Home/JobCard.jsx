@@ -38,7 +38,7 @@ export default function JobCard({
           onClick={onApply}
           className="inline-flex items-center gap-1 rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-orange-800"
         >
-          Apply Now
+          Job Request
         </button>
       </div>
     </div>

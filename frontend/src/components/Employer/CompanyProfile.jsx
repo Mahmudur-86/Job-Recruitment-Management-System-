@@ -11,30 +11,24 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  //Load profile (GET /api/employer/profile)
+  // ✅ Load profile (GET /api/employer/profile)
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Try employerToken first, then token
         const token =
-          localStorage.getItem("employerToken") ||
-          localStorage.getItem("token");
+          localStorage.getItem("employerToken") || localStorage.getItem("token");
 
         if (!token) {
-          setError(
-            "Congratulations for registering and Please logout now and login  again ."
-          );
+          setError("Please logout and login again.");
           setLoading(false);
           return;
         }
 
         const res = await axios.get(`${API_BASE}/api/employer/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.data && res.data.profile) {
@@ -44,19 +38,20 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
             ? `${API_BASE}/${apiProfile.companyLogo}`
             : "";
 
+          // ✅ IMPORTANT: keep SAME field names as backend
           setProfile((prev) => ({
             ...prev,
-            name: apiProfile.CompanyName || apiProfile.EmployerName || "",
-            address: apiProfile.address || "",
-            companyContact: apiProfile.phone || "",
-            website: apiProfile.website || "",
+            EmployerName: apiProfile.EmployerName || "",
+            CompanyName: apiProfile.CompanyName || "",
             email: apiProfile.email || "",
+            address: apiProfile.address || "",
+            phone: apiProfile.phone || "",
+            website: apiProfile.website || "",
             companyLogo: logoUrl,
             companyLogoFile: null,
           }));
 
           setPreviewLogo(logoUrl);
-
           localStorage.setItem("employerProfile", JSON.stringify(apiProfile));
         }
       } catch (err) {
@@ -71,9 +66,9 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Image upload preview
+  // ✅ Image upload preview
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const imageURL = URL.createObjectURL(file);
@@ -87,7 +82,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     setPreviewLogo(imageURL);
   };
 
-  // Save profile (POST /api/employer/profile)
+  // ✅ Save profile (POST /api/employer/profile)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,23 +91,22 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
       setError(null);
 
       const token =
-        localStorage.getItem("employerToken") ||
-        localStorage.getItem("token");
+        localStorage.getItem("employerToken") || localStorage.getItem("token");
 
       if (!token) {
-        alert(
-          "Congratulations for registering and Please logout now and login  again ."
-        );
+        alert("Please logout and login again.");
         setSaving(false);
         return;
       }
 
       const formData = new FormData();
-      formData.append("EmployerName", profile.name || "");
-      formData.append("CompanyName", profile.name || "");
+
+      // ✅ MUST match backend keys exactly:
+      formData.append("EmployerName", profile.EmployerName || "");
+      formData.append("CompanyName", profile.CompanyName || "");
       formData.append("email", profile.email || "");
       formData.append("address", profile.address || "");
-      formData.append("phone", profile.companyContact || "");
+      formData.append("phone", profile.phone || "");
       formData.append("website", profile.website || "");
 
       if (profile.companyLogoFile) {
@@ -129,29 +123,27 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
       if (res.data && res.data.profile) {
         const apiProfile = res.data.profile;
 
-        // build final URL from backend path
         const logoUrl = apiProfile.companyLogo
           ? `${API_BASE}/${apiProfile.companyLogo}`
           : "";
 
-        // update state with backend data
         setProfile((prev) => ({
           ...prev,
-          name: apiProfile.CompanyName || apiProfile.EmployerName || "",
-          address: apiProfile.address || "",
-          companyContact: apiProfile.phone || "",
-          website: apiProfile.website || "",
+          EmployerName: apiProfile.EmployerName || "",
+          CompanyName: apiProfile.CompanyName || "",
           email: apiProfile.email || "",
+          address: apiProfile.address || "",
+          phone: apiProfile.phone || "",
+          website: apiProfile.website || "",
           companyLogo: logoUrl,
           companyLogoFile: null,
         }));
 
         setPreviewLogo(logoUrl);
-
         localStorage.setItem("employerProfile", JSON.stringify(apiProfile));
 
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 1000);
+        setTimeout(() => setShowSuccess(false), 1200);
         setProfileMode("view");
       }
     } catch (err) {
@@ -162,7 +154,6 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     }
   };
 
-  //  UI
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center bg-gray-100 px-4">
@@ -175,7 +166,6 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3 sm:px-4">
-      {/* ✅ responsive width + safe padding for small screens */}
       <div className="mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-3xl bg-white shadow-lg rounded-2xl p-4 sm:p-6 lg:p-8">
         <button
           onClick={() => setCurrentPage("dashboard")}
@@ -185,14 +175,14 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         </button>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 border border-green-300 text-sm sm:text-base">
+          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-700 border border-red-300 text-sm sm:text-base">
             {error}
           </div>
         )}
 
         {showSuccess && (
           <div className="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300 text-sm sm:text-base">
-            ✔ Profile updated successfully!
+            Profile updated successfully!
           </div>
         )}
 
@@ -217,25 +207,33 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
               )}
             </div>
 
-            {/* ✅ responsive text + better wrapping on small screens */}
-            <div className="text-gray-700 text-sm sm:text-base lg:text-lg space-y-3 sm:space-y-4 wrap-break-word">
+            <div className="text-gray-700 text-sm sm:text-base lg:text-lg space-y-3 sm:space-y-4">
+              <p>
+                <span className="font-semibold">Employer Name:</span>{" "}
+                {profile.EmployerName || ""}
+              </p>
+
               <p>
                 <span className="font-semibold">Company Name:</span>{" "}
-                {profile.name || ""}
+                {profile.CompanyName || ""}
               </p>
+
               <p>
                 <span className="font-semibold">Address:</span>{" "}
                 {profile.address || ""}
               </p>
+
               <p>
                 <span className="font-semibold">Company Contact:</span>{" "}
-                {profile.companyContact || ""}
+                {profile.phone || ""}
               </p>
-              <p className="break-all sm:wrap-break-word">
+
+              <p className="break-all">
                 <span className="font-semibold">Email:</span>{" "}
                 {profile.email || ""}
               </p>
-              <p className="break-all sm:wrap-break-word">
+
+              <p className="break-all">
                 <span className="font-semibold">Website:</span>{" "}
                 {profile.website || ""}
               </p>
@@ -258,6 +256,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              {/* Logo */}
               <div className="text-center">
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Logo
@@ -287,20 +286,39 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                 />
               </div>
 
+              {/* Employer Name */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
+                  Employer Name
+                </label>
+                <input
+                  type="text"
+                  value={profile.EmployerName || ""}
+                  onChange={(e) =>
+                    setProfile((prev) => ({ ...prev, EmployerName: e.target.value }))
+                  }
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                  required
+                />
+              </div>
+
+              {/* Company Name */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Name
                 </label>
                 <input
                   type="text"
-                  value={profile.name || ""}
+                  value={profile.CompanyName || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({ ...prev, name: e.target.value }))
+                    setProfile((prev) => ({ ...prev, CompanyName: e.target.value }))
                   }
                   className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                  required
                 />
               </div>
 
+              {/* Address */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Address
@@ -308,33 +326,29 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                 <textarea
                   value={profile.address || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      address: e.target.value,
-                    }))
+                    setProfile((prev) => ({ ...prev, address: e.target.value }))
                   }
                   rows="3"
                   className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
-                ></textarea>
+                />
               </div>
 
+              {/* Phone */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Contact
                 </label>
                 <input
                   type="text"
-                  value={profile.companyContact || ""}
+                  value={profile.phone || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      companyContact: e.target.value,
-                    }))
+                    setProfile((prev) => ({ ...prev, phone: e.target.value }))
                   }
                   className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
 
+              {/* Email */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Email
@@ -343,15 +357,13 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                   type="email"
                   value={profile.email || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      email: e.target.value,
-                    }))
+                    setProfile((prev) => ({ ...prev, email: e.target.value }))
                   }
                   className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base break-all"
                 />
               </div>
 
+              {/* Website */}
               <div>
                 <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Website
@@ -360,10 +372,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                   type="text"
                   value={profile.website || ""}
                   onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      website: e.target.value,
-                    }))
+                    setProfile((prev) => ({ ...prev, website: e.target.value }))
                   }
                   className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base break-all"
                 />
