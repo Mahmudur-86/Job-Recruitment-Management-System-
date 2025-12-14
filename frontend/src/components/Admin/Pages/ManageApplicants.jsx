@@ -7,17 +7,20 @@ export default function ManageApplicants() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  //  Modal state (your popup)
+  // Modal state
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({
     name: "",
     email: "",
     message: "",
     questionsTitle: "",
-    questions: [], //  MCQ list
+    questions: [],
   });
 
-  //  "Send" option state (dummy send)
+  // selected application id (for send)
+  const [selectedAppId, setSelectedAppId] = useState(null);
+
+  // send state
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -70,15 +73,13 @@ export default function ManageApplicants() {
       await axios.delete(`${API_BASE}/api/admin/applications/${id}`, {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
-
       setApplications((prev) => prev.filter((a) => a._id !== id));
     } catch (err) {
       console.error("DELETE APPLICATION ERROR:", err);
     }
   };
 
-  // ✅ Dummy MCQ generator (based on job title)
-  // ✅ UPDATED: MERN Developer only (3 MCQ)
+  // Dummy MCQ generator (same as your backend)
   const getDummyQuestions = (jobTitle = "") => {
     const t = String(jobTitle).toLowerCase();
 
@@ -97,7 +98,12 @@ export default function ManageApplicants() {
           },
           {
             q: "In Express.js, which method is commonly used to parse JSON request bodies?",
-            options: ["express.json()", "bodyParser.html()", "app.view()", "req.parse()"],
+            options: [
+              "express.json()",
+              "bodyParser.html()",
+              "app.view()",
+              "req.parse()",
+            ],
           },
           {
             q: "In MongoDB, which command is used to find documents that match a filter?",
@@ -107,7 +113,6 @@ export default function ManageApplicants() {
       };
     }
 
-    // Default fallback dummy set
     return {
       title: "General Interview (3 MCQ)",
       questions: [
@@ -115,10 +120,7 @@ export default function ManageApplicants() {
           q: "Which one is a database?",
           options: ["MongoDB", "React", "HTML", "Tailwind"],
         },
-        {
-          q: "HTTP status code for Success is:",
-          options: ["200", "404", "500", "301"],
-        },
+        { q: "HTTP status code for Success is:", options: ["200", "404", "500", "301"] },
         {
           q: "Which one is a JavaScript framework/library?",
           options: ["Laravel", "Django", "React", "Flask"],
@@ -127,7 +129,7 @@ export default function ManageApplicants() {
     };
   };
 
-  // ✅ Popup ONLY (NO LINK)
+  // Open popup
   const handleSendInterview = (id) => {
     const app = applications.find((x) => x._id === id);
     if (!app) return;
@@ -135,40 +137,48 @@ export default function ManageApplicants() {
     const jobTitle = app.jobId?.title || "";
     const dummy = getDummyQuestions(jobTitle);
 
+    setSelectedAppId(app._id);
+
     setPopupData({
       name: app.userId?.name || "Applicant",
       email: app.userId?.email || "",
-      message:
-        "You are accepted for this position. Here is the Interview question.",
+      message: "You are accepted for this position. Here is the Interview question.",
       questionsTitle: dummy.title,
       questions: dummy.questions,
     });
 
-    // reset send state each time popup opens
     setSent(false);
     setIsSending(false);
-
     setShowPopup(true);
   };
 
   const closePopup = () => {
     setShowPopup(false);
+    setSelectedAppId(null);
     setIsSending(false);
     setSent(false);
   };
 
-  // Dummy "Send" action (frontend only)
+  // SEND API
   const handleSendNow = async () => {
+    if (!selectedAppId) return;
+
     try {
       setIsSending(true);
 
-      // Here later you will call backend API for notification
-      // await axios.post(`${API_BASE}/api/admin/send-interview`, {...})
+      await axios.post(
+        `${API_BASE}/api/admin/applications/${selectedAppId}/send-interview`,
+        {
+          title: popupData.questionsTitle,
+          questions: popupData.questions,
+        },
+        { headers: { Authorization: `Bearer ${adminToken}` } }
+      );
 
-      await new Promise((r) => setTimeout(r, 700)); // dummy delay
       setSent(true);
     } catch (e) {
-      console.error("SEND INTERVIEW (DUMMY) ERROR:", e);
+      console.error("SEND INTERVIEW ERROR:", e);
+      alert(e?.response?.data?.message || "Failed to send interview questions");
       setSent(false);
     } finally {
       setIsSending(false);
@@ -184,13 +194,12 @@ export default function ManageApplicants() {
 
         <button
           onClick={loadApplications}
-          //className="w-full sm:w-auto rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="w-full sm:w-auto rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
-          {/* Refresh*/}
+          Refresh
         </button>
       </div>
 
-      {/*  Responsive table wrapper */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="w-full overflow-x-auto">
           <table className="min-w-[900px] w-full">
@@ -215,7 +224,7 @@ export default function ManageApplicants() {
                   View CV
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Interview Questions
+                  Interview
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Actions
@@ -226,10 +235,7 @@ export default function ManageApplicants() {
             <tbody className="divide-y divide-gray-200">
               {loading && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-6 py-10 text-center text-gray-500"
-                  >
+                  <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
                     Loading...
                   </td>
                 </tr>
@@ -237,10 +243,7 @@ export default function ManageApplicants() {
 
               {!loading && applications.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-6 py-10 text-center text-gray-500"
-                  >
+                  <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
                     No applications found.
                   </td>
                 </tr>
@@ -252,15 +255,12 @@ export default function ManageApplicants() {
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {app.userId?.name || "-"}
                     </td>
-
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {app.userId?.email || "-"}
                     </td>
-
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {app.jobId?.title || "-"}
                     </td>
-
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {app.jobId?.company || "-"}
                     </td>
@@ -283,9 +283,7 @@ export default function ManageApplicants() {
                       <button
                         className="text-blue-600 hover:underline disabled:opacity-40"
                         disabled={!app.cvUrl}
-                        onClick={() =>
-                          window.open(fixCvLink(app.cvUrl), "_blank")
-                        }
+                        onClick={() => window.open(fixCvLink(app.cvUrl), "_blank")}
                       >
                         View CV
                       </button>
@@ -293,10 +291,12 @@ export default function ManageApplicants() {
 
                     <td className="px-6 py-4 text-sm">
                       <button
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline disabled:opacity-40"
+                        disabled={app.status !== "Approved"}
+                        title={app.status !== "Approved" ? "Approve first" : "Send interview questions"}
                         onClick={() => handleSendInterview(app._id)}
                       >
-                        Send Interview Questions
+                        Send Interview
                       </button>
                     </td>
 
@@ -306,17 +306,13 @@ export default function ManageApplicants() {
                           <>
                             <button
                               className="text-green-600 hover:underline"
-                              onClick={() =>
-                                handleStatusChange(app._id, "Approved")
-                              }
+                              onClick={() => handleStatusChange(app._id, "Approved")}
                             >
                               Approve
                             </button>
                             <button
                               className="text-red-600 hover:underline"
-                              onClick={() =>
-                                handleStatusChange(app._id, "Rejected")
-                              }
+                              onClick={() => handleStatusChange(app._id, "Rejected")}
                             >
                               Reject
                             </button>
@@ -324,9 +320,7 @@ export default function ManageApplicants() {
                         ) : (
                           <button
                             className="text-blue-600 hover:underline"
-                            onClick={() =>
-                              handleStatusChange(app._id, "Pending")
-                            }
+                            onClick={() => handleStatusChange(app._id, "Pending")}
                           >
                             Pending
                           </button>
@@ -347,94 +341,105 @@ export default function ManageApplicants() {
         </div>
       </div>
 
-      {/* ✅ Modal Popup (Responsive + Send option) */}
+      {/* ✅ Responsive Interview Modal (UI only) */}
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={closePopup}
-          ></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50" onClick={closePopup}></div>
 
-          <div className="relative w-full max-w-[92vw] sm:max-w-lg rounded-2xl bg-white shadow-xl">
+          {/* Modal */}
+          <div
+            className="
+              relative w-full
+              max-w-[95vw] sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl
+              max-h-[90vh]
+              rounded-2xl bg-white shadow-xl
+              flex flex-col
+              overflow-hidden
+            "
+          >
+            {/* Header */}
             <div className="flex items-start justify-between border-b p-4 sm:p-5">
-              <div>
+              <div className="min-w-0">
                 <h4 className="text-base sm:text-lg font-semibold text-gray-900">
                   Interview Questions Ready
                 </h4>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 truncate">
                   For <span className="font-medium">{popupData.name}</span>
                 </p>
+                <p className="text-xs text-gray-500 mt-1 truncate">{popupData.email}</p>
               </div>
+
+              <button
+                onClick={closePopup}
+                className="ml-3 shrink-0 rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100"
+                aria-label="Close"
+                title="Close"
+              >
+                ✕
+              </button>
             </div>
 
-            {/*  make modal scrollable for small screens */}
-            <div className="p-4 sm:p-5 space-y-4 max-h-[85vh] overflow-y-auto">
+            {/* Body (scroll area) */}
+            <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
               <div className="rounded-xl bg-green-50 border border-green-200 p-4">
                 <p className="text-sm text-green-800">{popupData.message}</p>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase">
-                  Interview Question:
-                </p>
+              <div className="rounded-xl border p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-gray-800">{popupData.questionsTitle}</p>
 
-                <div className="rounded-xl border p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-gray-800">
-                      {popupData.questionsTitle}
-                    </p>
+                  {sent && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                      Sent
+                    </span>
+                  )}
+                </div>
 
-                    {sent && (
-                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        Sent ✅
-                      </span>
-                    )}
-                  </div>
-
+                <div className="space-y-3">
                   {popupData.questions?.map((item, idx) => (
-                    <div key={idx} className="rounded-lg bg-gray-50 p-3">
-                      <p className="text-sm font-medium text-gray-900">
+                    <div key={idx} className="rounded-lg bg-gray-50 p-3 sm:p-4">
+                      <p className="text-sm sm:text-base font-medium text-gray-900">
                         {idx + 1}. {item.q}
                       </p>
                       <div className="mt-2 grid gap-1">
                         {item.options.map((op, i) => (
-                          <p key={i} className="text-sm text-gray-700">
+                          <p key={i} className="text-sm text-gray-700 wrap-break-word">
                             {String.fromCharCode(65 + i)}. {op}
                           </p>
                         ))}
                       </div>
                     </div>
                   ))}
-
-                  <p className="text-xs text-gray-500">
-                    (Notification sending part will be added next.)
-                  </p>
                 </div>
               </div>
             </div>
 
-            {/* ✅ Footer buttons: Send + Close */}
-            <div className="flex justify-end gap-2 border-t p-4 sm:p-5">
-              <button
-                onClick={handleSendNow}
-                disabled={isSending || sent}
-                className={`rounded-xl px-4 py-2 text-sm font-medium text-white ${
-                  sent
-                    ? "bg-green-600 opacity-70 cursor-not-allowed"
-                    : isSending
-                    ? "bg-blue-600 opacity-70 cursor-wait"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
-              >
-                {sent ? "Sent" : isSending ? "Sending..." : "Send"}
-              </button>
+            {/* Footer */}
+            <div className="border-t p-4 sm:p-5 bg-white">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2">
+                <button
+                  onClick={closePopup}
+                  className="w-full sm:w-auto rounded-xl border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Close
+                </button>
 
-              <button
-                onClick={closePopup}
-                className="rounded-xl border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Close
-              </button>
+                <button
+                  onClick={handleSendNow}
+                  disabled={isSending || sent}
+                  className={`w-full sm:w-auto rounded-xl px-4 py-2 text-sm font-medium text-white ${
+                    sent
+                      ? "bg-green-600 opacity-70 cursor-not-allowed"
+                      : isSending
+                      ? "bg-blue-600 opacity-70 cursor-wait"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {sent ? "Sent" : isSending ? "Sending..." : "Send"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

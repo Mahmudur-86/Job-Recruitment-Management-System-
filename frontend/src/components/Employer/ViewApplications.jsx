@@ -21,7 +21,7 @@ export default function ViewApplications({
       id: 1,
       name: "Md. Mahmudur Rahman",
       email: "hrid3740@gmail.com",
-      jobTitle: "Backend Developer",
+      jobTitle: "MERN Developer ",
       company: "EconoTech",
       appliedDate: "9-12-2025",
       cvUrl: "/assets/cvfile/CV.pdf",
