@@ -42,6 +42,14 @@ const internRoutes = require("./routes/internRoutes");
 // Employer profile
 const employerProfileRoutes = require("./routes/employerProfileRoutes");
 
+
+//  NEW: Notifications + Interviews routes
+const notificationRoutes = require("./routes/notificationRoutes");
+const interviewRoutes = require("./routes/interviewRoutes");
+
+
+
+
 // USE ROUTES
 app.use("/api/admin", adminRoutes);
 app.use("/api/jobs", jobRoutes);
@@ -52,6 +60,12 @@ app.use("/api/applications", jobApplicationRoutes);
 app.use("/api/interns", internRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/employer", employerProfileRoutes);
+
+
+//  NEW mounts
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/interviews", interviewRoutes);
+
 
 // Auth
 app.use("/", authRoutes);
