@@ -54,6 +54,25 @@ export default function JobCard({ job, profile }) {
     return "";
   };
 
+  // =========================
+  // ✅ JOB INTEREST MATCH RULE
+  // =========================
+  const normalize = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const interestRaw = profile?.jobInterest || "";
+  const interest = normalize(interestRaw);
+  const titleText = normalize(jobDetails.title);
+  const reqText = normalize(jobDetails.requirements);
+
+  // ✅ strict: interest must exist AND must match job
+  const isInterestMatched =
+    !!interest && (titleText.includes(interest) || reqText.includes(interest));
+
   // ✅ Load my applications → set status + myAppId for this job
   useEffect(() => {
     const loadMyStatus = async () => {
@@ -87,22 +106,19 @@ export default function JobCard({ job, profile }) {
     if (!profile?.cvUrl)
       return showToast("error", "Upload your CV in Profile first.");
 
+    if (!profile?.jobInterest) {
+      return showToast("error", "Set your Job Interest in Profile first.");
+    }
+
+    if (!isInterestMatched) {
+      return showToast(
+        "error",
+        `This job doesn't match your interest (${profile.jobInterest}).`
+      );
+    }
+
     try {
       setIsSubmitting(true);
-
-      // ✅ check limit: max 2 different applications
-      const { data: myData } = await axios.get(`${API_BASE}/api/applications/my`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const myApps = myData.applications || [];
-      const alreadyApplied = myApps.some((a) => a?.jobId?._id === job._id);
-
-      if (!alreadyApplied && myApps.length >= 2) {
-        showToast("error", "You can't apply more than 2 jobs.");
-        setShowRequestBox(false);
-        return;
-      }
 
       // ✅ create application
       const { data } = await axios.post(
@@ -145,7 +161,7 @@ export default function JobCard({ job, profile }) {
       setMyAppId(null);
       setShowRequestBox(false);
 
-      showToast("info", "Job request removed. Now you can apply another job.");
+      showToast("info", "Job request removed.");
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to remove request.";
       showToast("error", msg);
@@ -153,6 +169,13 @@ export default function JobCard({ job, profile }) {
       setIsSubmitting(false);
     }
   };
+
+  const isSendDisabled =
+    isSubmitting ||
+    !profile?.cvUrl ||
+    requestStatus !== "none" ||
+    !profile?.jobInterest ||
+    !isInterestMatched;
 
   return (
     <div className="relative bg-white p-6 rounded-lg shadow-lg w-full">
@@ -177,7 +200,10 @@ export default function JobCard({ job, profile }) {
       {/* ✅ SUCCESS MODAL POPUP */}
       {successModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/50" onClick={closeSuccessModal} />
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={closeSuccessModal}
+          />
 
           <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl">
             <div className="flex items-start justify-between border-b p-5">
@@ -241,6 +267,18 @@ export default function JobCard({ job, profile }) {
       <p className="text-sm mb-4">Requirements: {jobDetails.requirements}</p>
       <p className="text-sm mb-4">Vacancies: {jobDetails.vacancies}</p>
 
+      {/* ✅ Show Interest */}
+      <p className="text-sm mb-3">
+        Your Interest: <b>{profile?.jobInterest || "Not set"}</b>
+      </p>
+
+      {/* ✅ If mismatch show warning */}
+      {profile?.jobInterest && !isInterestMatched && (
+        <p className="text-sm text-red-600 mb-3">
+          This job doesn’t match your interest. You can’t apply here.
+        </p>
+      )}
+
       {requestStatus !== "none" && (
         <div className="mb-3">
           <span
@@ -284,16 +322,14 @@ export default function JobCard({ job, profile }) {
           )}
 
           <div className="flex gap-3 flex-wrap">
-            {/* Send button disabled if already applied */}
             <button
               onClick={handleSubmitJobRequest}
-              disabled={isSubmitting || !profile?.cvUrl || requestStatus !== "none"}
+              disabled={isSendDisabled}
               className="bg-green-600 text-white py-2 px-6 rounded-full disabled:opacity-60"
             >
               {isSubmitting ? "Sending..." : "Send Job Request"}
             </button>
 
-            {/* ✅ Remove only if Pending (recommended) */}
             {requestStatus === "Pending" && (
               <button
                 onClick={handleRemoveJobRequest}

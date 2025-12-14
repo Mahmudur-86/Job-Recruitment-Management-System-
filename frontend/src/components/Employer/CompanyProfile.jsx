@@ -24,7 +24,9 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
           localStorage.getItem("token");
 
         if (!token) {
-          setError("Congratulations for registering and Please logout now and login  again .");
+          setError(
+            "Congratulations for registering and Please logout now and login  again ."
+          );
           setLoading(false);
           return;
         }
@@ -69,7 +71,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Image upload preview 
+  // Image upload preview
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -85,7 +87,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     setPreviewLogo(imageURL);
   };
 
-  // Save profile (POST /api/employer/profile) 
+  // Save profile (POST /api/employer/profile)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,7 +100,9 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         localStorage.getItem("token");
 
       if (!token) {
-        alert("Congratulations for registering and Please logout now and login  again .");
+        alert(
+          "Congratulations for registering and Please logout now and login  again ."
+        );
         setSaving(false);
         return;
       }
@@ -115,16 +119,12 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         formData.append("companyLogo", profile.companyLogoFile);
       }
 
-      const res = await axios.post(
-        `${API_BASE}/api/employer/profile`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post(`${API_BASE}/api/employer/profile`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data && res.data.profile) {
         const apiProfile = res.data.profile;
@@ -162,33 +162,36 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     }
   };
 
-  //  UI 
+  //  UI
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-gray-700">Loading company profile...</p>
+      <div className="min-h-[60vh] flex items-center justify-center bg-gray-100 px-4">
+        <p className="text-gray-700 text-sm sm:text-base">
+          Loading company profile...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+    <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-3 sm:px-4">
+      {/* ✅ responsive width + safe padding for small screens */}
+      <div className="mx-auto w-full max-w-xl sm:max-w-2xl lg:max-w-3xl bg-white shadow-lg rounded-2xl p-4 sm:p-6 lg:p-8">
         <button
           onClick={() => setCurrentPage("dashboard")}
-          className="text-blue-600 hover:underline mb-4"
+          className="text-blue-600 hover:underline mb-4 text-sm sm:text-base"
         >
           ← Back to Dashboard
         </button>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 border border-green-300">
+          <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 border border-green-300 text-sm sm:text-base">
             {error}
           </div>
         )}
 
         {showSuccess && (
-          <div className="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300">
+          <div className="mb-6 p-4 rounded-lg bg-green-100 text-green-700 border border-green-300 text-sm sm:text-base">
             ✔ Profile updated successfully!
           </div>
         )}
@@ -196,25 +199,26 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         {/* VIEW MODE */}
         {profileMode === "view" && (
           <>
-            <h2 className="text-3xl font-bold text-center mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-center mb-6 sm:mb-8">
               Company Profile
             </h2>
 
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-5 sm:mb-6">
               {previewLogo || profile.companyLogo ? (
                 <img
                   src={previewLogo || profile.companyLogo}
                   alt="Company Logo"
-                  className="h-32 w-32 rounded-full border object-cover shadow"
+                  className="h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full border object-cover shadow"
                 />
               ) : (
-                <div className="h-32 w-32 rounded-full bg-gray-200 flex justify-center items-center text-gray-500 text-lg shadow">
+                <div className="h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 rounded-full bg-gray-200 flex justify-center items-center text-gray-500 text-sm sm:text-base lg:text-lg shadow">
                   No Logo
                 </div>
               )}
             </div>
 
-            <div className="text-gray-700 text-lg space-y-4">
+            {/* ✅ responsive text + better wrapping on small screens */}
+            <div className="text-gray-700 text-sm sm:text-base lg:text-lg space-y-3 sm:space-y-4 wrap-break-word">
               <p>
                 <span className="font-semibold">Company Name:</span>{" "}
                 {profile.name || ""}
@@ -227,11 +231,11 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                 <span className="font-semibold">Company Contact:</span>{" "}
                 {profile.companyContact || ""}
               </p>
-              <p>
+              <p className="break-all sm:wrap-break-word">
                 <span className="font-semibold">Email:</span>{" "}
                 {profile.email || ""}
               </p>
-              <p>
+              <p className="break-all sm:wrap-break-word">
                 <span className="font-semibold">Website:</span>{" "}
                 {profile.website || ""}
               </p>
@@ -239,7 +243,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
 
             <button
               onClick={() => setProfileMode("edit")}
-              className="mt-8 w-full bg-green-600 text-white py-3 rounded-xl text-lg shadow hover:bg-green-700 transition"
+              className="mt-6 sm:mt-8 w-full bg-green-600 text-white py-2.5 sm:py-3 rounded-xl text-base sm:text-lg shadow hover:bg-green-700 transition"
             >
               Edit Profile
             </button>
@@ -249,28 +253,28 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
         {/* EDIT MODE */}
         {profileMode === "edit" && (
           <>
-            <h2 className="text-3xl font-bold mb-6 text-center">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-5 sm:mb-6 text-center">
               Edit Company Profile
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div className="text-center">
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Logo
                 </label>
 
                 <label
                   htmlFor="logoUpload"
-                  className="cursor-pointer flex flex-col justify-center items-center h-32 w-32 mx-auto rounded-full bg-gray-100 border hover:bg-gray-200 transition shadow"
+                  className="cursor-pointer flex flex-col justify-center items-center h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 mx-auto rounded-full bg-gray-100 border hover:bg-gray-200 transition shadow overflow-hidden"
                 >
                   {previewLogo || profile.companyLogo ? (
                     <img
                       src={previewLogo || profile.companyLogo}
                       alt="Company Logo"
-                      className="h-32 w-32 object-cover rounded-full"
+                      className="h-full w-full object-cover rounded-full"
                     />
                   ) : (
-                    <span className="text-gray-500 text-2xl">📷</span>
+                    <span className="text-gray-500 text-xl sm:text-2xl">📷</span>
                   )}
                 </label>
 
@@ -284,7 +288,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Name
                 </label>
                 <input
@@ -293,12 +297,12 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                   onChange={(e) =>
                     setProfile((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Address
                 </label>
                 <textarea
@@ -310,12 +314,12 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                     }))
                   }
                   rows="3"
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 ></textarea>
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Company Contact
                 </label>
                 <input
@@ -327,12 +331,12 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                       companyContact: e.target.value,
                     }))
                   }
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Email
                 </label>
                 <input
@@ -344,12 +348,12 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                       email: e.target.value,
                     }))
                   }
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base break-all"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
                   Website
                 </label>
                 <input
@@ -361,14 +365,14 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
                       website: e.target.value,
                     }))
                   }
-                  className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 text-sm sm:text-base break-all"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl text-lg shadow hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-xl text-base sm:text-lg shadow hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -376,7 +380,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
               <button
                 type="button"
                 onClick={() => setProfileMode("view")}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl text-lg shadow hover:bg-gray-300 transition"
+                className="w-full bg-gray-200 text-gray-700 py-2.5 sm:py-3 rounded-xl text-base sm:text-lg shadow hover:bg-gray-300 transition"
               >
                 Cancel
               </button>
