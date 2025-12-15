@@ -1,9 +1,9 @@
 // controllers/employerProfileController.js
 const EmployerProfile = require("../models/EmployerProfile");
 
-// =======================================
-// GET /api/employer/profile  → current employer
-// =======================================
+
+// GET /api/employer/profile   current employer
+
 exports.getMyEmployerProfile = async (req, res) => {
   try {
     // comes from authMiddleware (decoded token)
@@ -23,9 +23,9 @@ exports.getMyEmployerProfile = async (req, res) => {
   }
 };
 
-// =======================================
-// POST /api/employer/profile  → create / update current employer
-// =======================================
+
+// POST /api/employer/profile   create / update current employer
+
 exports.upsertMyEmployerProfile = async (req, res) => {
   try {
     const employerId = req.user.id; // from authMiddleware
@@ -41,13 +41,12 @@ exports.upsertMyEmployerProfile = async (req, res) => {
 
     let companyLogo;
 
-    // ⬇️ IMPORTANT PART: store only relative path like
-    // "uploads/company-logos/1765478282422-1.png"
+    
     if (req.file) {
       // Convert Windows backslashes to forward slashes
       const fullPath = req.file.path.replace(/\\/g, "/");
-      // fullPath looks like:
-      // D:/Intern/.../backend/uploads/company-logos/1765....png
+     
+      
 
       // Take only the part after "uploads/"
       const afterUploads = fullPath.split("uploads/")[1]; // "company-logos/1765....png"

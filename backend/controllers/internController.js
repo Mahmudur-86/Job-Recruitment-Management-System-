@@ -1,5 +1,5 @@
 const InternRequest = require("../models/InternRequest");
-//const Notification = require("../models/Notification");
+
 
 exports.submitInternRequest = async (req, res) => {
   const intern = await InternRequest.create({

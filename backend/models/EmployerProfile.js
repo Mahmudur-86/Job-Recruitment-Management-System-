@@ -16,7 +16,7 @@ const employerProfileSchema = new mongoose.Schema(
     address: { type: String, trim: true },
     phone: { type: String, trim: true },
     website: { type: String, trim: true },
-    // e.g. "uploads/company-logos/1712678823-logo.png"
+    
     companyLogo: { type: String, trim: true },
   },
   { timestamps: true }
