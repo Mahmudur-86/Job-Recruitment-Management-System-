@@ -10,7 +10,7 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// Dummy MCQ generator (same as your frontend logic)
+// Dummy MCQ generator 
 const getDummyQuestions = (jobTitle = "") => {
   const t = String(jobTitle).toLowerCase();
 
