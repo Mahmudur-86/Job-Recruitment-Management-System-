@@ -100,7 +100,7 @@ export default function ManageUsers() {
     setUserToDelete(null);
   };
 
-  // ✅ Fetch FULL_DETAILS API
+  //  Fetch FULL_DETAILS API
   const fetchUserDetails = async (userId) => {
     try {
       const res = await axios.get(
@@ -112,7 +112,7 @@ export default function ManageUsers() {
 
       const { user, profile } = res.data;
 
-      // ✅ SAFE merge + normalize fields
+      //  SAFE merge + normalize fields
       const merged = {
         ...user,
         ...(profile || {}),
@@ -185,7 +185,7 @@ export default function ManageUsers() {
       {/* DETAILS MODAL (EMPLOYER / JOBSEEKER) */}
       {showDetails && selectedUser && (
         <div className="fixed inset-0 z-40 flex items-start justify-center px-4 py-6 sm:py-8 bg-black/40 overflow-y-auto">
-          {/* ✅ max-w-4xl for better laptop/desktop layout */}
+          
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-5 sm:p-8 relative border border-gray-200">
             {/* EMPLOYER VIEW */}
             {["employer", "Employer", "EMPLOYER"].includes(selectedUser.role) ? (

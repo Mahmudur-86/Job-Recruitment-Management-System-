@@ -45,7 +45,6 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar onAuthClick={setActiveForm} />
       <Hero />
-
       {/* POPUP FORMS */}
       {activeForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -58,7 +57,6 @@ export default function Home() {
               }}
             />
           )}
-
           {activeForm === "login" && (
             <Login
               onBack={() => setActiveForm(null)}
@@ -69,20 +67,17 @@ export default function Home() {
               }}
             />
           )}
-
           {activeForm === "admin" && (
             <Admin onBack={() => setActiveForm(null)} />
           )}
         </div>
       )}
-
-     
+      {/* JOB LISTING */}
       <JobGrid
         onApply={() => {
           setActiveForm("register");
         }}
       />
-
       <LargeBanner />
       <Footer />
     </main>

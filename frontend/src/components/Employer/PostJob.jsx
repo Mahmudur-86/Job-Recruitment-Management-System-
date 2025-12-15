@@ -25,7 +25,7 @@ export default function PostJob({ setCurrentPage, jobs, setJobs }) {
     setJobs([...jobs, newJob]);
     alert("Job submitted & waiting for Admin approval!");
 
-    // ✅ After submit, go to All Jobs page
+    //  After submitting, go to All Jobs page
     setCurrentPage("alljobs");
   };
 

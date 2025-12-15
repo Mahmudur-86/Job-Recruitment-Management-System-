@@ -15,7 +15,7 @@ export default function JobSeekerDashboard({ onLogout }) {
   const [profile, setProfile] = useState({});
   const [activeTab, setActiveTab] = useState("profile");
 
-  // ✅ notifications state
+  //  notifications state
   const [unreadCount, setUnreadCount] = useState(0);
 
   // keep your intern state
@@ -23,7 +23,7 @@ export default function JobSeekerDashboard({ onLogout }) {
 
   const isProfileComplete = () => profile.name && profile.email && profile.phone;
 
-  // ✅ Load unread notifications count
+  //  Load unread notifications count
   const loadUnreadCount = async () => {
     try {
       const { data } = await axios.get(`${API_BASE}/api/notifications/my`, {
@@ -36,7 +36,7 @@ export default function JobSeekerDashboard({ onLogout }) {
     }
   };
 
-  // ✅ on first render load unread count
+  //  on first render load unread count
   useEffect(() => {
     loadUnreadCount();
     // eslint-disable-next-line
@@ -53,7 +53,7 @@ export default function JobSeekerDashboard({ onLogout }) {
 
     setActiveTab(tab);
 
-    // ✅ when user opens notifications tab, refresh unread count
+    //  when user opens notifications tab, refresh unread count
     if (tab === "notifications") {
       loadUnreadCount();
     }
@@ -110,7 +110,7 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <Bell size={18} /> Notifications
 
-            {/* ✅ Unread badge */}
+            {/*  Unread badge */}
             {unreadCount > 0 && (
               <span className="ml-2 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
                 {unreadCount}
@@ -134,7 +134,7 @@ export default function JobSeekerDashboard({ onLogout }) {
 
         {activeTab === "browse" && <BrowseJobsTab profile={profile} />}
 
-        {/* ✅ IMPORTANT: NotificationsTab should fetch from backend by itself */}
+        {/*   NotificationsTab should fetch from backend by itself */}
         {activeTab === "notifications" && (
           <NotificationsTab onUpdateUnread={loadUnreadCount} />
         )}

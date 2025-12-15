@@ -10,13 +10,13 @@ export default function JobCard({ job, profile }) {
   // none | Pending | Approved | Rejected
   const [requestStatus, setRequestStatus] = useState("none");
 
-  // ✅ store my application id for this job (needed for remove)
+  //  store my application id for this job (needed for remove)
   const [myAppId, setMyAppId] = useState(null);
 
-  // ✅ Success modal
+  //  Success modal
   const [successModal, setSuccessModal] = useState(false);
 
-  // ✅ Toast popup state
+  //  Toast popup state
   const [toast, setToast] = useState({ open: false, type: "info", message: "" });
 
   const token = useMemo(() => localStorage.getItem("token"), []);
@@ -54,9 +54,9 @@ export default function JobCard({ job, profile }) {
     return "";
   };
 
-  // =========================
-  // ✅ JOB INTEREST MATCH RULE
-  // =========================
+  
+  //  JOB INTEREST MATCH RULE
+  
   const normalize = (s) =>
     String(s || "")
       .toLowerCase()
@@ -69,11 +69,11 @@ export default function JobCard({ job, profile }) {
   const titleText = normalize(jobDetails.title);
   const reqText = normalize(jobDetails.requirements);
 
-  // ✅ strict: interest must exist AND must match job
+  //  strict: interest must exist AND must match job
   const isInterestMatched =
     !!interest && (titleText.includes(interest) || reqText.includes(interest));
 
-  // ✅ Load my applications → set status + myAppId for this job
+  // Load my applications → set status + myAppId for this job
   useEffect(() => {
     const loadMyStatus = async () => {
       try {
@@ -120,7 +120,7 @@ export default function JobCard({ job, profile }) {
     try {
       setIsSubmitting(true);
 
-      // ✅ create application
+      //  create application
       const { data } = await axios.post(
         `${API_BASE}/api/applications`,
         { jobId: job._id },
@@ -145,7 +145,7 @@ export default function JobCard({ job, profile }) {
     }
   };
 
-  // ✅ REMOVE Job Request (delete application from DB)
+  //  REMOVE Job Request (delete application from DB)
   const handleRemoveJobRequest = async () => {
     if (!token) return showToast("error", "Please login first.");
     if (!myAppId) return showToast("error", "Application not found.");
@@ -179,7 +179,7 @@ export default function JobCard({ job, profile }) {
 
   return (
     <div className="relative bg-white p-6 rounded-lg shadow-lg w-full">
-      {/* ✅ Toast */}
+      {/*  Toast */}
       {toast.open && (
         <div className="absolute top-3 right-3 z-50">
           <div
@@ -197,7 +197,7 @@ export default function JobCard({ job, profile }) {
         </div>
       )}
 
-      {/* ✅ SUCCESS MODAL POPUP */}
+      {/* SUCCESS MODAL POPUP */}
       {successModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
@@ -267,12 +267,12 @@ export default function JobCard({ job, profile }) {
       <p className="text-sm mb-4">Requirements: {jobDetails.requirements}</p>
       <p className="text-sm mb-4">Vacancies: {jobDetails.vacancies}</p>
 
-      {/* ✅ Show Interest */}
+      {/*  Show Interest */}
       <p className="text-sm mb-3">
         Your Interest: <b>{profile?.jobInterest || "Not set"}</b>
       </p>
 
-      {/* ✅ If mismatch show warning */}
+      {/*  If mismatch show warning */}
       {profile?.jobInterest && !isInterestMatched && (
         <p className="text-sm text-red-600 mb-3">
           This job doesn’t match your interest. You can’t apply here.

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 export default function ManageJobs() {
-  // ✅ initial jobs (dummy)
+  
   const initialJobs = useMemo(
     () => [
       {
@@ -15,10 +15,10 @@ export default function ManageJobs() {
         requirements: "MongoDB, Express.js, React.js, Node.js",
         vacancies: 2,
 
-        // ✅ default Approved (you can change to Pending if you want)
+        //  default Approved 
         status: "Approved",
 
-        // ✅ job-wise MCQs (MERN)
+        // job-wise MCQs (MERN)
         mcqs: [
           {
             question: "1. Which stack correctly represents MERN?",
@@ -45,7 +45,7 @@ export default function ManageJobs() {
         ],
       },
 
-      // ✅ NEW JOB (Frontend Developer)
+        
       {
         _id: "2",
         jobTitle: "Frontend Developer",
@@ -57,10 +57,10 @@ export default function ManageJobs() {
         requirements: "React, Tailwind, JavaScript",
         vacancies: 3,
 
-        // ✅ default Approved (you can change to Pending if you want)
+        //  default Approved
         status: "Approved",
 
-        // ✅ job-wise MCQs (Frontend)
+        //  job-wise MCQs (Frontend)
         mcqs: [
           {
             question:
@@ -94,14 +94,14 @@ export default function ManageJobs() {
     []
   );
 
-  // ✅ jobs state
+  //  jobs state
   const [jobs, setJobs] = useState(initialJobs);
 
-  // ✅ Modal state
+  //  Modal state
   const [open, setOpen] = useState(false);
   const [activeJob, setActiveJob] = useState(null);
 
-  // ✅ fallback Dummy interview questions (if job has no mcqs)
+  //  fallback Dummy interview questions (if job has no mcqs)
   const interviewQuestions = useMemo(
     () => [
       {
@@ -125,7 +125,7 @@ export default function ManageJobs() {
     []
   );
 
-  // ✅ modal handlers
+  //  modal handlers
   const openModal = (job) => {
     setActiveJob(job);
     setOpen(true);
@@ -136,14 +136,14 @@ export default function ManageJobs() {
     setActiveJob(null);
   };
 
-  // ✅ actions
+  //  actions
   const handleApprove = (jobId) => {
     setJobs((prev) =>
       prev.map((j) => (j._id === jobId ? { ...j, status: "Approved" } : j))
     );
   };
 
-  // ✅ NEW: Pending action
+  //   Pending action
   const handlePending = (jobId) => {
     setJobs((prev) =>
       prev.map((j) => (j._id === jobId ? { ...j, status: "Pending" } : j))
@@ -277,7 +277,7 @@ export default function ManageJobs() {
                           Approve
                         </button>
 
-                        {/* ✅ NEW Pending Button */}
+                        {/*  NEW Pending Button */}
                         <button
                           onClick={() => handlePending(job._id)}
                           className="px-3 py-1.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
@@ -323,7 +323,7 @@ export default function ManageJobs() {
             </div>
 
             <div className="p-4 max-h-[70vh] overflow-y-auto space-y-4">
-              {/* ✅ show job specific MCQs if available */}
+              {/*  show job specific MCQs if available */}
               {Array.isArray(activeJob?.mcqs) && activeJob.mcqs.length > 0 ? (
                 activeJob.mcqs.map((m, i) => (
                   <div key={i} className="border rounded-md p-3">
@@ -341,7 +341,7 @@ export default function ManageJobs() {
                   </div>
                 ))
               ) : (
-                // ✅ fallback dummy (old)
+                // fallback dummy (old)
                 interviewQuestions.map((q, i) => (
                   <div key={i} className="border rounded-md p-3">
                     <p className="font-semibold">{q.q}</p>

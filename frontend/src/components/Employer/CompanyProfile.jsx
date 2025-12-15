@@ -11,7 +11,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ Load profile (GET /api/employer/profile)
+  //  Load profile (GET /api/employer/profile)
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -38,7 +38,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
             ? `${API_BASE}/${apiProfile.companyLogo}`
             : "";
 
-          // ✅ IMPORTANT: keep SAME field names as backend
+          //  IMPORTANT: keep SAME field names as backend
           setProfile((prev) => ({
             ...prev,
             EmployerName: apiProfile.EmployerName || "",
@@ -66,7 +66,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ Image upload preview
+  //  Image upload preview
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -82,7 +82,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
     setPreviewLogo(imageURL);
   };
 
-  // ✅ Save profile (POST /api/employer/profile)
+  //  Save profile (POST /api/employer/profile)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -101,7 +101,7 @@ export default function CompanyProfile({ setCurrentPage, profile, setProfile }) 
 
       const formData = new FormData();
 
-      // ✅ MUST match backend keys exactly:
+      //   match backend keys exactly:
       formData.append("EmployerName", profile.EmployerName || "");
       formData.append("CompanyName", profile.CompanyName || "");
       formData.append("email", profile.email || "");
