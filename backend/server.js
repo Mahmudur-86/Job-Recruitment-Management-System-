@@ -43,7 +43,7 @@ const internRoutes = require("./routes/internRoutes");
 const employerProfileRoutes = require("./routes/employerProfileRoutes");
 
 
-//  NEW: Notifications + Interviews routes
+//   Notifications + Interviews routes
 const notificationRoutes = require("./routes/notificationRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 
@@ -62,7 +62,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/employer", employerProfileRoutes);
 
 
-//  NEW mounts
+//  mounts
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
 
@@ -70,11 +70,11 @@ app.use("/api/interviews", interviewRoutes);
 // Auth
 app.use("/", authRoutes);
 
-// Health-check
+
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
 
-// SERVER LISTEN
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

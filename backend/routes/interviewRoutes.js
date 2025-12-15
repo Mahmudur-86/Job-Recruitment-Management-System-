@@ -10,15 +10,15 @@ const {
 
 router.use(auth);
 
-// ===================
+
 // JobSeeker
-// ===================
+
 router.get("/application/:applicationId", getInterviewByApplication);
 router.post("/application/:applicationId/submit", submitInterview);
 
-// ===================
+
 // Employer
-// ===================
+
 router.get("/application/:applicationId/submission", getSubmissionForEmployer);
 router.get("/employer/applications", getEmployerApplications);
 

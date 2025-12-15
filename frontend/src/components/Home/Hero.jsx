@@ -1,5 +1,4 @@
 import SearchBar from "./SearchBar.jsx";
-
 export default function Hero() {
   return (
     <section className="mx-auto max-w-6xl px-6">
@@ -8,12 +7,9 @@ export default function Hero() {
         <br />
         Job here!
       </h1>
-
       <div className="mt-10">
         <SearchBar />
       </div>
-
-     
     </section>
     
   );

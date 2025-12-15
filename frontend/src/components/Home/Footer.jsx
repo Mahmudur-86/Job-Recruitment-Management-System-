@@ -30,12 +30,8 @@ export default function Footer() {
           <h4 className="text-lg font-semibold text-white mb-3">For Employers</h4>
           <ul className="space-y-2 text-sm">
             <li><a href="#" className="hover:text-white transition">Post a Job</a></li>
-           
-          
-            
           </ul>
         </div>
-
         {/* Social & Newsletter */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-3">Stay Connected</h4>
@@ -53,32 +49,18 @@ export default function Footer() {
               <FaGithub size={20} />
             </a>
           </div>
-
           <form className="flex flex-col sm:flex-row gap-2">
-            
-
  <input
               type="name"
               placeholder="Your Full Name"
               className="px-3 py-2 rounded bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            
-            
             <input
               type="email"
               placeholder="Your email"
               className="px-3 py-2 rounded bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-
-
-          
           </form>
-
-
-
-
-
-          
           <br />
             <button
               type="submit"

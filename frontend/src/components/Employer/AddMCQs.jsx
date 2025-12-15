@@ -12,7 +12,7 @@ export default function AddMCQs({ setCurrentPage, jobs, setJobs, selectedJob }) 
         ]
   );
 
-  // ✅ NEW: success popup state
+  //   success popup state
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = (e) => {

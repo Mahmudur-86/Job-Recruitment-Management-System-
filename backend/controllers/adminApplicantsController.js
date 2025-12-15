@@ -10,7 +10,7 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// Dummy MCQ generator 
+// Dummy MCQ 
 const getDummyQuestions = (jobTitle = "") => {
   const t = String(jobTitle).toLowerCase();
 
@@ -106,7 +106,7 @@ exports.deleteApplication = async (req, res) => {
   }
 };
 
-// ✅ Admin: POST /api/admin/applications/:id/send-interview
+//  Admin: POST /api/admin/applications/:id/send-interview
 exports.sendInterview = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -124,7 +124,7 @@ exports.sendInterview = async (req, res) => {
       });
     }
 
-    // optional: prevent re-sending same interview
+    //  prevent re-sending same interview
     if (app.interviewSent && app.interviewSetId) {
       return res.status(400).json({ message: "Interview already sent for this application." });
     }

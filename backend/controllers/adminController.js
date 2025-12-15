@@ -6,13 +6,13 @@ const bcrypt = require("bcryptjs");
 const EmployerProfile = require("../models/EmployerProfile");
 const JobSeekerProfile = require("../models/JobSeekerProfile");
 
-//  add these for stats
+//   these for stats
 const Job = require("../models/Job");
 const Application = require("../models/Application");
 
-// ==============================
+
 // ADMIN LOGIN
-// ==============================
+
 exports.adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
@@ -34,17 +34,17 @@ exports.adminLogin = async (req, res) => {
   });
 };
 
-// ==============================
+
 // GET ALL USERS
-// ==============================
+
 exports.getAllUsers = async (req, res) => {
   const users = await User.find().select("-password");
   res.json({ users });
 };
 
-// ==============================
+
 // GET FULL DETAILS FOR EACH USER
-// ==============================
+
 exports.getUserFullDetails = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -67,26 +67,26 @@ exports.getUserFullDetails = async (req, res) => {
   }
 };
 
-// ==============================
+
 // UPDATE USER STATUS
-// ==============================
+
 exports.updateUserStatus = async (req, res) => {
   const { userId, status } = req.body;
   await User.findByIdAndUpdate(userId, { status });
   res.json({ message: "Status updated" });
 };
 
-// ==============================
+
 // DELETE USER
-// ==============================
+
 exports.deleteUser = async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ message: "User deleted" });
 };
 
-// ==============================
+
 // ADD USER (optional)
-// ==============================
+
 exports.addUser = async (req, res) => {
   const { name, email, password, role } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -102,9 +102,9 @@ exports.addUser = async (req, res) => {
   res.json({ message: "User added successfully" });
 };
 
-// ==============================
+
 //  DASHBOARD STATS (REAL)
-// ==============================
+
 exports.getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();

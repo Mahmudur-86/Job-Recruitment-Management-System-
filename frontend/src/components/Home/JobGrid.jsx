@@ -43,18 +43,40 @@ const jobs = [
     salary: "55k - 75k",
    
   },
+
+  {
+    id: 5,
+    company: "DevSolutions",
+    tag: "Engineer",
+    title: "Backend Engineer",
+    location: "Mohakhali, Dhaka, Bangladesh",
+    department: "Engineering",
+    salary: "55k - 75k",
+   
+  },
+
+
+    {
+    id: 6,
+    company: "DevSolutions",
+    tag: "Engineer",
+    title: "Backend Engineer",
+    location: "Mohakhali, Dhaka, Bangladesh",
+    department: "Engineering",
+    salary: "55k - 75k",
+   
+  },
+
 ];
 
 export default function JobGrid({ onApply }) {
   const [showMore, setShowMore] = useState(false);
 
   const handleShowMore = () => {
-    setShowMore(!showMore); // Toggle to show more or less jobs
+    setShowMore(!showMore); 
   };
-
-  // Determine which jobs to display based on the "showMore" state
-  const displayedJobs = showMore ? jobs : jobs.slice(0, 2); // Initially show only 2 jobs
-
+ // Determine jobs to display based on showMore state
+  const displayedJobs = showMore ? jobs : jobs.slice(0, 3); 
   return (
     <section className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-8 py-14 sm:grid-cols-2 lg:grid-cols-3">
       {displayedJobs.map((j) => (

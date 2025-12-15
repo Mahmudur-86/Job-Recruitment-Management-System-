@@ -3,10 +3,10 @@ const InterviewSet = require("../models/InterviewSet");
 const InterviewSubmission = require("../models/InterviewSubmission");
 const Notification = require("../models/Notification");
 
-// =================================================
+
 // JobSeeker: Get interview questions
 // GET /api/interviews/application/:applicationId
-// =================================================
+
 exports.getInterviewByApplication = async (req, res) => {
   try {
     const { applicationId } = req.params;
@@ -35,10 +35,10 @@ exports.getInterviewByApplication = async (req, res) => {
   }
 };
 
-// =================================================
+
 // JobSeeker: Submit answers
 // POST /api/interviews/application/:applicationId/submit
-// =================================================
+
 exports.submitInterview = async (req, res) => {
   try {
     const { applicationId } = req.params;
@@ -84,10 +84,10 @@ exports.submitInterview = async (req, res) => {
   }
 };
 
-// =================================================
+
 // Employer: View answers
 // GET /api/interviews/application/:applicationId/submission
-// =================================================
+
 exports.getSubmissionForEmployer = async (req, res) => {
   try {
     const { applicationId } = req.params;
@@ -114,10 +114,10 @@ exports.getSubmissionForEmployer = async (req, res) => {
   }
 };
 
-// =================================================
+
 // Employer: Get applications list (NO admin role)
 // GET /api/interviews/employer/applications
-// =================================================
+
 exports.getEmployerApplications = async (req, res) => {
   try {
     const applications = await Application.find()

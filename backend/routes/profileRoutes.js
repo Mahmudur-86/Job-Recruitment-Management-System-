@@ -56,7 +56,7 @@ const upload = multer({ storage });
 // Routes
 router.get("/me", auth, getMyProfile);
 
-// ✅ accept both cv and profileImage (same endpoint)
+//  accept both cv and profileImage (same endpoint)
 router.post(
   "/",
   auth,

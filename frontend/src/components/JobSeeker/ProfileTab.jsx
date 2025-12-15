@@ -168,7 +168,7 @@ export default function ProfileTab({ profile, setProfile }) {
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-      {/* ✅ responsive header: stacks on small screens */}
+      {/*  responsive header: stacks on small screens */}
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
           <User size={24} /> Profile Management
@@ -489,7 +489,7 @@ export default function ProfileTab({ profile, setProfile }) {
         )}
       </div>
 
-      {/* ✅ Modal for Viewing Profile (RESPONSIVE + SCROLL) */}
+      
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50 p-3 sm:p-4">
           <div className="bg-white rounded-lg shadow-lg w-[92vw] sm:max-w-2xl lg:max-w-3xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -506,7 +506,7 @@ export default function ProfileTab({ profile, setProfile }) {
               Profile Details
             </h3>
 
-            {/* ✅ responsive grid so it fits in laptops + mobile */}
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <p>
                 <strong>Name:</strong> {profile.name}
@@ -557,7 +557,7 @@ export default function ProfileTab({ profile, setProfile }) {
               )}
             </div>
 
-            {/* ✅ footer sticky feel + full width on mobile */}
+            
             <div className="mt-6 flex justify-end">
               <button
                 onClick={closeModal}
