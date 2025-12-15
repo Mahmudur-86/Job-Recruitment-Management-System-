@@ -19,8 +19,17 @@ export default function NotificationsTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // ✅ UI message (no alert)
+  //  UI message (no alert)
   const [uiMsg, setUiMsg] = useState({ type: "", text: "" });
+
+  //  Success popup (toast) -------------- (ADDED)
+  const [toast, setToast] = useState({ show: false, text: "" }); // (ADDED)
+
+  const showToast = (text) => {
+    // (ADDED)
+    setToast({ show: true, text });
+    setTimeout(() => setToast({ show: false, text: "" }), 2500);
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -149,10 +158,13 @@ export default function NotificationsTab() {
 
       setSubmitted(true);
 
-      // ✅ AUTO CLOSE MODAL AFTER 3 SECONDS (only after success)
+      //  AUTO CLOSE MODAL THEN SHOW POPUP MSG (ADDED)
       setTimeout(() => {
         closeInterview();
-      }, 3000);
+        showToast(
+          " Your interview has been sent to the employer. Please wait for their response."
+        );
+      }, 2000);
     } catch (e) {
       console.error("SUBMIT INTERVIEW ERROR:", e);
       setUiMsg({
@@ -375,6 +387,15 @@ export default function NotificationsTab() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/*  Success Toast Popup (ADDED) */}
+      {toast.show && (
+        <div className="fixed bottom-5 right-5 z-9999">
+          <div className="rounded-xl bg-green-600 text-white px-4 py-3 shadow-lg text-sm">
+            {toast.text}
           </div>
         </div>
       )}

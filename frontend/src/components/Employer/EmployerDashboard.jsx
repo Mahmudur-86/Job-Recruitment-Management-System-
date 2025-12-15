@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 
 import CompanyProfile from "./CompanyProfile";
 import PostJob from "./PostJob";
@@ -9,16 +10,24 @@ import StudentInternshipAlert from "./StudentInternshipAlert";
 import EmailModal from "./EmailModal";
 import AddMCQs from "./AddMCQs";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function EmployerDashboard({ onLogout }) {
   const [currentPage, setCurrentPage] = useState("dashboard");
 
-  // Applications (empty initially)
-  const [applications] = useState([]);
+  //  Use token OR adminToken 
+  const token = useMemo(
+    () => localStorage.getItem("token") || localStorage.getItem("adminToken"),
+    []
+  );
+
+  //  Applications fetched from backend
+  const [applications, setApplications] = useState([]);
 
   // Jobs posted by employer
   const [jobs, setJobs] = useState([]);
 
-  // Students (dummy for now) - keep as you want
+  // Students (dummy ) 
   const [students] = useState([
     {
       id: 1,
@@ -42,7 +51,7 @@ export default function EmployerDashboard({ onLogout }) {
   // MCQ job selection
   const [selectedJob, setSelectedJob] = useState(null);
 
-  // ✅ PROFILE STATE (NOW MATCHES BACKEND FIELDS EXACTLY)
+  // Profile state
   const [profile, setProfile] = useState({
     EmployerName: "",
     CompanyName: "",
@@ -69,6 +78,25 @@ export default function EmployerDashboard({ onLogout }) {
   });
 
   const [isAlertActive, setIsAlertActive] = useState(false);
+
+  //  Fetch Applications (Employer endpoint, NOT admin)
+  const fetchApplications = async () => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE}/api/interviews/employer/applications`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setApplications(data.applications || []);
+    } catch (err) {
+      console.error("FETCH APPLICATIONS ERROR:", err);
+      setApplications([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchApplications();
+    // eslint-disable-next-line
+  }, []);
 
   // Dashboard UI
   const dashboardFeatures = [
@@ -145,6 +173,8 @@ export default function EmployerDashboard({ onLogout }) {
             setShowEmailModal={setShowEmailModal}
             selectedPerson={selectedPerson}
             setSelectedPerson={setSelectedPerson}
+            //  refresh button support 
+            refreshApplications={fetchApplications}
           />
         )}
 
