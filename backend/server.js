@@ -48,6 +48,9 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 
 
+//  Email route
+const emailRoutes = require("./routes/emailRoutes");
+
 
 
 // USE ROUTES
@@ -66,6 +69,9 @@ app.use("/api/employer", employerProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
 
+
+//  NEW mount
+app.use("/api/email", emailRoutes);
 
 // Auth
 app.use("/", authRoutes);
