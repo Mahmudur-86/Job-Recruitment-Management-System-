@@ -36,12 +36,12 @@ export default function ViewApplications({
             <h2 className="text-2xl font-bold">Applications</h2>
 
             {typeof refreshApplications === "function" && (
-              <button
+           <button
                 onClick={refreshApplications}
                 className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
               >
                 Refresh
-              </button>
+              </button> 
             )}
           </div>
 
