@@ -36,7 +36,7 @@ export default function ManageJobs() {
   const [open, setOpen] = useState(false);
   const [activeJob, setActiveJob] = useState(null);
 
-  // ✅ NEW: show correct answers toggle (only inside view modal)
+  //  show correct answers toggle (only inside view modal)
   const [showCorrect, setShowCorrect] = useState(false);
 
   const openModal = (job) => {
@@ -232,9 +232,9 @@ export default function ManageJobs() {
   // UI mapping: show title as jobTitle
   const uiJobs = jobs.map((j) => ({ ...j, jobTitle: j.title }));
 
-  // =========================================================
-  // ✅ NEW: EDIT JOB FEATURE (minimal add)
-  // =========================================================
+  
+  
+ 
   const [editOpen, setEditOpen] = useState(false);
   const [editJobId, setEditJobId] = useState("");
   const [editError, setEditError] = useState("");
@@ -428,11 +428,11 @@ export default function ManageJobs() {
                     </td>
 
                     <td className="px-4 py-3 text-sm text-gray-700 max-w-[260px]">
-                      <div className="line-clamp-5 wrap-break-word">{job.description}</div>
+                      <div className="line-clamp-10 wrap-break-word">{job.description}</div>
                     </td>
 
                     <td className="px-4 py-3 text-sm text-gray-700 max-w-60">
-                      <div className="line-clamp-3 wrap-break-word">{job.requirements}</div>
+                      <div className="line-clamp-9 wrap-break-word">{job.requirements}</div>
                     </td>
 
                     <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
@@ -459,7 +459,7 @@ export default function ManageJobs() {
 
                     <td className="px-4 py-3 text-sm">
                       <div className="flex flex-wrap gap-2">
-                        {/* ✅ NEW: Edit button */}
+                       
                         <button
                           onClick={() => openEditModal(job)}
                           className="px-3 py-1.5 border border-gray-300 text-gray-800 rounded-md hover:bg-gray-100"
@@ -496,7 +496,7 @@ export default function ManageJobs() {
                 </p>
               </div>
 
-              {/* ✅ NEW: Toggle show correct answers */}
+              
               <label className="flex items-center gap-2 text-sm text-gray-700 select-none">
                 <input
                   type="checkbox"
@@ -560,7 +560,7 @@ export default function ManageJobs() {
         </div>
       )}
 
-      {/* ✅ NEW: Edit Job Modal */}
+      
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/50" onClick={closeEditModal} />
@@ -570,12 +570,7 @@ export default function ManageJobs() {
                 <h4 className="text-lg font-semibold">Edit Job</h4>
                 <p className="text-sm text-gray-600">Update job fields and save.</p>
               </div>
-              <button
-                onClick={closeEditModal}
-                className="px-3 py-1.5 rounded-md border hover:bg-gray-50"
-              >
-                ✕
-              </button>
+             
             </div>
 
             <div className="p-4 max-h-[70vh] overflow-y-auto">
