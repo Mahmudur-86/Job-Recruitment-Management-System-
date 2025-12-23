@@ -85,11 +85,56 @@ exports.submitInterview = async (req, res) => {
 };
 
 
-// Employer: View answers
-// GET /api/interviews/application/:applicationId/submission
 
-exports.getSubmissionForEmployer = async (req, res) => {
+//  ADMIN: Applications list
+// GET /api/interviews/admin/applications
+
+exports.getAdminApplications = async (req, res) => {
   try {
+    // only admin
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const applications = await Application.find()
+      .populate("userId", "name email")
+      .populate("jobId", "title company")
+      .sort({ createdAt: -1 });
+
+    // attach submission info (hasSubmitted + submittedAt)
+    const appIds = applications.map((a) => a._id);
+    const subs = await InterviewSubmission.find({ applicationId: { $in: appIds } })
+      .select("applicationId createdAt");
+
+    const map = new Map();
+    subs.forEach((s) => map.set(String(s.applicationId), s));
+
+    const final = applications.map((a) => {
+      const sub = map.get(String(a._id));
+      return {
+        ...a.toObject(),
+        hasSubmitted: !!sub,
+        submittedAt: sub?.createdAt || null,
+      };
+    });
+
+    return res.json({ applications: final });
+  } catch (err) {
+    console.log("ADMIN APPLICATIONS ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+//  ADMIN: View interview answers
+// GET /api/interviews/admin/application/:applicationId/submission
+
+exports.getSubmissionForAdmin = async (req, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const { applicationId } = req.params;
 
     const app = await Application.findById(applicationId);
@@ -100,9 +145,11 @@ exports.getSubmissionForEmployer = async (req, res) => {
     }
 
     const set = await InterviewSet.findById(app.interviewSetId);
+    if (!set) return res.status(404).json({ message: "Interview set not found" });
+
     const submission = await InterviewSubmission.findOne({ applicationId });
 
-    res.json({
+    return res.json({
       applicationId,
       title: set.title,
       questions: set.questions,
@@ -110,23 +157,7 @@ exports.getSubmissionForEmployer = async (req, res) => {
       submittedAt: submission?.createdAt || null,
     });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-
-// Employer: Get applications list (NO admin role)
-// GET /api/interviews/employer/applications
-
-exports.getEmployerApplications = async (req, res) => {
-  try {
-    const applications = await Application.find()
-      .populate("userId", "name email")
-      .populate("jobId", "title company")
-      .sort({ createdAt: -1 });
-
-    res.json({ applications });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.log("ADMIN SUBMISSION ERROR:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };

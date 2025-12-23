@@ -1,7 +1,12 @@
+// controllers/adminApplicantsController.js
 const Application = require("../models/Application");
 const InterviewSet = require("../models/InterviewSet");
 const Notification = require("../models/Notification");
+const Job = require("../models/Job");
 
+// ----------------------
+// Helper: Admin only
+// ----------------------
 const ensureAdmin = (req, res) => {
   if (req.user?.role !== "admin") {
     res.status(403).json({ message: "Admin only" });
@@ -10,7 +15,9 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// Dummy MCQ 
+// ----------------------
+// Dummy fallback (only if job.mcqs missing)
+// ----------------------
 const getDummyQuestions = (jobTitle = "") => {
   const t = String(jobTitle).toLowerCase();
 
@@ -26,14 +33,17 @@ const getDummyQuestions = (jobTitle = "") => {
             "MongoDB, Electron, React, Next.js",
             "MariaDB, Ember, React, Node.js",
           ],
+          correctOption: 0,
         },
         {
           q: "In Express.js, which method is commonly used to parse JSON request bodies?",
           options: ["express.json()", "bodyParser.html()", "app.view()", "req.parse()"],
+          correctOption: 0,
         },
         {
           q: "In MongoDB, which command is used to find documents that match a filter?",
           options: ["find()", "select()", "get()", "match()"],
+          correctOption: 0,
         },
       ],
     };
@@ -42,21 +52,43 @@ const getDummyQuestions = (jobTitle = "") => {
   return {
     title: "General Interview (3 MCQ)",
     questions: [
-      { q: "Which one is a database?", options: ["MongoDB", "React", "HTML", "Tailwind"] },
-      { q: "HTTP status code for Success is:", options: ["200", "404", "500", "301"] },
-      { q: "Which one is a JavaScript framework/library?", options: ["Laravel", "Django", "React", "Flask"] },
+      { q: "Which one is a database?", options: ["MongoDB", "React", "HTML", "Tailwind"], correctOption: 0 },
+      { q: "HTTP status code for Success is:", options: ["200", "404", "500", "301"], correctOption: 0 },
+      {
+        q: "Which one is a JavaScript framework/library?",
+        options: ["Laravel", "Django", "React", "Flask"],
+        correctOption: 2,
+      },
     ],
   };
 };
 
-// Admin: GET /api/admin/applications
+// convert Job.mcqs -> interview set format
+const fromJobMcqs = (job) => {
+  const list = Array.isArray(job?.mcqs) ? job.mcqs : [];
+  if (list.length !== 3) return null;
+
+  return {
+    title: `${job.title} (3 MCQ)`,
+    questions: list.map((m) => ({
+      q: m.question,
+      options: m.options,
+      correctOption: typeof m.correctOption === "number" ? m.correctOption : undefined,
+    })),
+  };
+};
+
+// ----------------------
+// ✅ GET /api/admin/applications
+// IMPORTANT: include job.mcqs so frontend preview works
+// ----------------------
 exports.getAllApplications = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
 
     const apps = await Application.find()
       .populate("userId", "name email")
-      .populate("jobId", "title company")
+      .populate("jobId", "title company location category salary mcqs") // ✅ FIX: mcqs include
       .sort({ createdAt: -1 });
 
     return res.json({ applications: apps });
@@ -66,12 +98,14 @@ exports.getAllApplications = async (req, res) => {
   }
 };
 
-// Admin: PATCH /api/admin/applications/:id/status
+// ----------------------
+// ✅ PATCH /api/admin/applications/:id/status
+// ----------------------
 exports.updateApplicationStatus = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const { status } = req.body;
+    const { status } = req.body || {};
     const allowed = ["Pending", "Approved", "Rejected"];
     if (!allowed.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
@@ -84,6 +118,7 @@ exports.updateApplicationStatus = async (req, res) => {
     );
 
     if (!updated) return res.status(404).json({ message: "Application not found" });
+
     return res.json({ message: "Status updated", application: updated });
   } catch (err) {
     console.log("ADMIN UPDATE STATUS ERROR:", err);
@@ -91,7 +126,9 @@ exports.updateApplicationStatus = async (req, res) => {
   }
 };
 
-// Admin: DELETE /api/admin/applications/:id
+// ----------------------
+// ✅ DELETE /api/admin/applications/:id
+// ----------------------
 exports.deleteApplication = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -106,7 +143,14 @@ exports.deleteApplication = async (req, res) => {
   }
 };
 
-//  Admin: POST /api/admin/applications/:id/send-interview
+// ----------------------
+// ✅ POST /api/admin/applications/:id/send-interview
+// Rules:
+// - only Approved
+// - no resend
+// - if frontend sends custom title/questions -> keep (backward compatible)
+// - else: use Job.mcqs (must be 3) -> else dummy
+// ----------------------
 exports.sendInterview = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -117,27 +161,39 @@ exports.sendInterview = async (req, res) => {
 
     if (!app) return res.status(404).json({ message: "Application not found" });
 
-    // only approved
     if (app.status !== "Approved") {
       return res.status(400).json({
         message: "Only Approved applicants can receive interview questions.",
       });
     }
 
-    //  prevent re-sending same interview
     if (app.interviewSent && app.interviewSetId) {
       return res.status(400).json({ message: "Interview already sent for this application." });
     }
 
-    // allow custom questions from admin (optional)
+    // (1) Backward compatible: frontend sends custom title/questions
     let { title, questions } = req.body || {};
-    if (!title || !Array.isArray(questions) || questions.length === 0) {
-      const dummy = getDummyQuestions(app.jobId?.title || "");
-      title = dummy.title;
-      questions = dummy.questions;
+    const hasCustom =
+      String(title || "").trim() &&
+      Array.isArray(questions) &&
+      questions.length > 0;
+
+    // (2) else use Job.mcqs first
+    if (!hasCustom) {
+      let picked = null;
+
+      if (app.jobId?._id) {
+        const job = await Job.findById(app.jobId._id).select("title mcqs");
+        picked = fromJobMcqs(job);
+      }
+
+      // (3) fallback dummy
+      if (!picked) picked = getDummyQuestions(app.jobId?.title || "");
+
+      title = picked.title;
+      questions = picked.questions;
     }
 
-    // create InterviewSet
     const interviewSet = await InterviewSet.create({
       applicationId: app._id,
       userId: app.userId?._id,
@@ -147,22 +203,17 @@ exports.sendInterview = async (req, res) => {
       createdByAdminId: req.user.id,
     });
 
-    // update application
     app.interviewSent = true;
     app.interviewSentAt = new Date();
     app.interviewSetId = interviewSet._id;
     await app.save();
 
-    // create Notification for jobseeker
     await Notification.create({
       userId: app.userId?._id,
       type: "INTERVIEW",
       title: "Interview Questions",
       message: `You are accepted for ${app.jobId?.title || "the job"}. Please submit the interview MCQ.`,
-      data: {
-        applicationId: app._id,
-        interviewSetId: interviewSet._id,
-      },
+      data: { applicationId: app._id, interviewSetId: interviewSet._id },
       isRead: false,
     });
 

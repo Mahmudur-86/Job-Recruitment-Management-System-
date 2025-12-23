@@ -4,8 +4,8 @@ const auth = require("../middleware/authMiddleware");
 const {
   getInterviewByApplication,
   submitInterview,
-  getSubmissionForEmployer,
-  getEmployerApplications,
+    getAdminApplications,
+  getSubmissionForAdmin,
 } = require("../controllers/interviewController");
 
 router.use(auth);
@@ -17,9 +17,16 @@ router.get("/application/:applicationId", getInterviewByApplication);
 router.post("/application/:applicationId/submit", submitInterview);
 
 
-// Employer
 
-router.get("/application/:applicationId/submission", getSubmissionForEmployer);
-router.get("/employer/applications", getEmployerApplications);
+// Admin 
+router.get("/admin/applications", getAdminApplications);
+router.get("/admin/application/:applicationId/submission", getSubmissionForAdmin);
+
+
+
+
+
+
+
 
 module.exports = router;
