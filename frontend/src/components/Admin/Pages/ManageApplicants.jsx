@@ -124,7 +124,7 @@ export default function ManageApplicants() {
     setSent(false);
   };
 
-  // ✅ Send interview: ALWAYS {} so backend uses Job.mcqs (or fallback dummy)
+ 
   const handleSendNow = async () => {
     if (!selectedAppId) return;
 
@@ -133,7 +133,7 @@ export default function ManageApplicants() {
 
       await axios.post(
         `${API_BASE}/api/admin/applications/${selectedAppId}/send-interview`,
-        {}, // ✅ IMPORTANT
+        {}, 
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
 

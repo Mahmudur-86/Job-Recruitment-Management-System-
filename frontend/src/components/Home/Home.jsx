@@ -14,7 +14,7 @@ import Admin from "./AuthForm/Admin";
 
 // DASHBOARDS
 import JobSeekerDashboard from "../JobSeeker/JobSeekerDashboard.jsx";
-//import EmployerDashboard from "../Employer/EmployerDashboard.jsx";
+
 
 export default function Home() {
   const [activeForm, setActiveForm] = useState(null);

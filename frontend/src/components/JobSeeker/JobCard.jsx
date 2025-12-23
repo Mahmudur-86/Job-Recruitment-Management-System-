@@ -144,7 +144,7 @@ export default function JobCard({ job, profile }) {
     }
   };
 
-  //  REMOVE Job Request (delete application from DB)
+  
   const handleRemoveJobRequest = async () => {
     if (!token) return showToast("error", "Please login first.");
     if (!myAppId) return showToast("error", "Application not found.");

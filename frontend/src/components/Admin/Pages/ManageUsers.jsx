@@ -10,7 +10,6 @@ export default function ManageUsers() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-  // Details modal
   const [showDetails, setShowDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -182,7 +181,7 @@ export default function ManageUsers() {
         </div>
       )}
 
-      {/* DETAILS MODAL (EMPLOYER / JOBSEEKER) */}
+      {/* DETAILS MODAL (JOBSEEKER) */}
       {showDetails && selectedUser && (
         <div className="fixed inset-0 z-40 flex items-start justify-center px-4 py-6 sm:py-8 bg-black/40 overflow-y-auto">
           
@@ -373,7 +372,7 @@ export default function ManageUsers() {
         </div>
       )}
 
-      {/* USERS TABLE */}
+      {/* jobseeker TABLE */}
       <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
         <div className="w-full overflow-x-auto">
           <table className="min-w-[900px] w-full">
