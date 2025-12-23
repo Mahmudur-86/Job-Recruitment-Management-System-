@@ -9,7 +9,7 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// GET /api/admin/jobs  (admin) ✅ includes mcqs
+// GET /api/admin/jobs  (admin)  includes mcqs
 exports.getAdminJobs = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -73,7 +73,7 @@ exports.createJob = async (req, res) => {
   }
 };
 
-// ✅ NEW: PUT /api/admin/jobs/:id  (edit job)
+//  PUT /api/admin/jobs/:id  (edit job)
 exports.updateJob = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;

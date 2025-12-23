@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const employerProfileSchema = new mongoose.Schema(
   {
-    // comes from JWT decoded `userId` via authMiddleware
+    // comes from JWT decoded 'userId' via authMiddleware
     employerId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

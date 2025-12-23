@@ -10,7 +10,7 @@ import Dashboard from "./components/Admin/Pages/Dashboard.jsx";
 import ManageUsers from "./components/Admin/Pages/ManageUsers.jsx";
 import ManageJobs from "./components/Admin/Pages/ManageJobs.jsx";
 import ManageApplicants from "./components/Admin/Pages/ManageApplicants.jsx";
-//import InternshipAlerts from "./components/Admin/Pages/InternshipAlerts.jsx";
+;
 import ViewInterviewAnswers from "./components/Admin/Pages/ViewInterviewAnswers.jsx";
 
 
@@ -19,7 +19,7 @@ import JobSeekerDashboard from "./components/JobSeeker/JobSeekerDashboard.jsx";
 
 
 
-//import EmployerDashboard from "./components/Employer/EmployerDashboard.jsx";
+
 
 import PrivateRoute from "./components/Auth/PrivateRoute.jsx";
 
@@ -89,16 +89,7 @@ export default function App() {
           }
         />
 
-         {/*<Route
-          path="/admin/internships"
-          element={
-            <PrivateRoute>
-              <AdminLayout>
-                <InternshipAlerts />
-              </AdminLayout>
-            </PrivateRoute>
-          }
-        />*/}
+        
 
   <Route
           path="/admin/interview-answers"
@@ -117,6 +108,8 @@ export default function App() {
 
 
 
+
+
         {/* User protected */}
         <Route
           path="/jobseeker"
@@ -128,15 +121,7 @@ export default function App() {
         />
 
 
-{/* 
-        <Route
-          path="/employer"
-          element={
-            <PrivateRoute>
-              <EmployerDashboard />
-            </PrivateRoute>
-          }
-        />*/}
+
 
       </Routes>
     </Router>

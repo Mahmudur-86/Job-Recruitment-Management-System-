@@ -15,10 +15,7 @@ router.post("/send", authMiddleware, async (req, res) => {
       });
     }
 
-    //  Optional: only employer/admin can send
-    // if (req.user?.role !== "employer" && req.user?.role !== "admin") {
-    //   return res.status(403).json({ message: "Forbidden" });
-    // }
+  
 
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,

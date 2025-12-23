@@ -25,7 +25,7 @@ const jobSchema = new mongoose.Schema(
     requirements: { type: String, default: "" },
     vacancies: { type: Number, default: 2 },
 
-    // ✅ NEW: job-wise interview mcqs (Admin will manage)
+    //  job-wise interview mcqs (Admin will manage)
     mcqs: { type: [mcqSchema], default: [] },
   },
   { timestamps: true }

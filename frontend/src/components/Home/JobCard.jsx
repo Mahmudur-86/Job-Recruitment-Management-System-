@@ -14,7 +14,7 @@ export default function JobCard({
       <div className="mt-3 text-base font-semibold text-stone-900">{company}</div>
       <div className="mt-1 text-sm font-medium text-stone-800">{title}</div>
 
-      {/* Tag */}
+     
       {tag && (
         <div className="mt-2">
           <span className="inline-block rounded-full bg-rose-100 px-4 py-1 text-xs text-stone-900">
@@ -23,7 +23,7 @@ export default function JobCard({
         </div>
       )}
 
-      {/* Extra info */}
+     
       <div className="mt-3 space-y-1 text-xs text-stone-800">
         {location && <p><span className="font-semibold">Location:</span> {location}</p>}
         {department && <p><span className="font-semibold">Department:</span> {department}</p>}
@@ -31,9 +31,9 @@ export default function JobCard({
         {deadline && <p><span className="font-semibold">Deadline:</span> {deadline}</p>}
       </div>
 
-      {/* Apply area */}
+      {/* job request area */}
       <div className="mt-4 flex items-center justify-between">
-        <div className="text-xs text-neutral-800">Ready to apply?</div>
+        <div className="text-xs text-neutral-800">Ready to job request?</div>
         <button
           onClick={onApply}
           className="inline-flex items-center gap-1 rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-orange-800"
