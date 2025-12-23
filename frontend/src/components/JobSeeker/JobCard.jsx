@@ -10,7 +10,7 @@ export default function JobCard({ job, profile }) {
   // none | Pending | Approved | Rejected
   const [requestStatus, setRequestStatus] = useState("none");
 
-  //  store my application id for this job (needed for remove)
+  //  store my application id for this job 
   const [myAppId, setMyAppId] = useState(null);
 
   //  Success modal
@@ -54,9 +54,8 @@ export default function JobCard({ job, profile }) {
     return "";
   };
 
-  
   //  JOB INTEREST MATCH RULE
-  
+
   const normalize = (s) =>
     String(s || "")
       .toLowerCase()
@@ -209,7 +208,7 @@ export default function JobCard({ job, profile }) {
             <div className="flex items-start justify-between border-b p-5">
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">
-                  Job Request Sent ✅
+                  Job Request Sent 
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
                   Please wait for admin approval.
@@ -220,7 +219,7 @@ export default function JobCard({ job, profile }) {
                 onClick={closeSuccessModal}
                 className="rounded-lg px-3 py-1 text-gray-600 hover:bg-gray-100"
               >
-                ✕
+                
               </button>
             </div>
 
@@ -268,12 +267,12 @@ export default function JobCard({ job, profile }) {
       <p className="text-sm mb-4">Vacancies: {jobDetails.vacancies}</p>
 
       {/*  Show Interest */}
-      <p className="text-sm mb-3">
+      {/* <p className="text-sm mb-3">
         Your Interest: <b>{profile?.jobInterest || "Not set"}</b>
-      </p>
+      </p>*/}
 
-      {/*  If mismatch show warning */}
-      {profile?.jobInterest && !isInterestMatched && (
+      {/*  Only show mismatch message AFTER clicking Job Request (when box opens) */}
+      {showRequestBox && profile?.jobInterest && !isInterestMatched && (
         <p className="text-sm text-red-600 mb-3">
           This job doesn’t match your interest. You can’t apply here.
         </p>

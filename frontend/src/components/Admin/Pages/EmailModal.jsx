@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function EmailModal({ person, onClose }) {
   const token = useMemo(
-    () => localStorage.getItem("token") || localStorage.getItem("adminToken"),
+    () =>  localStorage.getItem("adminToken"),
     []
   );
 

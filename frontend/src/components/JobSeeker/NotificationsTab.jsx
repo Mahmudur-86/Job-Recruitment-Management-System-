@@ -162,7 +162,7 @@ export default function NotificationsTab() {
       setTimeout(() => {
         closeInterview();
         showToast(
-          " Your interview has been sent to the employer. Please wait for their response."
+          " Your interview has been submitted. Admin will review it soon."
         );
       }, 2000);
     } catch (e) {
@@ -246,9 +246,9 @@ export default function NotificationsTab() {
 
                   <button
                     onClick={() => removeNotification(n._id)}
-                    className="px-3 py-2 text-sm rounded-lg border text-red-600 hover:bg-red-50"
+                   
                   >
-                    Remove Notification
+                    
                   </button>
                 </div>
               </div>
@@ -381,9 +381,9 @@ export default function NotificationsTab() {
                     removeNotification(activeNotif._id);
                     closeInterview();
                   }}
-                  className="rounded-xl border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                  
                 >
-                  Remove Notification
+                 
                 </button>
               )}
             </div>

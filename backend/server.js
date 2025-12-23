@@ -31,6 +31,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // IMPORT ROUTES
 const adminRoutes = require("./routes/adminRoutes");
+const adminJobRoutes = require("./routes/adminJobRoutes");
 const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 
@@ -40,7 +41,7 @@ const jobApplicationRoutes = require("./routes/jobApplicationRoutes"); // ✅ en
 const internRoutes = require("./routes/internRoutes");
 
 // Employer profile
-const employerProfileRoutes = require("./routes/employerProfileRoutes");
+//const employerProfileRoutes = require("./routes/employerProfileRoutes");
 
 
 //   Notifications + Interviews routes
@@ -55,6 +56,7 @@ const emailRoutes = require("./routes/emailRoutes");
 
 // USE ROUTES
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminJobRoutes);
 app.use("/api/jobs", jobRoutes);
 
 // applications (job request)
@@ -62,7 +64,9 @@ app.use("/api/applications", jobApplicationRoutes);
 
 app.use("/api/interns", internRoutes);
 app.use("/api/profile", profileRoutes);
-app.use("/api/employer", employerProfileRoutes);
+
+
+//app.use("/api/employer", employerProfileRoutes);
 
 
 //  mounts

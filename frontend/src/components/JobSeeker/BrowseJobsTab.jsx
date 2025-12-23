@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import JobCard from "./JobCard";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export default function BrowseJobsTab({ profile }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,10 +11,11 @@ export default function BrowseJobsTab({ profile }) {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/jobs");
-        setJobs(res.data);
+        const res = await axios.get(`${API_BASE}/api/jobs`);
+        setJobs(res.data || []);
       } catch (err) {
         console.error("Failed to load jobs:", err);
+        setJobs([]);
       } finally {
         setLoading(false);
       }

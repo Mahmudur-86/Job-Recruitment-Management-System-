@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Briefcase, FileText, Bell, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, FileText, Bell, LogOut, ClipboardCheck } from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -8,10 +8,16 @@ export default function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: <LayoutDashboard size={18} /> },
-    { name: "Manage Users", path: "/admin/users", icon: <Users size={18} /> },
+    { name: "Manage Jobseekers", path: "/admin/users", icon: <Users size={18} /> },
     { name: "Manage Jobs", path: "/admin/jobs", icon: <Briefcase size={18} /> },
     { name: "Applicants", path: "/admin/applicants", icon: <FileText size={18} /> },
-    { name: "Internship Alerts", path: "/admin/internships", icon: <Bell size={18} /> },
+   
+  { name: "View Interview Answers", path: "/admin/interview-answers", icon: <ClipboardCheck size={18} /> },
+
+
+  
+
+
   ];
 
  const handleLogout = () => {

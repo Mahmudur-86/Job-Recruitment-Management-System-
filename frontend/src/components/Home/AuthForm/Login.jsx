@@ -14,7 +14,7 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    role: "", // user-selected role
+    role: "jobseeker", //  fixed role
   });
 
   const handleSubmit = async () => {
@@ -35,21 +35,19 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
         { withCredentials: true }
       );
 
-      //  real backend role
       const realRole = data.role;
 
-      //  Secure role match check
       if (form.role !== realRole) {
-        setError(`This account is registered as "${realRole}". Please select the correct role.`);
+        setError(
+          `This account is registered as "${realRole}". Please select the correct role.`
+        );
         return;
       }
 
-      // SAVE TOKEN 
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
-      // Login success → send role to Home.jsx
       onLoginSuccess(realRole);
 
     } catch (err) {
@@ -58,18 +56,29 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Login</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden">
 
-      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+      {/* subtle animated glow */}
+      <span className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-200/40 blur-3xl animate-pulse" />
+      <span className="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-300/30 blur-3xl animate-pulse" />
 
-      <div className="space-y-4">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center relative">
+        Login
+      </h2>
+
+      {error && (
+        <p className="text-red-600 text-sm mb-3 text-center relative">
+          {error}
+        </p>
+      )}
+
+      <div className="space-y-4 relative">
 
         {/* EMAIL */}
         <input
           type="email"
           placeholder="Email"
-          className="w-full px-4 py-2 border rounded-lg"
+          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
@@ -78,54 +87,65 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full px-4 py-2 pr-12 border rounded-lg"
+            className="w-full px-4 py-2 pr-12 border rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 transition"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
 
-        {/* ROLE SELECTOR */}
-        <select
-          className="w-full px-4 py-2 border rounded-lg"
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          <option value="">Login as...</option>
-          <option value="jobseeker">Job Seeker</option>
-          <option value="employer">Employer</option>
-        </select>
+        {/*  ROLE (FIXED JOBSEEKER  */}
+      
+
 
         {/* LOGIN BUTTON */}
         <button
           onClick={handleSubmit}
-          className="w-full bg-cyan-500 text-white py-2 rounded-lg hover:bg-cyan-600"
+          className="w-full bg-cyan-500 text-white py-2 rounded-xl hover:bg-cyan-600 transition shadow-lg hover:shadow-xl active:scale-[0.99]"
         >
           Login
         </button>
 
         {/* CREATE NEW ACCOUNT LINK */}
-        <span>
-          <p className="mt-2 text-center bg-amber-700 rounded-t-full">Don't have an account?</p>
-        </span>
+        <p className="mt-3 text-center text-sm text-gray-600">
+          Don&apos;t have an account?
+        </p>
         <p
           onClick={onCreateNew}
-          className="text-center bg-amber-300 py-1 rounded-b-full cursor-pointer mt-2 hover:bg-amber-400"
+          className="text-center bg-amber-300 py-2 rounded-full cursor-pointer hover:bg-amber-400 transition font-medium"
         >
           Create a new one
         </p>
-
       </div>
 
       {/* BACK BUTTON */}
-      <button onClick={onBack} className="mt-6 text-gray-800 hover:text-black">
-        ← Back
-      </button>
+  <div className="mt-6 flex justify-center">
+  <button
+    onClick={onBack}
+    className="
+      flex items-center gap-2
+      px-5 py-2
+      border border-gray-300
+      rounded-full
+      text-gray-700 font-medium
+      transition-all duration-200
+      hover:text-cyan-600
+      hover:border-cyan-400
+      hover:gap-3
+      hover:shadow-md
+      active:scale-95
+    "
+  >
+    
+    Back
+  </button>
+</div>
     </div>
   );
 }

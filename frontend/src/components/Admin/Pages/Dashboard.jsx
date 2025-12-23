@@ -8,9 +8,8 @@ export default function Dashboard() {
     totalUsers: 0,
     totalJobs: 0,
     totalApplications: 0,
-    totalInternshipsAlert: 0,
+   
   });
-
   useEffect(() => {
     const loadStats = async () => {
       try {
@@ -23,33 +22,51 @@ export default function Dashboard() {
         console.log("DASHBOARD STATS ERROR:", err);
       }
     };
-
     loadStats();
   }, []);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Admin Dashboard</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Total Users</h3>
-          <p className="text-3xl font-semibold text-blue-600">{stats.totalUsers}</p>
+    <div className="min-h-screen bg-gray-100">
+      {/*  Page wrapper (responsive padding, nice header) */}
+      <div className="p-4 sm:p-6 lg:p-8 fade-in">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         </div>
 
-        <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Total Jobs</h3>
-          <p className="text-3xl font-semibold text-blue-600">{stats.totalJobs}</p>
-        </div>
-
-        <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Applicants</h3>
-          <p className="text-3xl font-semibold text-blue-800">{stats.totalApplications}</p>
-        </div>
-
-        <div className="bg-white shadow p-6 rounded-lg border">
-          <h3 className="text-xl font-bold text-gray-700 mb-2">Internships Alert</h3>
-          <p className="text-3xl font-semibold text-blue-800">{stats.totalInternshipsAlert}</p>
+        {/*  Stats grid (same data, better UI) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Total Users */}
+          <div className="bg-white shadow-sm p-6 rounded-2xl border card pop-in">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600">Total Jobseekers</h3>
+                <p className="text-3xl font-semibold text-blue-600 mt-2">{stats.totalUsers}</p>
+              </div>
+            </div>
+          </div>
+          {/* Total Jobs */}
+          <div className="bg-white shadow-sm p-6 rounded-2xl border card pop-in">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600">Total Jobs</h3>
+                <p className="text-3xl font-semibold text-blue-600 mt-2">{stats.totalJobs}</p>
+              </div>
+            </div>
+            <div className="mt-4 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            </div>
+          </div>
+          {/* Applicants */}
+          <div className="bg-white shadow-sm p-6 rounded-2xl border card pop-in">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600">Applicants</h3>
+                <p className="text-3xl font-semibold text-blue-800 mt-2">
+                  {stats.totalApplications}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            </div>
+          </div>
         </div>
       </div>
     </div>
