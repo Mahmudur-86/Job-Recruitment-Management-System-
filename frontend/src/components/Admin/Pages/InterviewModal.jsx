@@ -4,14 +4,11 @@ import axios from "axios";
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function InterviewModal({ application, onClose }) {
-  const token = useMemo(
-    () => localStorage.getItem("token") || localStorage.getItem("adminToken"),
-    []
-  );
+  const token = useMemo(() => localStorage.getItem("adminToken"), []);
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [data, setData] = useState(null); // { title, questions, answers, submittedAt }
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -20,7 +17,7 @@ export default function InterviewModal({ application, onClose }) {
         setErr("");
 
         const res = await axios.get(
-          `${API_BASE}/api/interviews/application/${application._id}/submission`,
+          `${API_BASE}/api/interviews/admin/application/${application._id}/submission`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -37,7 +34,6 @@ export default function InterviewModal({ application, onClose }) {
     if (application?._id) load();
   }, [application?._id, token]);
 
-  // Find selected option index by questionIndex
   const getSelectedIndex = (qIndex) => {
     const found = data?.answers?.find((a) => a.questionIndex === qIndex);
     return typeof found?.selectedOptionIndex === "number" ? found.selectedOptionIndex : null;
