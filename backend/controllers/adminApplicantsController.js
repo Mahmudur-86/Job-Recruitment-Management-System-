@@ -1,12 +1,12 @@
-// controllers/adminApplicantsController.js
+
 const Application = require("../models/Application");
 const InterviewSet = require("../models/InterviewSet");
 const Notification = require("../models/Notification");
 const Job = require("../models/Job");
 
-// ----------------------
-// Helper: Admin only
-// ----------------------
+
+
+
 const ensureAdmin = (req, res) => {
   if (req.user?.role !== "admin") {
     res.status(403).json({ message: "Admin only" });
@@ -15,9 +15,9 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// ----------------------
+
 // Dummy fallback (only if job.mcqs missing)
-// ----------------------
+
 const getDummyQuestions = (jobTitle = "") => {
   const t = String(jobTitle).toLowerCase();
 
@@ -63,7 +63,7 @@ const getDummyQuestions = (jobTitle = "") => {
   };
 };
 
-// convert Job.mcqs -> interview set format
+
 const fromJobMcqs = (job) => {
   const list = Array.isArray(job?.mcqs) ? job.mcqs : [];
   if (list.length !== 3) return null;
@@ -78,10 +78,10 @@ const fromJobMcqs = (job) => {
   };
 };
 
-// ----------------------
-// ✅ GET /api/admin/applications
-// IMPORTANT: include job.mcqs so frontend preview works
-// ----------------------
+
+//  GET /api/admin/applications
+
+
 exports.getAllApplications = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -98,9 +98,9 @@ exports.getAllApplications = async (req, res) => {
   }
 };
 
-// ----------------------
-// ✅ PATCH /api/admin/applications/:id/status
-// ----------------------
+
+//  PATCH /api/admin/applications/:id/status
+
 exports.updateApplicationStatus = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -126,9 +126,9 @@ exports.updateApplicationStatus = async (req, res) => {
   }
 };
 
-// ----------------------
-// ✅ DELETE /api/admin/applications/:id
-// ----------------------
+
+//  DELETE /api/admin/applications/:id
+
 exports.deleteApplication = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -143,14 +143,14 @@ exports.deleteApplication = async (req, res) => {
   }
 };
 
-// ----------------------
-// ✅ POST /api/admin/applications/:id/send-interview
-// Rules:
-// - only Approved
-// - no resend
-// - if frontend sends custom title/questions -> keep (backward compatible)
-// - else: use Job.mcqs (must be 3) -> else dummy
-// ----------------------
+
+//  POST /api/admin/applications/:id/send-interview
+
+
+
+
+
+
 exports.sendInterview = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;

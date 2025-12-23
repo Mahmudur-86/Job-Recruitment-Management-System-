@@ -37,11 +37,10 @@ const profileRoutes = require("./routes/profileRoutes");
 
 // Jobseeker part
 const jobRoutes = require("./routes/jobRoutes");
-const jobApplicationRoutes = require("./routes/jobApplicationRoutes"); // ✅ enabled
+const jobApplicationRoutes = require("./routes/jobApplicationRoutes"); 
 const internRoutes = require("./routes/internRoutes");
 
-// Employer profile
-//const employerProfileRoutes = require("./routes/employerProfileRoutes");
+
 
 
 //   Notifications + Interviews routes
@@ -66,7 +65,7 @@ app.use("/api/interns", internRoutes);
 app.use("/api/profile", profileRoutes);
 
 
-//app.use("/api/employer", employerProfileRoutes);
+
 
 
 //  mounts

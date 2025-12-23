@@ -12,7 +12,7 @@ const {
 
 const auth = require("../middleware/authMiddleware");
 
-//  NEW controllers for applicants
+//  controllers for applicants
 const {
   getAllApplications,
   updateApplicationStatus,

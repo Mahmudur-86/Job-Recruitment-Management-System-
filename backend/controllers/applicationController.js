@@ -69,7 +69,7 @@ exports.createApplication = async (req, res) => {
       application: app,
     });
   } catch (err) {
-    // duplicate apply for same job
+    
     if (err?.code === 11000) {
       return res
         .status(409)
