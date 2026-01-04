@@ -38,7 +38,7 @@ const profileRoutes = require("./routes/profileRoutes");
 // Jobseeker part
 const jobRoutes = require("./routes/jobRoutes");
 const jobApplicationRoutes = require("./routes/jobApplicationRoutes"); 
-const internRoutes = require("./routes/internRoutes");
+
 
 
 
@@ -52,16 +52,24 @@ const interviewRoutes = require("./routes/interviewRoutes");
 const emailRoutes = require("./routes/emailRoutes");
 
 
+// report routes
+const adminReportRoutes = require("./routes/adminReportRoutes");
+
+const publicJobRoutes = require("./routes/publicJobRoutes");
 
 // USE ROUTES
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminJobRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/public", publicJobRoutes);
+
+
+
 
 // applications (job request)
 app.use("/api/applications", jobApplicationRoutes);
 
-app.use("/api/interns", internRoutes);
+
 app.use("/api/profile", profileRoutes);
 
 
@@ -75,6 +83,11 @@ app.use("/api/interviews", interviewRoutes);
 
 //  NEW mount
 app.use("/api/email", emailRoutes);
+
+
+app.use("/api/admin/reports", adminReportRoutes);
+
+
 
 // Auth
 app.use("/", authRoutes);

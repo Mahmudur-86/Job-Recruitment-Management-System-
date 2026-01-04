@@ -36,7 +36,7 @@ export default function ManageJobs() {
   const [open, setOpen] = useState(false);
   const [activeJob, setActiveJob] = useState(null);
 
-  // ✅ NEW: show correct answers toggle (only inside view modal)
+  //  show correct answers toggle (only inside view modal)
   const [showCorrect, setShowCorrect] = useState(false);
 
   const openModal = (job) => {
@@ -232,9 +232,7 @@ export default function ManageJobs() {
   // UI mapping: show title as jobTitle
   const uiJobs = jobs.map((j) => ({ ...j, jobTitle: j.title }));
 
-  // =========================================================
-  // ✅ NEW: EDIT JOB FEATURE (minimal add)
-  // =========================================================
+  // Edit modal
   const [editOpen, setEditOpen] = useState(false);
   const [editJobId, setEditJobId] = useState("");
   const [editError, setEditError] = useState("");
@@ -333,7 +331,9 @@ export default function ManageJobs() {
           )
         );
         if (activeJob?._id === editJobId) {
-          setActiveJob((prev) => (prev ? { ...prev, ...payload, title: payload.title } : prev));
+          setActiveJob((prev) =>
+            prev ? { ...prev, ...payload, title: payload.title } : prev
+          );
         }
       }
 
@@ -346,162 +346,263 @@ export default function ManageJobs() {
     }
   };
 
+  // ✅ NEW: Text Preview Modal (only UI)
+  const [textOpen, setTextOpen] = useState(false);
+  const [textTitle, setTextTitle] = useState("");
+  const [textBody, setTextBody] = useState("");
+
+  const openTextModal = (title, body) => {
+    setTextTitle(title || "Details");
+    setTextBody(body || "-");
+    setTextOpen(true);
+  };
+
+  const closeTextModal = () => {
+    setTextOpen(false);
+    setTextTitle("");
+    setTextBody("");
+  };
+
+  // ✅ Helper: compact preview
+  const renderCompactText = (label, value) => {
+    const v = String(value ?? "").trim();
+    const isLong = v.length > 140;
+
+    return (
+      <div className="space-y-1">
+        <div className="text-[13px] text-gray-700 leading-5 wrap-break-word line-clamp-3">
+          {v || "-"}
+        </div>
+
+        {isLong ? (
+          <button
+            type="button"
+            onClick={() => openTextModal(label, v)}
+            className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+          >
+            Read more
+          </button>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800">Manage Jobs</h3>
-          <p className="text-sm text-gray-500">
-            {loading ? "Loading..." : `Total: ${uiJobs.length}`}
-          </p>
-        </div>
+      {/* Background + container */}
+      <div className="min-h-[calc(100vh-90px)] bg-gray-50/60">
+        <div className="mx-auto w-full max-w-[1400px] px-3 sm:px-5 lg:px-7 py-4 sm:py-6">
+          {/* Header */}
+          <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                Manage Jobs
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                {loading ? "Loading..." : `Total: ${uiJobs.length}`}
+              </p>
+            </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => setAddOpen(true)}
-            className="px-4 py-2 rounded-md bg-indigo-600 text-white shadow hover:bg-indigo-700 transition"
-          >
-            + Add Job
-          </button>
-        </div>
-      </div>
+            <button
+              onClick={() => setAddOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white shadow hover:bg-indigo-700 active:scale-[0.99] transition w-full sm:w-auto"
+            >
+              + Add Job
+            </button>
+          </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-[1100px] w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                {[
-                  "Job Title",
-                  "Company",
-                  "Location",
-                  "Category",
-                  "Salary",
-                  "Description",
-                  "Requirements",
-                  "Vacancies",
-                  "Interview",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+          {/* Card */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            {/* top bar */}
+            <div className="px-4 sm:px-6 py-3 border-b bg-white">
+              <div className="flex items-center justify-between">
+                
+               
+              </div>
+            </div>
 
-            <tbody className="divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-gray-600">
-                    Loading jobs...
-                  </td>
-                </tr>
-              ) : uiJobs.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-gray-600">
-                    No jobs found. Click <b>+ Add Job</b> to create your first job.
-                  </td>
-                </tr>
-              ) : (
-                uiJobs.map((job) => (
-                  <tr key={job._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">
-                      {job.jobTitle}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-                      {job.company}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-                      {job.location}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-                      {job.category}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-                      {job.salary}
-                    </td>
-
-                    <td className="px-4 py-3 text-sm text-gray-700 max-w-[260px]">
-                      <div className="line-clamp-5 wrap-break-word">{job.description}</div>
-                    </td>
-
-                    <td className="px-4 py-3 text-sm text-gray-700 max-w-60">
-                      <div className="line-clamp-3 wrap-break-word">{job.requirements}</div>
-                    </td>
-
-                    <td className="px-4 py-3 text-sm text-gray-800 whitespace-nowrap">
-                      {job.vacancies}
-                    </td>
-
-                    <td className="px-4 py-3 text-sm">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => openModal(job)}
-                          className="px-3 py-1.5 rounded-md border border-gray-300 hover:bg-gray-100 whitespace-nowrap"
-                        >
-                          See Interview Question
-                        </button>
-
-                        <button
-                          onClick={() => openInterviewQuestionModal(job._id)}
-                          className="px-3 py-1.5 rounded-md border border-indigo-300 text-indigo-700 hover:bg-indigo-50 whitespace-nowrap"
-                        >
-                          Add Interview Question
-                        </button>
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-3 text-sm">
-                      <div className="flex flex-wrap gap-2">
-                        {/* ✅ NEW: Edit button */}
-                        <button
-                          onClick={() => openEditModal(job)}
-                          className="px-3 py-1.5 border border-gray-300 text-gray-800 rounded-md hover:bg-gray-100"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(job._id)}
-                          className="px-3 py-1.5 border border-red-300 text-red-700 rounded-md hover:bg-red-50"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+            {/* Table */}
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-[1180px] w-full table-fixed">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  <tr>
+                    {[
+                      { h: "Job Title", w: "w-[220px]" },
+                      { h: "Company", w: "w-[140px]" },
+                      { h: "Location", w: "w-[160px]" },
+                      { h: "Category", w: "w-[120px]" },
+                      { h: "Salary", w: "w-[120px]" },
+                      { h: "Description", w: "w-[280px]" },
+                      { h: "Requirements", w: "w-[280px]" },
+                      { h: "Vacancies", w: "w-[90px]" },
+                      { h: "Interview", w: "w-[230px]" },
+                      { h: "Actions", w: "w-[160px]" },
+                    ].map((col) => (
+                      <th
+                        key={col.h}
+                        className={`px-4 py-3 text-left text-[11px] font-bold text-gray-600 uppercase tracking-wider ${col.w}`}
+                      >
+                        {col.h}
+                      </th>
+                    ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+
+                <tbody className="divide-y divide-gray-200">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={10} className="px-6 py-12">
+                        <div className="flex items-center justify-center gap-3 text-gray-600">
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-800" />
+                          <p className="text-sm">Loading jobs...</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : uiJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="px-6 py-12 text-center text-gray-600">
+                        No jobs found. Click <b>+ Add Job</b> to create your first job.
+                      </td>
+                    </tr>
+                  ) : (
+                    uiJobs.map((job, idx) => (
+                      <tr
+                        key={job._id}
+                        className={`align-top ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/40"} hover:bg-indigo-50/40 transition-colors`}
+                      >
+                        <td className="px-4 py-4">
+                          <div className="font-semibold text-gray-900 leading-5">
+                            {job.jobTitle}
+                          </div>
+                        
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-800">
+                          {job.company || "-"}
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-800">
+                          {job.location || "-"}
+                        </td>
+
+                        <td className="px-4 py-4">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border">
+                            {job.category || "-"}
+                          </span>
+                        </td>
+
+                        <td className="px-4 py-4 text-sm text-gray-800">
+                          {job.salary || "-"}
+                        </td>
+
+                        <td className="px-4 py-4">
+                          {renderCompactText("Job Description", job.description)}
+                        </td>
+
+                        <td className="px-4 py-4">
+                          {renderCompactText("Job Requirements", job.requirements)}
+                        </td>
+
+                        <td className="px-4 py-4 text-sm font-semibold text-gray-900">
+                          {job.vacancies}
+                        </td>
+
+                        <td className="px-4 py-4">
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => openModal(job)}
+                              className="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-sm font-medium transition"
+                            >
+                              See Interview Question
+                            </button>
+
+                            <button
+                              onClick={() => openInterviewQuestionModal(job._id)}
+                              className="px-3 py-2 rounded-lg border border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold transition"
+                            >
+                              Add Interview Question
+                            </button>
+                          </div>
+                        </td>
+
+                        <td className="px-4 py-4">
+                          <div className="flex flex-col gap-2">
+                            <button
+                              onClick={() => openEditModal(job)}
+                              className="px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 text-sm font-medium transition"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              onClick={() => handleDelete(job._id)}
+                              className="px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 text-sm font-semibold transition"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+           
+           
+          </div>
         </div>
       </div>
+
+      {/* ✅ Text Modal (Description/Requirements full view) */}
+      {textOpen && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center px-3 sm:px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={closeTextModal} />
+          <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl border overflow-hidden">
+            <div className="p-4 sm:p-5 border-b flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h4 className="text-lg font-semibold text-gray-900 truncate">{textTitle}</h4>
+                <p className="text-sm text-gray-500 mt-0.5">Full details</p>
+              </div>
+              <button
+                onClick={closeTextModal}
+                className="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-5 max-h-[70vh] overflow-y-auto">
+              <div className="whitespace-pre-wrap wrap-break-word text-sm text-gray-800 leading-6">
+                {textBody}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Interview View Modal */}
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
           <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-          <div className="relative bg-white w-full max-w-2xl rounded-lg shadow-lg border">
-            <div className="flex justify-between items-center p-4 border-b">
-              <div>
-                <h4 className="text-lg font-semibold">Interview Questions</h4>
-                <p className="text-sm text-gray-600">
+          <div className="relative bg-white w-full max-w-2xl rounded-xl shadow-xl border overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-b">
+              <div className="min-w-0">
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Interview Questions
+                </h4>
+                <p className="text-xs sm:text-sm text-gray-600 truncate">
                   {activeJob?.title} • {activeJob?.company}
                 </p>
               </div>
 
-              {/* ✅ NEW: Toggle show correct answers */}
               <label className="flex items-center gap-2 text-sm text-gray-700 select-none">
                 <input
                   type="checkbox"
                   checked={showCorrect}
                   onChange={(e) => setShowCorrect(e.target.checked)}
+                  className="h-4 w-4"
                 />
                 Show correct answers
               </label>
@@ -510,10 +611,10 @@ export default function ManageJobs() {
             <div className="p-4 max-h-[70vh] overflow-y-auto space-y-4">
               {Array.isArray(activeJob?.mcqs) && activeJob.mcqs.length > 0 ? (
                 activeJob.mcqs.map((m, i) => (
-                  <div key={i} className="border rounded-md p-3">
-                    <p className="font-semibold">{m.question}</p>
+                  <div key={i} className="border rounded-lg p-3 sm:p-4">
+                    <p className="font-semibold text-gray-900">{m.question}</p>
 
-                    <div className="mt-2 space-y-2">
+                    <div className="mt-3 space-y-2">
                       {(m.options || []).map((op, idx) => {
                         const isCorrect = Number(m.correctOption) === idx;
 
@@ -533,7 +634,6 @@ export default function ManageJobs() {
                       })}
                     </div>
 
-                    {/* Optional small hint line */}
                     {showCorrect && (
                       <p className="mt-2 text-xs text-gray-500">
                         Correct option index: {Number(m.correctOption) + 1}
@@ -542,7 +642,7 @@ export default function ManageJobs() {
                   </div>
                 ))
               ) : (
-                <div className="p-4 rounded-md border bg-gray-50 text-gray-700">
+                <div className="p-4 rounded-lg border bg-gray-50 text-gray-700">
                   No interview questions added yet.
                 </div>
               )}
@@ -551,7 +651,7 @@ export default function ManageJobs() {
             <div className="p-4 border-t flex justify-end">
               <button
                 onClick={closeModal}
-                className="px-4 py-2 bg-gray-900 text-white rounded-md"
+                className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-black transition active:scale-[0.99]"
               >
                 Close
               </button>
@@ -560,22 +660,16 @@ export default function ManageJobs() {
         </div>
       )}
 
-      {/* ✅ NEW: Edit Job Modal */}
+      {/* Edit Modal */}
       {editOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
           <div className="absolute inset-0 bg-black/50" onClick={closeEditModal} />
-          <div className="relative bg-white w-full max-w-2xl rounded-lg shadow-lg border">
+          <div className="relative bg-white w-full max-w-2xl rounded-xl shadow-xl border overflow-hidden">
             <div className="p-4 border-b flex items-start justify-between gap-3">
               <div>
-                <h4 className="text-lg font-semibold">Edit Job</h4>
-                <p className="text-sm text-gray-600">Update job fields and save.</p>
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900">Edit Job</h4>
+                <p className="text-xs sm:text-sm text-gray-600">Update job fields and save.</p>
               </div>
-              <button
-                onClick={closeEditModal}
-                className="px-3 py-1.5 rounded-md border hover:bg-gray-50"
-              >
-                ✕
-              </button>
             </div>
 
             <div className="p-4 max-h-[70vh] overflow-y-auto">
@@ -591,7 +685,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.jobTitle}
                     onChange={(e) => updateEditField("jobTitle", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Job Title"
                   />
                 </div>
@@ -601,7 +695,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.company}
                     onChange={(e) => updateEditField("company", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Company"
                   />
                 </div>
@@ -611,7 +705,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.location}
                     onChange={(e) => updateEditField("location", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Location"
                   />
                 </div>
@@ -621,7 +715,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.category}
                     onChange={(e) => updateEditField("category", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Category"
                   />
                 </div>
@@ -631,7 +725,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.salary}
                     onChange={(e) => updateEditField("salary", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Salary"
                   />
                 </div>
@@ -641,7 +735,7 @@ export default function ManageJobs() {
                   <input
                     value={editJob.vacancies}
                     onChange={(e) => updateEditField("vacancies", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2"
+                    className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Vacancies"
                   />
                 </div>
@@ -651,7 +745,7 @@ export default function ManageJobs() {
                   <textarea
                     value={editJob.description}
                     onChange={(e) => updateEditField("description", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2 min-h-[110px]"
+                    className="mt-1 w-full border rounded-md px-3 py-2 min-h-[110px] focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Description"
                   />
                 </div>
@@ -661,24 +755,24 @@ export default function ManageJobs() {
                   <textarea
                     value={editJob.requirements}
                     onChange={(e) => updateEditField("requirements", e.target.value)}
-                    className="mt-1 w-full border rounded-md px-3 py-2 min-h-[110px]"
+                    className="mt-1 w-full border rounded-md px-3 py-2 min-h-[110px] focus:outline-none focus:ring-2 focus:ring-indigo-200"
                     placeholder="Requirements"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border-t flex justify-end gap-2">
+            <div className="p-4 border-t flex flex-col sm:flex-row justify-end gap-2">
               <button
                 onClick={closeEditModal}
-                className="px-4 py-2 rounded-md border hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 py-2 rounded-md border hover:bg-gray-50 transition active:scale-[0.99]"
                 disabled={editSaving}
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateJob}
-                className="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
+                className="w-full sm:w-auto px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60 transition active:scale-[0.99]"
                 disabled={editSaving}
               >
                 {editSaving ? "Saving..." : "Save Changes"}

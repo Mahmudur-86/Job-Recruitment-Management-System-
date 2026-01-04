@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { User, Bell, GraduationCap, Search, LogOut } from "lucide-react";
+import { User, Bell,  Search, LogOut, FileText } from "lucide-react";
 import axios from "axios";
 
 import ProfileTab from "./ProfileTab";
 import BrowseJobsTab from "./BrowseJobsTab";
-import InternTab from "./InternTab";
+
 import NotificationsTab from "./NotificationsTab";
+
+import ViewRecruitmentLetter from "./ViewRecruitmentLetter";
+
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -18,8 +21,13 @@ export default function JobSeekerDashboard({ onLogout }) {
   //  notifications state
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // keep your intern state
-  const [internRequests, setInternRequests] = useState([]);
+  
+ 
+
+  //  popup state 
+  const [showPopup, setShowPopup] = useState(false);
+  const popupMsg =
+    "Please complete your profile first to access other features.";
 
   const isProfileComplete = () => profile.name && profile.email && profile.phone;
 
@@ -30,7 +38,7 @@ export default function JobSeekerDashboard({ onLogout }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUnreadCount(data.unreadCount || 0);
-    } catch  {
+    } catch {
       // if token missing / API fail, just show 0
       setUnreadCount(0);
     }
@@ -44,9 +52,9 @@ export default function JobSeekerDashboard({ onLogout }) {
 
   const handleTabChange = (tab) => {
     if (tab !== "profile" && !isProfileComplete()) {
-      alert(
-        "Thank you for completing the registration and it will be verified by admin.Please Logout. About ten seconds later you can Login again  and then you will be able to write profile,but it is important that you have to complete the all necessary profile information and save them.Otherwise, you can't access other features."
-      );
+      //  popup instead of alert
+      setShowPopup(true);
+
       setActiveTab("profile");
       return;
     }
@@ -59,13 +67,46 @@ export default function JobSeekerDashboard({ onLogout }) {
     }
   };
 
-  const handleInternSubmit = (internData) => {
-    setInternRequests([...internRequests, internData]);
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
+        {/*  POPUP MODAL (alert replacement) */}
+        {showPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* overlay */}
+            <div
+              className="absolute inset-0 bg-black/40"
+              onClick={() => setShowPopup(false)}
+            />
+            {/* modal */}
+            <div className="relative w-full max-w-lg rounded-xl bg-white shadow-2xl border border-gray-200 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Profile Required
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-700 leading-relaxed p-1">
+                    {popupMsg}
+                  </p>
+                </div>
+
+              
+              </div>
+
+              <div className="mt-5 flex items-center justify-end gap-2">
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Job Seeker Dashboard</h1>
@@ -118,14 +159,19 @@ export default function JobSeekerDashboard({ onLogout }) {
             )}
           </button>
 
-          <button
-            onClick={() => handleTabChange("intern")}
-            className={`px-4 py-2 rounded flex items-center gap-2 ${
-              activeTab === "intern" ? "bg-blue-600 text-white" : "bg-white"
-            }`}
-          >
-            <GraduationCap size={18} /> Student Intern
-          </button>
+<button
+  onClick={() => handleTabChange("recruitment")}
+  className={`px-4 py-2 rounded flex items-center gap-2 ${
+    activeTab === "recruitment" ? "bg-blue-600 text-white" : "bg-white"
+  }`}
+>
+  <FileText size={18} /> View Recruitment Letter
+</button>
+
+
+
+
+         
         </div>
 
         {activeTab === "profile" && (
@@ -139,12 +185,7 @@ export default function JobSeekerDashboard({ onLogout }) {
           <NotificationsTab onUpdateUnread={loadUnreadCount} />
         )}
 
-        {activeTab === "intern" && (
-          <InternTab
-            internRequests={internRequests}
-            onSubmit={handleInternSubmit}
-          />
-        )}
+      {activeTab === "recruitment" && <ViewRecruitmentLetter />}
       </div>
     </div>
   );

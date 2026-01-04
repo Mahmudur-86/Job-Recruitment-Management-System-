@@ -151,8 +151,8 @@ export default function ManageUsers() {
 
   return (
     <div className="p-4 sm:p-6 bg-gray-100 min-h-screen relative">
-      <h3 className="text-xl font-semibold mb-2 text-gray-800">Manage Users</h3>
-      <p className="text-gray-600 mb-6 text-sm">Change Status or Delete Users.</p>
+      <h3 className="text-xl font-semibold mb-2 text-gray-800">Manage Jobseekers</h3>
+     
 
       {/* Delete Confirmation Modal */}
       {showConfirm && (
@@ -432,6 +432,7 @@ export default function ManageUsers() {
                             }
                             className="w-full px-4 py-3 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none cursor-pointer border-b border-gray-200"
                           >
+                            
                             <option value="Active">Active</option>
                             <option value="Blocked">Blocked</option>
                           </select>
@@ -481,9 +482,7 @@ export default function ManageUsers() {
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-2 sm:hidden">
-        Tip: Swipe left/right to see the full table.
-      </p>
+    
     </div>
   );
 }

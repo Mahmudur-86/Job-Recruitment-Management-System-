@@ -134,7 +134,13 @@ export default function ViewInterviewAnswers() {
                         <button
                           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                           onClick={() => {
-                            setSelectedPerson({ name, email });
+                            // ✅ IMPORTANT FIX: jobId must be string ObjectId, not the populated object
+                            setSelectedPerson({
+                              name,
+                              email,
+                              applicationId: app._id,
+                              jobId: app?.jobId?._id || app?.jobId, // <-- FIX
+                            });
                             setShowEmailModal(true);
                           }}
                         >

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Briefcase, FileText, Bell, LogOut, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, FileText,  LogOut, ClipboardCheck, FileBarChart2 , FileSignature} from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
@@ -15,8 +15,9 @@ export default function Sidebar() {
   { name: "View Interview Answers", path: "/admin/interview-answers", icon: <ClipboardCheck size={18} /> },
 
 
-  
+  { name: "Monthly Report", path: "/admin/monthly-report", icon: <FileBarChart2 size={18} /> },
 
+{name: "Recruitment Letter", path: "/admin/recruitment-Letter", icon: <FileSignature size={18} />}
 
   ];
 

@@ -19,14 +19,13 @@ export default function NotificationsTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  //  UI message (no alert)
+  // UI message (no alert)
   const [uiMsg, setUiMsg] = useState({ type: "", text: "" });
 
-  //  Success popup (toast) -------------- (ADDED)
-  const [toast, setToast] = useState({ show: false, text: "" }); // (ADDED)
+  // Success popup (toast)
+  const [toast, setToast] = useState({ show: false, text: "" });
 
   const showToast = (text) => {
-    // (ADDED)
     setToast({ show: true, text });
     setTimeout(() => setToast({ show: false, text: "" }), 2500);
   };
@@ -98,9 +97,7 @@ export default function NotificationsTab() {
 
       const { data } = await axios.get(
         `${API_BASE}/api/interviews/application/${appId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setInterview({ title: data.title, questions: data.questions || [] });
@@ -158,12 +155,9 @@ export default function NotificationsTab() {
 
       setSubmitted(true);
 
-      //  AUTO CLOSE MODAL THEN SHOW POPUP MSG (ADDED)
       setTimeout(() => {
         closeInterview();
-        showToast(
-          " Your interview has been submitted. Admin will review it soon."
-        );
+        showToast(" Your interview has been submitted. Admin will review it soon.");
       }, 2000);
     } catch (e) {
       console.error("SUBMIT INTERVIEW ERROR:", e);
@@ -174,6 +168,30 @@ export default function NotificationsTab() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // ✅ NEW: badge ui helper (no logic change)
+  const typeBadge = (n) => {
+    const t = String(n?.type || "").toUpperCase();
+    if (t === "EMAIL") {
+      return (
+        <span className="text-[11px] px-2 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+          EMAIL
+        </span>
+      );
+    }
+    if (t === "INTERVIEW") {
+      return (
+        <span className="text-[11px] px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+          INTERVIEW
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] px-2 py-1 rounded-full bg-gray-100 text-gray-700 border">
+        {t || "INFO"}
+      </span>
+    );
   };
 
   return (
@@ -214,12 +232,20 @@ export default function NotificationsTab() {
                 }`}
               >
                 <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 truncate">
-                    {n.title || "Notification"}
-                  </p>
-                  <p className="text-sm text-gray-700 mt-1">
-                    {n.message || "-"}
-                  </p>
+                  {/* ✅ NEW: badge on top row */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-semibold text-gray-900 truncate">
+                      {n.title || "Notification"}
+                    </p>
+                    {typeBadge(n)}
+                    {!n.isRead && (
+                      <span className="text-[11px] px-2 py-1 rounded-full bg-red-100 text-red-700 border border-red-200">
+                        NEW
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-gray-700 mt-1">{n.message || "-"}</p>
                   <p className="text-xs text-gray-500 mt-2">
                     {new Date(n.createdAt).toLocaleString()}
                   </p>
@@ -235,6 +261,19 @@ export default function NotificationsTab() {
                     </button>
                   )}
 
+                  {/* ✅ EMAIL type special button (optional but useful, no backend needed) */}
+                  {n.type === "EMAIL" && (
+                    <button
+                      onClick={() => {
+                        if (!n.isRead) markRead(n._id);
+                        showToast("Please check your email inbox.");
+                      }}
+                      
+                    >
+                     
+                    </button>
+                  )}
+
                   {!n.isRead && (
                     <button
                       onClick={() => markRead(n._id)}
@@ -244,12 +283,8 @@ export default function NotificationsTab() {
                     </button>
                   )}
 
-                  <button
-                    onClick={() => removeNotification(n._id)}
-                   
-                  >
-                    
-                  </button>
+                  {/* keep your delete button behavior same (no UI added by you before) */}
+                  <button onClick={() => removeNotification(n._id)}></button>
                 </div>
               </div>
             ))}
@@ -260,10 +295,7 @@ export default function NotificationsTab() {
       {/* Interview Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={closeInterview}
-          />
+          <div className="absolute inset-0 bg-black/50" onClick={closeInterview} />
 
           <div className="relative w-full max-w-[92vw] sm:max-w-2xl rounded-2xl bg-white shadow-xl">
             <div className="flex items-start justify-between border-b p-4 sm:p-5">
@@ -271,9 +303,7 @@ export default function NotificationsTab() {
                 <h4 className="text-base sm:text-lg font-semibold text-gray-900">
                   Interview Questions
                 </h4>
-                <p className="text-sm text-gray-600">
-                  {interview?.title || "Loading..."}
-                </p>
+                <p className="text-sm text-gray-600">{interview?.title || "Loading..."}</p>
               </div>
 
               <button
@@ -305,9 +335,7 @@ export default function NotificationsTab() {
                     >
                       <p
                         className={`text-sm ${
-                          uiMsg.type === "error"
-                            ? "text-red-700"
-                            : "text-blue-700"
+                          uiMsg.type === "error" ? "text-red-700" : "text-blue-700"
                         }`}
                       >
                         {uiMsg.text}
@@ -347,9 +375,7 @@ export default function NotificationsTab() {
 
                   {submitted && (
                     <div className="rounded-xl bg-green-50 border border-green-200 p-4">
-                      <p className="text-sm text-green-800">
-                        Submitted successfully ✅
-                      </p>
+                      <p className="text-sm text-green-800">Submitted successfully ✅</p>
                     </div>
                   )}
                 </div>
@@ -368,11 +394,7 @@ export default function NotificationsTab() {
                     : "bg-blue-600 hover:bg-blue-700"
                 }`}
               >
-                {submitted
-                  ? "Submitted"
-                  : submitting
-                  ? "Submitting..."
-                  : "Submit"}
+                {submitted ? "Submitted" : submitting ? "Submitting..." : "Submit"}
               </button>
 
               {activeNotif?._id && (
@@ -381,17 +403,14 @@ export default function NotificationsTab() {
                     removeNotification(activeNotif._id);
                     closeInterview();
                   }}
-                  
-                >
-                 
-                </button>
+                ></button>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/*  Success Toast Popup (ADDED) */}
+      {/* Success Toast Popup */}
       {toast.show && (
         <div className="fixed bottom-5 right-5 z-9999">
           <div className="rounded-xl bg-green-600 text-white px-4 py-3 shadow-lg text-sm">
