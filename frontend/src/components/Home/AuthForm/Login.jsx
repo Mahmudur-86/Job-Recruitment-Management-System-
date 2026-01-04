@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
-//  API BASE 
+// API BASE
 const RAW_API_BASE =
   import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL || "";
 const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
@@ -14,7 +14,7 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
   const [form, setForm] = useState({
     email: "",
     password: "",
-    role: "jobseeker", //  fixed role
+    role: "jobseeker",
   });
 
   const handleSubmit = async () => {
@@ -49,7 +49,6 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
       }
 
       onLoginSuccess(realRole);
-
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
@@ -57,12 +56,10 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden">
-
-      {/* subtle animated glow */}
       <span className="absolute -top-24 -right-24 w-64 h-64 bg-cyan-200/40 blur-3xl animate-pulse" />
       <span className="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-300/30 blur-3xl animate-pulse" />
 
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center relative">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center relative">
         Login
       </h2>
 
@@ -73,8 +70,6 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
       )}
 
       <div className="space-y-4 relative">
-
-        {/* EMAIL */}
         <input
           type="email"
           placeholder="Email"
@@ -82,7 +77,6 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
-        {/* PASSWORD */}
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
@@ -100,11 +94,6 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
           </button>
         </div>
 
-        {/*  ROLE (FIXED JOBSEEKER  */}
-      
-
-
-        {/* LOGIN BUTTON */}
         <button
           onClick={handleSubmit}
           className="w-full bg-cyan-500 text-white py-2 rounded-xl hover:bg-cyan-600 transition shadow-lg hover:shadow-xl active:scale-[0.99]"
@@ -112,7 +101,6 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
           Login
         </button>
 
-        {/* CREATE NEW ACCOUNT LINK */}
         <p className="mt-3 text-center text-sm text-gray-600">
           Don&apos;t have an account?
         </p>
@@ -124,28 +112,14 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
         </p>
       </div>
 
-      {/* BACK BUTTON */}
-  <div className="mt-6 flex justify-center">
-  <button
-    onClick={onBack}
-    className="
-      flex items-center gap-2
-      px-5 py-2
-      border border-gray-300
-      rounded-full
-      text-gray-700 font-medium
-      transition-all duration-200
-      hover:text-cyan-600
-      hover:border-cyan-400
-      hover:gap-3
-      hover:shadow-md
-      active:scale-95
-    "
-  >
-    
-    Back
-  </button>
-</div>
+      <div className="mt-6 flex justify-center">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-full text-gray-700 font-medium transition-all duration-200 hover:text-cyan-600 hover:border-cyan-400 hover:gap-3 hover:shadow-md active:scale-95"
+        >
+          Back
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import SearchBar from "./SearchBar.jsx";
-export default function Hero() {
+
+export default function Hero({ searchValue, onSearch }) {
   return (
     <section className="mx-auto max-w-6xl px-6">
       <h1 className="text-center font-serif text-5xl sm:text-6xl font-semibold leading-tight">
@@ -7,10 +8,10 @@ export default function Hero() {
         <br />
         Job here!
       </h1>
+
       <div className="mt-10">
-        <SearchBar />
+        <SearchBar value={searchValue} onSearch={onSearch} />
       </div>
     </section>
-    
   );
 }

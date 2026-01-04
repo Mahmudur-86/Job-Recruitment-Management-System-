@@ -68,7 +68,7 @@ export default function JobCard({ job, profile }) {
   const titleText = normalize(jobDetails.title);
   const reqText = normalize(jobDetails.requirements);
 
-  //  strict: interest must exist AND must match job
+  //  interest must exist AND must match job
   const isInterestMatched =
     !!interest && (titleText.includes(interest) || reqText.includes(interest));
 

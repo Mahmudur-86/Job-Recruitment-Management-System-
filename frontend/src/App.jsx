@@ -10,10 +10,11 @@ import Dashboard from "./components/Admin/Pages/Dashboard.jsx";
 import ManageUsers from "./components/Admin/Pages/ManageUsers.jsx";
 import ManageJobs from "./components/Admin/Pages/ManageJobs.jsx";
 import ManageApplicants from "./components/Admin/Pages/ManageApplicants.jsx";
-;
+import RecruitmentLetter from "./components/Admin/Pages/RecruitmentLetter.jsx";
+
 import ViewInterviewAnswers from "./components/Admin/Pages/ViewInterviewAnswers.jsx";
 
-
+import MonthlyReport from "./components/Admin/Pages/MonthlyReport.jsx";
 
 import JobSeekerDashboard from "./components/JobSeeker/JobSeekerDashboard.jsx";
 
@@ -104,13 +105,34 @@ export default function App() {
 
 
 
+   <Route
+          path="/admin/monthly-report"
+          element={
+            <PrivateRoute>
+              <AdminLayout>
+                <MonthlyReport />
+              </AdminLayout>
+            </PrivateRoute>
+          }
+        />
+
+<Route
+  path="/admin/recruitment-letter"
+  element={
+    <PrivateRoute>
+      <AdminLayout>
+        <RecruitmentLetter />
+      </AdminLayout>
+    </PrivateRoute>
+  }
+/>
 
 
 
 
 
 
-        {/* User protected */}
+        {/* jobseeker protected */}
         <Route
           path="/jobseeker"
           element={
