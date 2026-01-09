@@ -4,7 +4,7 @@ const User = require("../models/User");
 const Job = require("../models/Job");
 const Application = require("../models/Application");
 const InterviewSubmission = require("../models/InterviewSubmission");
-const EmailLog = require("../models/EmailLog");
+const RecruitmentLetter = require("../models/RecruitmentLetter"); // ✅ NEW (Recruitment Letter-based report)
 
 // Admin guard
 const ensureAdmin = (req, res) => {
@@ -15,11 +15,11 @@ const ensureAdmin = (req, res) => {
   return true;
 };
 
-// Month helpers (UTC safe)
+// Month
 const monthName = (m) =>
   [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
   ][m - 1] || "";
 
 const getMonthRange = (month, year) => {
@@ -46,7 +46,6 @@ const getDateRange = (startDate, endDate) => {
 
   const start = parseYMD_UTCStart(s);
   const endInclusiveStart = parseYMD_UTCStart(e);
-
   if (isNaN(start.getTime()) || isNaN(endInclusiveStart.getTime())) return null;
   if (start > endInclusiveStart) return null;
 
@@ -58,6 +57,7 @@ const rangeLabel = (s, e) => `Range: ${String(s || "").trim()} to ${String(e || 
 
 // fetch + aggregate once for ANY range
 const buildDetailsForRange = async ({ start, end, label }) => {
+  // applications aggregated by jobId
   const appAgg = await Application.aggregate([
     { $match: { createdAt: { $gte: start, $lt: end } } },
     {
@@ -83,12 +83,14 @@ const buildDetailsForRange = async ({ start, end, label }) => {
     jobTitleMap.set(String(j._id), j.jobTitle || j.title || "Unknown Position")
   );
 
+  // interview sent count (range)
   const sentAgg = await Application.aggregate([
     { $match: { interviewSent: true, interviewSentAt: { $gte: start, $lt: end } } },
     { $group: { _id: "$jobId", sent: { $sum: 1 } } },
   ]);
   const sentMap = new Map(sentAgg.map((x) => [String(x._id), x.sent]));
 
+  // interview submission count (range)
   const subAgg = await InterviewSubmission.aggregate([
     { $match: { createdAt: { $gte: start, $lt: end } } },
     {
@@ -104,65 +106,94 @@ const buildDetailsForRange = async ({ start, end, label }) => {
   ]);
   const submittedMap = new Map(subAgg.map((x) => [String(x._id), x.submitted]));
 
-  // EmailLog summary per job (latest email + count)
-  const emailAgg = await EmailLog.aggregate([
-    { $match: { status: "SENT", createdAt: { $gte: start, $lt: end } } },
-    { $sort: { createdAt: -1 } },
+  // ✅ Recruitment Letter aggregate (ONLY published letters, by positionTitle)
+  //    EmailModal emails are ignored completely.
+  const rlAgg = await RecruitmentLetter.aggregate([
+    {
+      $match: {
+        status: "published",
+        publishedAt: { $gte: start, $lt: end },
+      },
+    },
+    { $sort: { publishedAt: -1 } },
     {
       $group: {
-        _id: "$jobId",
+        _id: "$positionTitle", // group by positionTitle (matches job title in report)
         sentCount: { $sum: 1 },
-        lastEmailTo: { $first: "$to" },
-        lastEmailSubject: { $first: "$subject" }, // kept (logic unchanged)
-        lastEmailSentAt: { $first: "$createdAt" },
+        recipients: {
+          $push: {
+            to: "$candidateEmail",
+            lastSentAt: "$publishedAt",
+          },
+        },
       },
     },
   ]);
 
-  const emailMap = new Map(
-    emailAgg.map((x) => [
-      String(x._id),
+  const rlMap = new Map(
+    rlAgg.map((x) => [
+      String(x._id || "").trim(),
       {
         sentCount: x.sentCount || 0,
-        lastEmailTo: x.lastEmailTo || "",
-        lastEmailSubject: x.lastEmailSubject || "",
-        lastEmailSentAt: x.lastEmailSentAt || null,
+        recipients: Array.isArray(x.recipients) ? x.recipients : [],
       },
     ])
   );
 
   const details = appAgg.map((row) => {
     const id = String(row._id);
+
     const sent = sentMap.get(id) || 0;
     const submitted = submittedMap.get(id) || 0;
 
-    const emailInfo = emailMap.get(id) || {
-      sentCount: 0,
-      lastEmailTo: "",
-      lastEmailSubject: "",
-      lastEmailSentAt: null,
-    };
+    const position = jobTitleMap.get(id) || "Unknown Position";
+
+    // ✅ Recruitment Letter info by this position title
+    const rlInfo = rlMap.get(String(position).trim()) || { sentCount: 0, recipients: [] };
+
+    const recipientsSorted = [...rlInfo.recipients].sort((a, b) => {
+      const ta = a?.lastSentAt ? new Date(a.lastSentAt).getTime() : 0;
+      const tb = b?.lastSentAt ? new Date(b.lastSentAt).getTime() : 0;
+      return tb - ta;
+    });
+
+    const maxShow = 8;
+    const shown = recipientsSorted.slice(0, maxShow);
+
+    const toWithTime = shown
+      .map((r) => {
+        const mail = String(r?.to || "").trim();
+        const t = r?.lastSentAt ? new Date(r.lastSentAt).toLocaleString() : "";
+        return t ? `${mail} (${t})` : mail || "";
+      })
+      .filter(Boolean)
+      .join(", ");
+
+    const extraCount = recipientsSorted.length - shown.length;
+    const rlToText = extraCount > 0 ? `${toWithTime} +${extraCount} more` : toWithTime;
+
+    const rlStatus = rlInfo.sentCount > 0 ? "Sent" : "Not Sent";
 
     return {
       month: label,
-      position: jobTitleMap.get(id) || "Unknown Position",
+      position,
       jobId: id,
+
       totalCV: row.totalCV || 0,
       pending: row.pending || 0,
       approved: row.approved || 0,
       rejected: row.rejected || 0,
+
       interviewSent: sent,
       interviewSubmitted: submitted,
       interviewPending: Math.max(0, sent - submitted),
 
-      emailStatus: emailInfo.sentCount > 0 ? "Sent" : "Not Sent",
-      emailSentCount: emailInfo.sentCount,
+      // ✅ NEW
+      recruitmentLetterStatus: rlStatus,
 
-      // ✅ renamed fields for UI (subject removed)
-      emailTo: emailInfo.lastEmailTo,
-      emailDate: emailInfo.lastEmailSentAt
-        ? new Date(emailInfo.lastEmailSentAt).toISOString()
-        : "",
+      // ✅ Email columns now show ONLY Recruitment Letter sending (not EmailModal)
+      emailStatus: rlStatus,
+      emailTo: rlToText || "",
     };
   });
 
@@ -179,7 +210,7 @@ const buildSummaryForRange = async ({ start, end }) => {
     rejectedApps,
     interviewsSent,
     interviewsSubmitted,
-    emailsSent,
+    recruitmentLettersSent, // ✅ NEW summary count (published letters in range)
   ] = await Promise.all([
     User.countDocuments({
       role: { $in: ["jobseeker", "Jobseeker", "JOBSEEKER"] },
@@ -192,7 +223,12 @@ const buildSummaryForRange = async ({ start, end }) => {
     Application.countDocuments({ status: "Rejected", createdAt: { $gte: start, $lt: end } }),
     Application.countDocuments({ interviewSent: true, interviewSentAt: { $gte: start, $lt: end } }),
     InterviewSubmission.countDocuments({ createdAt: { $gte: start, $lt: end } }),
-    EmailLog.countDocuments({ status: "SENT", createdAt: { $gte: start, $lt: end } }),
+
+    // ✅ Only Recruitment Letters count
+    RecruitmentLetter.countDocuments({
+      status: "published",
+      publishedAt: { $gte: start, $lt: end },
+    }),
   ]);
 
   return {
@@ -205,11 +241,13 @@ const buildSummaryForRange = async ({ start, end }) => {
     interviewsSent,
     interviewsSubmitted,
     interviewsPending: Math.max(0, interviewsSent - interviewsSubmitted),
-    emailsSent,
+
+    // keep the same field name so frontend doesn't break
+    emailsSent: recruitmentLettersSent,
   };
 };
 
-// PDF helpers
+// PDF
 const scaleWidthsToFit = (doc, baseWidths) => {
   const pageW = doc.page.width;
   const left = doc.page.margins.left;
@@ -250,7 +288,6 @@ const drawRow = (doc, y, cols, widths, opts = {}) => {
 
   for (let i = 0; i < cols.length; i++) {
     const w = widths[i];
-
     doc.save();
     doc.strokeColor(borderColor).rect(x, y, w, height).stroke();
     doc.restore();
@@ -288,7 +325,6 @@ const renderReportPdf = ({
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
 
-  // A3 landscape for wide table
   const doc = new PDFDocument({ margin: 28, size: "A3", layout: "landscape" });
   doc.pipe(res);
 
@@ -300,10 +336,10 @@ const renderReportPdf = ({
   doc.fillColor("black");
   doc.moveDown(0.6);
 
-  // ✅ 14 cols now (removed Email Subject)
+  // ✅ Added Recruitment Letter column (still NO Email Count)
   const baseWidths = [
-    105, 175, 85, 65, 65, 65, 65, 75, 125, 75,
-    75, 70, 190, 120
+    110, 190, 85, 65, 65, 65, 65, 75, 125, 75,
+    110, 80, 300
   ];
   const widths = scaleWidthsToFit(doc, baseWidths);
 
@@ -318,10 +354,9 @@ const renderReportPdf = ({
     "Interview Sent",
     "Interview Submitted",
     "Interview Pending",
+    "Recruitment Letter",
     "Email Status",
-    "Email Count",
-    "Email To",
-    "Email Date",
+    "Email To (with time)",
   ];
 
   let y = doc.y;
@@ -348,8 +383,6 @@ const renderReportPdf = ({
       drawHeader();
     }
 
-    const emailDate = r.emailDate ? new Date(r.emailDate).toLocaleString() : "-";
-
     y = drawRow(
       doc,
       y,
@@ -364,10 +397,9 @@ const renderReportPdf = ({
         r.interviewSent,
         r.interviewSubmitted,
         r.interviewPending,
-        r.emailStatus,
-        r.emailSentCount,
-        safeShortText(r.emailTo, 48),
-        safeShortText(emailDate, 26),
+        r.recruitmentLetterStatus || "Not Sent",
+        r.emailStatus || "Not Sent",
+        safeShortText(r.emailTo, 90),
       ],
       widths,
       { height: rowH, fontSize: 8 }
@@ -458,10 +490,9 @@ exports.downloadMonthlyReportPdf = async (req, res) => {
         summary.interviewsSent,
         summary.interviewsSubmitted,
         summary.interviewsPending,
-        "-",
-        summary.emailsSent ?? 0,
-        "-",
-        "-",
+        "-", // Recruitment Letter
+        "-", // Email Status
+        "-", // Email To
       ],
     });
   } catch (err) {
@@ -538,10 +569,9 @@ exports.downloadRangeReportPdf = async (req, res) => {
         summary.interviewsSent,
         summary.interviewsSubmitted,
         summary.interviewsPending,
-        "-",
-        summary.emailsSent ?? 0,
-        "-",
-        "-",
+        "-", // Recruitment Letter
+        "-", // Email Status
+        "-", // Email To
       ],
     });
   } catch (err) {

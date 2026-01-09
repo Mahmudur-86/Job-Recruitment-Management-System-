@@ -68,7 +68,7 @@ export default function Register({ onBack }) {
               Registration Successful
             </h3>
             <p className="mt-2 text-sm text-gray-700">
-              Thanks for registering! Please login to continue.
+              Thank you for registering! Please go to Login Page.
             </p>
 
             <div className="mt-5 flex justify-end gap-2">
@@ -76,7 +76,7 @@ export default function Register({ onBack }) {
                 onClick={handleGoToLogin}
                 className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
               >
-                Go to Login page
+               Close
               </button>
             </div>
           </div>

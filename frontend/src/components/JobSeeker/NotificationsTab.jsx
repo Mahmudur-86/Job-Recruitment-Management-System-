@@ -2,14 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 export default function NotificationsTab() {
   const token = useMemo(() => localStorage.getItem("token"), []);
-
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
   // Interview modal
   const [open, setOpen] = useState(false);
   const [activeNotif, setActiveNotif] = useState(null);
@@ -21,15 +18,12 @@ export default function NotificationsTab() {
 
   // UI message (no alert)
   const [uiMsg, setUiMsg] = useState({ type: "", text: "" });
-
   // Success popup (toast)
   const [toast, setToast] = useState({ show: false, text: "" });
-
   const showToast = (text) => {
     setToast({ show: true, text });
     setTimeout(() => setToast({ show: false, text: "" }), 2500);
   };
-
   const fetchNotifications = async () => {
     try {
       setLoading(true);
@@ -46,12 +40,10 @@ export default function NotificationsTab() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchNotifications();
     // eslint-disable-next-line
   }, []);
-
   const markRead = async (notifId) => {
     try {
       await axios.patch(
@@ -67,7 +59,6 @@ export default function NotificationsTab() {
       console.error("MARK READ ERROR:", e);
     }
   };
-
   const removeNotification = async (notifId) => {
     try {
       await axios.delete(`${API_BASE}/api/notifications/${notifId}`, {
@@ -78,7 +69,6 @@ export default function NotificationsTab() {
       console.error("DELETE NOTIFICATION ERROR:", e);
     }
   };
-
   const openInterview = async (notif) => {
     setOpen(true);
     setActiveNotif(notif);
@@ -86,20 +76,15 @@ export default function NotificationsTab() {
     setAnswers({});
     setSubmitted(false);
     setUiMsg({ type: "", text: "" });
-
     try {
       setInterviewLoading(true);
-
       if (!notif.isRead) await markRead(notif._id);
-
       const appId = notif?.data?.applicationId;
       if (!appId) return;
-
       const { data } = await axios.get(
         `${API_BASE}/api/interviews/application/${appId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setInterview({ title: data.title, questions: data.questions || [] });
     } catch (e) {
       console.error("GET INTERVIEW ERROR:", e);
@@ -109,7 +94,6 @@ export default function NotificationsTab() {
       setInterviewLoading(false);
     }
   };
-
   const closeInterview = () => {
     setOpen(false);
     setActiveNotif(null);
@@ -119,7 +103,6 @@ export default function NotificationsTab() {
     setSubmitted(false);
     setUiMsg({ type: "", text: "" });
   };
-
   const submitInterview = async () => {
     try {
       const appId = activeNotif?.data?.applicationId;
@@ -130,7 +113,6 @@ export default function NotificationsTab() {
         setUiMsg({ type: "error", text: "No questions found." });
         return;
       }
-
       const formatted = [];
       for (let i = 0; i < total; i++) {
         const selected = answers[i];
@@ -143,18 +125,14 @@ export default function NotificationsTab() {
         }
         formatted.push({ questionIndex: i, selectedOptionIndex: selected });
       }
-
       setSubmitting(true);
       setUiMsg({ type: "", text: "" });
-
       await axios.post(
         `${API_BASE}/api/interviews/application/${appId}/submit`,
         { answers: formatted },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       setSubmitted(true);
-
       setTimeout(() => {
         closeInterview();
         showToast(" Your interview has been submitted. Admin will review it soon.");
@@ -169,14 +147,13 @@ export default function NotificationsTab() {
       setSubmitting(false);
     }
   };
-
-  // ✅ NEW: badge ui helper (no logic change)
+  //  badge ui 
   const typeBadge = (n) => {
     const t = String(n?.type || "").toUpperCase();
     if (t === "EMAIL") {
       return (
-        <span className="text-[11px] px-2 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
-          EMAIL
+        <span >
+          
         </span>
       );
     }
@@ -193,19 +170,16 @@ export default function NotificationsTab() {
       </span>
     );
   };
-
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <h2 className="text-lg sm:text-xl font-bold">Notifications</h2>
-
         <div className="flex items-center gap-2">
           {unreadCount > 0 && (
             <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
               Unread: {unreadCount}
             </span>
           )}
-
           <button
             onClick={fetchNotifications}
             className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
@@ -214,14 +188,11 @@ export default function NotificationsTab() {
           </button>
         </div>
       </div>
-
       <div className="mt-4">
         {loading && <p className="text-gray-500 text-sm">Loading...</p>}
-
         {!loading && notifications.length === 0 && (
           <p className="text-gray-600">No notifications yet.</p>
         )}
-
         {!loading && notifications.length > 0 && (
           <div className="space-y-3">
             {notifications.map((n) => (
@@ -232,7 +203,6 @@ export default function NotificationsTab() {
                 }`}
               >
                 <div className="min-w-0">
-                  {/* ✅ NEW: badge on top row */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-semibold text-gray-900 truncate">
                       {n.title || "Notification"}
@@ -250,7 +220,6 @@ export default function NotificationsTab() {
                     {new Date(n.createdAt).toLocaleString()}
                   </p>
                 </div>
-
                 <div className="flex gap-2 flex-wrap">
                   {n.type === "INTERVIEW" && (
                     <button
@@ -260,17 +229,13 @@ export default function NotificationsTab() {
                       View / Answer
                     </button>
                   )}
-
-                  {/* ✅ EMAIL type special button (optional but useful, no backend needed) */}
                   {n.type === "EMAIL" && (
                     <button
                       onClick={() => {
                         if (!n.isRead) markRead(n._id);
                         showToast("Please check your email inbox.");
                       }}
-                      
                     >
-                     
                     </button>
                   )}
 

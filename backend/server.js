@@ -57,6 +57,10 @@ const adminReportRoutes = require("./routes/adminReportRoutes");
 
 const publicJobRoutes = require("./routes/publicJobRoutes");
 
+//  Recruitment Letter routes 
+const recruitmentLetterRoutes = require("./routes/recruitmentLetterRoutes");
+
+
 // USE ROUTES
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminJobRoutes);
@@ -81,13 +85,14 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
 
 
-//  NEW mount
+//   mount
 app.use("/api/email", emailRoutes);
 
 
 app.use("/api/admin/reports", adminReportRoutes);
 
-
+// ✅recruitment letters 
+app.use("/api", recruitmentLetterRoutes);
 
 // Auth
 app.use("/", authRoutes);

@@ -1,3 +1,4 @@
+// backend/authMiddleware.js
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
@@ -12,10 +13,9 @@ module.exports = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    //  token sends userId, so use userId
     req.user = {
-      id: decoded.id || decoded.userId,    
-      role: decoded.role
+      id: decoded.id || decoded.userId,
+      role: decoded.role,
     };
 
     next();

@@ -5,7 +5,7 @@ const transporter = require("../utils/mailer");
 
 const Application = require("../models/Application");
 const EmailLog = require("../models/EmailLog");
-const Notification = require("../models/Notification");
+
 
 // POST /api/email/send
 router.post("/send", authMiddleware, async (req, res) => {
@@ -15,7 +15,7 @@ router.post("/send", authMiddleware, async (req, res) => {
     return res.status(400).json({ message: "to, subject, message are required" });
   }
 
-  // ✅ MUST: both (no null, no optional)
+  
   if (!jobId || !applicationId) {
     return res.status(400).json({ message: "jobId and applicationId are required" });
   }
@@ -25,7 +25,7 @@ router.post("/send", authMiddleware, async (req, res) => {
     return res.status(403).json({ message: "Admin only" });
   }
 
-  // ✅ Verify: application exists + belongs to this job
+  //  application exists + belongs to this job
   const app = await Application.findById(applicationId)
     .select("_id jobId userId")
     .lean();
@@ -49,7 +49,7 @@ router.post("/send", authMiddleware, async (req, res) => {
             </div>`,
     });
 
-    // ✅ Save EmailLog (never null)
+    //  Save EmailLog 
     const log = await EmailLog.create({
       sentBy: req.user.id,
       to,
@@ -62,15 +62,7 @@ router.post("/send", authMiddleware, async (req, res) => {
       error: "",
     });
 
-    // ✅ Notify jobseeker (use app.userId)
-    await Notification.create({
-      userId: app.userId,
-      type: "EMAIL",
-      title: "Email Sent",
-      message: "Please check your email inbox.",
-      data: { applicationId, emailLogId: log._id },
-      isRead: false,
-    });
+   
 
     return res.json({
       success: true,
@@ -81,7 +73,7 @@ router.post("/send", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error("EMAIL SEND ERROR:", err);
 
-    // log FAILED (still no null)
+    // log FAILED 
     try {
       await EmailLog.create({
         sentBy: req.user.id,
@@ -106,7 +98,7 @@ router.post("/send", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Optional helper: GET /api/email/logs (Admin only)
+//  GET /api/email/logs (Admin only)
 router.get("/logs", authMiddleware, async (req, res) => {
   try {
     if (req.user?.role !== "admin") return res.status(403).json({ message: "Admin only" });
