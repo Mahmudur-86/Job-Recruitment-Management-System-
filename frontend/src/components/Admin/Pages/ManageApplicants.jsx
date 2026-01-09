@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import EmailModal from "./EmailModal"; // ✅ add (same folder hole ঠিক থাকবে)
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function ManageApplicants() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Email modal state (applicant-wise)
+  const [emailPerson, setEmailPerson] = useState(null);
 
   // Modal state
   const [showPopup, setShowPopup] = useState(false);
@@ -76,7 +80,7 @@ export default function ManageApplicants() {
     }
   };
 
-  // ✅ Build preview questions from DB job.mcqs
+  //  Build preview questions from DB job.mcqs
   const buildPreviewFromJob = (job) => {
     const mcqs = Array.isArray(job?.mcqs) ? job.mcqs : [];
     if (mcqs.length === 3) {
@@ -124,7 +128,6 @@ export default function ManageApplicants() {
     setSent(false);
   };
 
- 
   const handleSendNow = async () => {
     if (!selectedAppId) return;
 
@@ -133,7 +136,7 @@ export default function ManageApplicants() {
 
       await axios.post(
         `${API_BASE}/api/admin/applications/${selectedAppId}/send-interview`,
-        {}, 
+        {},
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
 
@@ -145,6 +148,16 @@ export default function ManageApplicants() {
     } finally {
       setIsSending(false);
     }
+  };
+
+  // ✅ Open Email modal (applicant-wise)
+  const openEmailModal = (app) => {
+    setEmailPerson({
+      name: app.userId?.name || "Applicant",
+      email: app.userId?.email || "",
+      jobId: app.jobId?._id || null,
+      applicationId: app._id || null,
+    });
   };
 
   return (
@@ -164,11 +177,17 @@ export default function ManageApplicants() {
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="w-full overflow-x-auto">
-          <table className="min-w-[900px] w-full">
+          <table className="min-w-[980px] w-full">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applicant</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+
+                {/* ✅ NEW column */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Email Box
+                </th>
+
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -181,7 +200,7 @@ export default function ManageApplicants() {
             <tbody className="divide-y divide-gray-200">
               {loading && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-10 text-center text-gray-500">
                     Loading...
                   </td>
                 </tr>
@@ -189,7 +208,7 @@ export default function ManageApplicants() {
 
               {!loading && applications.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-10 text-center text-gray-500">
                     No applications found.
                   </td>
                 </tr>
@@ -200,6 +219,19 @@ export default function ManageApplicants() {
                   <tr key={app._id}>
                     <td className="px-6 py-4 text-sm text-gray-900">{app.userId?.name || "-"}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{app.userId?.email || "-"}</td>
+
+                    {/* ✅ Email modal button (applicant-wise) */}
+                    <td className="px-6 py-4 text-sm">
+                      <button
+                        className="text-blue-600 hover:underline disabled:opacity-40"
+                        disabled={!app.userId?.email}
+                        onClick={() => openEmailModal(app)}
+                        title={!app.userId?.email ? "No email found" : "Send email"}
+                      >
+                        Email
+                      </button>
+                    </td>
+
                     <td className="px-6 py-4 text-sm text-gray-600">{app.jobId?.title || "-"}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{app.jobId?.company || "-"}</td>
 
@@ -267,6 +299,11 @@ export default function ManageApplicants() {
         </div>
       </div>
 
+      {/* ✅ Email Modal (same EmailModal.jsx, no change needed) */}
+      {emailPerson && (
+        <EmailModal person={emailPerson} onClose={() => setEmailPerson(null)} />
+      )}
+
       {/* Modal */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
@@ -281,8 +318,6 @@ export default function ManageApplicants() {
                 </p>
                 <p className="text-xs text-gray-500 mt-1 truncate">Email: {popupData.email}</p>
               </div>
-
-             
             </div>
 
             <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">

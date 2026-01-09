@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -24,7 +24,7 @@ export default function MonthlyReport() {
 
   const shortId = (id) => String(id || "").slice(-6);
 
-  const fetchReport = async () => {
+  const fetchReport = useCallback(async () => {
     try {
       setLoading(true);
       setErr("");
@@ -34,10 +34,7 @@ export default function MonthlyReport() {
           ? `${API_BASE}/api/admin/reports/monthly`
           : `${API_BASE}/api/admin/reports/range`;
 
-      const params =
-        reportType === "monthly"
-          ? { month, year }
-          : { startDate, endDate };
+      const params = reportType === "monthly" ? { month, year } : { startDate, endDate };
 
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -51,7 +48,7 @@ export default function MonthlyReport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reportType, month, year, startDate, endDate, token]);
 
   useEffect(() => {
     if (reportType === "monthly") {
@@ -60,10 +57,9 @@ export default function MonthlyReport() {
       if (!startDate || !endDate) return;
     }
     fetchReport();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reportType, month, year, startDate, endDate]);
+  }, [fetchReport, reportType, month, year, startDate, endDate]);
 
-  const downloadPdf = async () => {
+  const downloadPdf = useCallback(async () => {
     try {
       setErr("");
 
@@ -72,10 +68,7 @@ export default function MonthlyReport() {
           ? `${API_BASE}/api/admin/reports/monthly/pdf`
           : `${API_BASE}/api/admin/reports/range/pdf`;
 
-      const params =
-        reportType === "monthly"
-          ? { month, year }
-          : { startDate, endDate };
+      const params = reportType === "monthly" ? { month, year } : { startDate, endDate };
 
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -101,7 +94,7 @@ export default function MonthlyReport() {
     } catch (e) {
       setErr(e?.response?.data?.message || "PDF download failed");
     }
-  };
+  }, [reportType, month, year, startDate, endDate, token]);
 
   const rows = report?.details || [];
   const sum = reportType === "monthly" ? report?.monthlySummary : report?.rangeSummary;
@@ -113,34 +106,35 @@ export default function MonthlyReport() {
         : ""
       : report?.rangeLabel || "";
 
-  const cols = 14; // ✅ NEW
+  // ✅ Added Recruitment Letter column => total cols = 13
+  const cols = 13;
 
-  const SkeletonRow = ({ cols = 14 }) => (
+  const SkeletonRow = ({ cols: c = 13 }) => (
     <tr className="border-t">
-      {Array.from({ length: cols }).map((_, i) => (
-        <td key={i} className="px-2 sm:px-4 py-3">
+      {Array.from({ length: c }).map((_, i) => (
+        <td key={i} className="px-3 py-3">
           <div className="h-4 w-full rounded bg-gray-200 animate-pulse" />
         </td>
       ))}
     </tr>
   );
 
-  const clip = (text, max = 28) => {
-    const s = String(text || "");
-    if (!s) return "-";
-    return s.length > max ? s.slice(0, max - 3) + "..." : s;
-  };
+  // (mobile/tablet)
+  const COL1_W = "w-32 min-w-[128px]";
+  const COL2_W = "w-72 min-w-[288px]";
+  const COL1_LEFT = "md:left-0";
+  const COL2_LEFT = "md:left-32";
+  const STICKY = "md:sticky";
+  const STICKY_Z = "md:z-20";
 
-  // sticky widths
-  const COL1_W = "w-28";
-  const COL2_W = "w-64";
-  const COL1_LEFT = "left-0";
-  const COL2_LEFT = "left-28";
+  // Job ID visible
+  const JOBID_TH = "w-[120px] min-w-[120px]";
+  const JOBID_TD = "w-[120px] min-w-[120px] font-mono tracking-wider";
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="mx-auto w-full max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="space-y-6">
           <div className="bg-white border rounded-2xl shadow p-4 sm:p-6">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div className="min-w-[220px]">
@@ -167,6 +161,7 @@ export default function MonthlyReport() {
               </button>
             </div>
 
+            {/* Filters */}
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <select
                 className="border rounded-xl px-4 py-2 bg-white w-full"
@@ -196,6 +191,7 @@ export default function MonthlyReport() {
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
                     placeholder="Year"
+                    inputMode="numeric"
                   />
                 </>
               ) : (
@@ -206,7 +202,6 @@ export default function MonthlyReport() {
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                   />
-
                   <input
                     type="date"
                     className="border rounded-xl px-4 py-2 bg-white w-full"
@@ -225,32 +220,41 @@ export default function MonthlyReport() {
               </div>
             ) : null}
 
-            <div className="mt-3 rounded-xl border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-[1500px] w-full text-xs sm:text-sm">
+            {/* Table wrapper responsive */}
+            <div className="mt-4 rounded-xl border overflow-hidden bg-white">
+              <div className="w-full overflow-x-auto">
+                <table className="min-w-[1600px] w-full table-fixed text-[11px] sm:text-sm">
                   <thead className="bg-gray-700 text-white">
                     <tr>
-                      <th className={`sticky ${COL1_LEFT} z-20 bg-gray-700 text-left px-2 sm:px-4 py-3 font-semibold ${COL1_W}`}>
+                      <th
+                        className={`${STICKY} ${COL1_LEFT} ${STICKY_Z} bg-gray-700 text-left px-3 py-3 font-semibold ${COL1_W}`}
+                      >
                         {reportType === "monthly" ? "Month" : "Range"}
                       </th>
-
-                      <th className={`sticky ${COL2_LEFT} z-20 bg-gray-700 text-left px-2 sm:px-4 py-3 font-semibold ${COL2_W}`}>
+                      <th
+                        className={`${STICKY} ${COL2_LEFT} ${STICKY_Z} bg-gray-700 text-left px-3 py-3 font-semibold ${COL2_W}`}
+                      >
                         Position
                       </th>
+                      <th className={`text-center px-3 py-3 font-semibold ${JOBID_TH}`}>Job ID</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[90px]">Total CV</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[90px]">Pending</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[90px]">Approved</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[90px]">Rejected</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[120px]">Interview Sent</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[150px]">Interview Submitted</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[140px]">Interview Pending</th>
 
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Job ID</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Total CV</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Pending</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Approved</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Rejected</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Interview Sent</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Interview Submitted</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Interview Pending</th>
+                      {/* ✅ NEW */}
+                      <th className="text-center px-3 py-3 font-semibold w-[150px]">
+                        Recruitment Letter
+                      </th>
 
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Email Status</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Email Count</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Email To</th>
-                      <th className="text-center px-2 sm:px-4 py-3 font-semibold">Email Date</th>
+                      <th className="text-center px-3 py-3 font-semibold w-[120px]">Email Status</th>
+
+                      <th className="text-left px-3 py-3 font-semibold w-[520px]">
+                        Email To (with time)
+                      </th>
                     </tr>
                   </thead>
 
@@ -265,7 +269,7 @@ export default function MonthlyReport() {
 
                     {!loading && rows.length === 0 ? (
                       <tr>
-                        <td className="px-2 sm:px-4 py-6 text-gray-600" colSpan={cols}>
+                        <td className="px-3 py-6 text-gray-600" colSpan={cols}>
                           No data.
                         </td>
                       </tr>
@@ -273,62 +277,76 @@ export default function MonthlyReport() {
 
                     {!loading &&
                       rows.map((r, idx) => (
-                        <tr key={`${r.jobId}-${idx}`} className="border-t hover:bg-gray-50">
-                          <td className={`sticky ${COL1_LEFT} z-10 bg-white px-2 sm:px-4 py-3 text-gray-800 ${COL1_W}`} title={r.month}>
-                            {clip(r.month, 18)}
+                        <tr key={`${r.jobId}-${idx}`} className="border-t hover:bg-gray-50 align-top">
+                          <td
+                            className={`${STICKY} ${COL1_LEFT} md:z-10 bg-white px-3 py-3 text-gray-800 ${COL1_W} whitespace-normal wrap-break-word`}
+                          >
+                            {r.month || "-"}
                           </td>
 
-                          <td className={`sticky ${COL2_LEFT} z-10 bg-white px-2 sm:px-4 py-3 font-medium text-gray-900 ${COL2_W}`} title={r.position}>
-                            {clip(r.position, 40)}
+                          <td
+                            className={`${STICKY} ${COL2_LEFT} md:z-10 bg-white px-3 py-3 font-medium text-gray-900 ${COL2_W} whitespace-normal wrap-break-word`}
+                          >
+                            {r.position || "-"}
                           </td>
 
-                          <td className="text-center px-2 sm:px-4 py-3">{shortId(r.jobId)}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.totalCV}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.pending}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.approved}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.rejected}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.interviewSent}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.interviewSubmitted}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.interviewPending}</td>
-
-                          <td className="text-center px-2 sm:px-4 py-3">{r.emailStatus || "Not Sent"}</td>
-                          <td className="text-center px-2 sm:px-4 py-3">{r.emailSentCount ?? 0}</td>
-
-                          <td className="text-center px-2 sm:px-4 py-3" title={r.emailTo || ""}>
-                            {clip(r.emailTo, 34)}
+                          <td
+                            className={`text-center px-3 py-3 ${JOBID_TD} whitespace-nowrap`}
+                            title={String(r.jobId || "")}
+                          >
+                            {shortId(r.jobId)}
                           </td>
 
-                          <td className="text-center px-2 sm:px-4 py-3">
-                            {r.emailDate ? new Date(r.emailDate).toLocaleString() : "-"}
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.totalCV}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.pending}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.approved}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.rejected}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.interviewSent}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.interviewSubmitted}</td>
+                          <td className="text-center px-3 py-3 whitespace-nowrap">{r.interviewPending}</td>
+
+                          {/* ✅ NEW */}
+                          <td className="text-center px-3 py-3 whitespace-nowrap">
+                            {r.recruitmentLetterStatus || "Not Sent"}
+                          </td>
+
+                          <td className="text-center px-3 py-3 whitespace-nowrap">
+                            {r.emailStatus || "Not Sent"}
+                          </td>
+
+                          <td className="text-left px-3 py-3 whitespace-normal wrap-break-word">
+                            {r.emailTo || "-"}
                           </td>
                         </tr>
                       ))}
 
                     {!loading && sum ? (
                       <tr className="border-t bg-gray-50">
-                        <td className={`sticky ${COL1_LEFT} z-10 bg-gray-50 px-2 sm:px-4 py-3 font-bold ${COL1_W}`}>TOTAL</td>
-                        <td className={`sticky ${COL2_LEFT} z-10 bg-gray-50 px-2 sm:px-4 py-3 font-bold ${COL2_W}`}>-</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">-</td>
-
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.totalApplications ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.totalPendingApplications ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.totalApprovedApplications ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.totalRejectedApplications ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.interviewsSent ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.interviewsSubmitted ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.interviewsPending ?? 0}</td>
-
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">-</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">{sum.emailsSent ?? 0}</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">-</td>
-                        <td className="text-center px-2 sm:px-4 py-3 font-bold">-</td>
+                        <td className={`${STICKY} ${COL1_LEFT} md:z-10 bg-gray-50 px-3 py-3 font-bold ${COL1_W}`}>
+                          TOTAL
+                        </td>
+                        <td className={`${STICKY} ${COL2_LEFT} md:z-10 bg-gray-50 px-3 py-3 font-bold ${COL2_W}`}>
+                          -
+                        </td>
+                        <td className={`text-center px-3 py-3 font-bold ${JOBID_TH}`}>-</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.totalApplications ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.totalPendingApplications ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.totalApprovedApplications ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.totalRejectedApplications ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.interviewsSent ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.interviewsSubmitted ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">{sum.interviewsPending ?? 0}</td>
+                        <td className="text-center px-3 py-3 font-bold">-</td>
+                        <td className="text-center px-3 py-3 font-bold">-</td>
+                        <td className="text-left px-3 py-3 font-bold">-</td>
                       </tr>
                     ) : null}
                   </tbody>
                 </table>
               </div>
-            </div>
 
+              <div className="px-3 py-2 text-[11px] text-gray-500 bg-white border-t md:hidden"></div>
+            </div>
           </div>
         </div>
       </div>
