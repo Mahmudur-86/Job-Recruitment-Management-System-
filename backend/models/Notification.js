@@ -5,7 +5,7 @@ const notificationSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-    // ✅ add EMAIL (keeping old INTERVIEW same)
+    //  add EMAIL (keeping old INTERVIEW same)
     type: { type: String, enum: ["INTERVIEW", "EMAIL"], required: true },
 
     title: { type: String, default: "" },

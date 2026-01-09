@@ -4,9 +4,6 @@ const InterviewSet = require("../models/InterviewSet");
 const Notification = require("../models/Notification");
 const Job = require("../models/Job");
 
-
-
-
 const ensureAdmin = (req, res) => {
   if (req.user?.role !== "admin") {
     res.status(403).json({ message: "Admin only" });
@@ -14,10 +11,7 @@ const ensureAdmin = (req, res) => {
   }
   return true;
 };
-
-
-// Dummy fallback (only if job.mcqs missing)
-
+// Dummy  (only if job.mcqs missing)
 const getDummyQuestions = (jobTitle = "") => {
   const t = String(jobTitle).toLowerCase();
 
@@ -48,7 +42,6 @@ const getDummyQuestions = (jobTitle = "") => {
       ],
     };
   }
-
   return {
     title: "General Interview (3 MCQ)",
     questions: [
@@ -62,12 +55,9 @@ const getDummyQuestions = (jobTitle = "") => {
     ],
   };
 };
-
-
 const fromJobMcqs = (job) => {
   const list = Array.isArray(job?.mcqs) ? job.mcqs : [];
   if (list.length !== 3) return null;
-
   return {
     title: `${job.title} (3 MCQ)`,
     questions: list.map((m) => ({
@@ -77,11 +67,7 @@ const fromJobMcqs = (job) => {
     })),
   };
 };
-
-
 //  GET /api/admin/applications
-
-
 exports.getAllApplications = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -90,110 +76,76 @@ exports.getAllApplications = async (req, res) => {
       .populate("userId", "name email")
       .populate("jobId", "title company location category salary mcqs") // ✅ FIX: mcqs include
       .sort({ createdAt: -1 });
-
     return res.json({ applications: apps });
   } catch (err) {
     console.log("ADMIN GET APPLICATIONS ERROR:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
 //  PATCH /api/admin/applications/:id/status
-
 exports.updateApplicationStatus = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
-
     const { status } = req.body || {};
     const allowed = ["Pending", "Approved", "Rejected"];
     if (!allowed.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
-
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
     );
-
     if (!updated) return res.status(404).json({ message: "Application not found" });
-
     return res.json({ message: "Status updated", application: updated });
   } catch (err) {
     console.log("ADMIN UPDATE STATUS ERROR:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
 //  DELETE /api/admin/applications/:id
-
 exports.deleteApplication = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
-
     const deleted = await Application.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Application not found" });
-
     return res.json({ message: "Application deleted" });
   } catch (err) {
     console.log("ADMIN DELETE APPLICATION ERROR:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
 //  POST /api/admin/applications/:id/send-interview
-
-
-
-
-
-
 exports.sendInterview = async (req, res) => {
   try {
     if (!ensureAdmin(req, res)) return;
-
     const app = await Application.findById(req.params.id)
       .populate("userId", "name email")
       .populate("jobId", "title company");
-
     if (!app) return res.status(404).json({ message: "Application not found" });
-
     if (app.status !== "Approved") {
       return res.status(400).json({
         message: "Only Approved applicants can receive interview questions.",
       });
     }
-
     if (app.interviewSent && app.interviewSetId) {
       return res.status(400).json({ message: "Interview already sent for this application." });
     }
-
-    // (1) Backward compatible: frontend sends custom title/questions
     let { title, questions } = req.body || {};
     const hasCustom =
       String(title || "").trim() &&
       Array.isArray(questions) &&
       questions.length > 0;
-
-    // (2) else use Job.mcqs first
     if (!hasCustom) {
       let picked = null;
-
       if (app.jobId?._id) {
         const job = await Job.findById(app.jobId._id).select("title mcqs");
         picked = fromJobMcqs(job);
       }
-
-      // (3) fallback dummy
       if (!picked) picked = getDummyQuestions(app.jobId?.title || "");
-
       title = picked.title;
       questions = picked.questions;
     }
-
     const interviewSet = await InterviewSet.create({
       applicationId: app._id,
       userId: app.userId?._id,
@@ -202,12 +154,10 @@ exports.sendInterview = async (req, res) => {
       questions,
       createdByAdminId: req.user.id,
     });
-
     app.interviewSent = true;
     app.interviewSentAt = new Date();
     app.interviewSetId = interviewSet._id;
     await app.save();
-
     await Notification.create({
       userId: app.userId?._id,
       type: "INTERVIEW",
@@ -216,7 +166,6 @@ exports.sendInterview = async (req, res) => {
       data: { applicationId: app._id, interviewSetId: interviewSet._id },
       isRead: false,
     });
-
     return res.json({
       message: "Interview sent to jobseeker notifications.",
       interviewSetId: interviewSet._id,

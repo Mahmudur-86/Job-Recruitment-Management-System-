@@ -88,8 +88,6 @@ exports.updateJob = async (req, res) => {
       requirements,
       vacancies,
     } = req.body || {};
-
-    // Only update allowed fields (and require non-empty if provided)
     const allowed = {
       title,
       company,
@@ -100,7 +98,6 @@ exports.updateJob = async (req, res) => {
       requirements,
       vacancies,
     };
-
     const update = {};
     for (const key in allowed) {
       if (allowed[key] !== undefined) {
@@ -108,14 +105,12 @@ exports.updateJob = async (req, res) => {
         if (!String(allowed[key]).trim()) {
           return res.status(400).json({ message: `${key} is required` });
         }
-
         update[key] =
           key === "vacancies"
             ? Number(allowed[key]) || 0
             : String(allowed[key]).trim();
       }
     }
-
     const job = await Job.findByIdAndUpdate(req.params.id, update, { new: true });
     if (!job) return res.status(404).json({ message: "Job not found" });
 
