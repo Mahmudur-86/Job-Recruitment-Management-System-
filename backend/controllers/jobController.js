@@ -5,7 +5,7 @@ const Job = require("../models/Job");
 exports.getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find()
-      .select("-mcqs") // ✅ JobSeeker/public: mcqs hide
+      .select("-mcqs") //  JobSeeker/public: mcqs hide
       .sort({ createdAt: -1 });
 
     return res.json(jobs);
