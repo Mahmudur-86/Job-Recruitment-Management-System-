@@ -1,10 +1,8 @@
 const Notification = require("../models/Notification");
-
 exports.getMyNotifications = async (req, res) => {
   try {
     const items = await Notification.find({ userId: req.user.id })
       .sort({ createdAt: -1 });
-
     const unreadCount = items.filter((n) => !n.isRead).length;
     return res.json({ notifications: items, unreadCount });
   } catch (err) {

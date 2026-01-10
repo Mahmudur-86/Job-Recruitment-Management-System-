@@ -61,13 +61,13 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "127d" }
     );
 
-    // STORE TOKEN IN COOKIE ALSO (optional)
+    // STORE TOKEN IN COOKIE ALSO 
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict"
     });
 
-    // RETURN TOKEN TO FRONTEND (VERY IMPORTANT)
+    // RETURN TOKEN TO FRONTEND 
     return res.json({
       message: "Login success",
       role: user.role,

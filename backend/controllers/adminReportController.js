@@ -105,9 +105,6 @@ const buildDetailsForRange = async ({ start, end, label }) => {
     { $group: { _id: "$app.jobId", submitted: { $sum: 1 } } },
   ]);
   const submittedMap = new Map(subAgg.map((x) => [String(x._id), x.submitted]));
-
-  // ✅ Recruitment Letter aggregate (ONLY published letters, by positionTitle)
-  //    EmailModal emails are ignored completely.
   const rlAgg = await RecruitmentLetter.aggregate([
     {
       $match: {
@@ -118,7 +115,7 @@ const buildDetailsForRange = async ({ start, end, label }) => {
     { $sort: { publishedAt: -1 } },
     {
       $group: {
-        _id: "$positionTitle", // group by positionTitle (matches job title in report)
+        _id: "$positionTitle", 
         sentCount: { $sum: 1 },
         recipients: {
           $push: {
@@ -139,18 +136,12 @@ const buildDetailsForRange = async ({ start, end, label }) => {
       },
     ])
   );
-
   const details = appAgg.map((row) => {
     const id = String(row._id);
-
     const sent = sentMap.get(id) || 0;
     const submitted = submittedMap.get(id) || 0;
-
     const position = jobTitleMap.get(id) || "Unknown Position";
-
-    // ✅ Recruitment Letter info by this position title
     const rlInfo = rlMap.get(String(position).trim()) || { sentCount: 0, recipients: [] };
-
     const recipientsSorted = [...rlInfo.recipients].sort((a, b) => {
       const ta = a?.lastSentAt ? new Date(a.lastSentAt).getTime() : 0;
       const tb = b?.lastSentAt ? new Date(b.lastSentAt).getTime() : 0;
@@ -171,27 +162,20 @@ const buildDetailsForRange = async ({ start, end, label }) => {
 
     const extraCount = recipientsSorted.length - shown.length;
     const rlToText = extraCount > 0 ? `${toWithTime} +${extraCount} more` : toWithTime;
-
     const rlStatus = rlInfo.sentCount > 0 ? "Sent" : "Not Sent";
 
     return {
       month: label,
       position,
       jobId: id,
-
       totalCV: row.totalCV || 0,
       pending: row.pending || 0,
       approved: row.approved || 0,
       rejected: row.rejected || 0,
-
       interviewSent: sent,
       interviewSubmitted: submitted,
       interviewPending: Math.max(0, sent - submitted),
-
-      // ✅ NEW
       recruitmentLetterStatus: rlStatus,
-
-      // ✅ Email columns now show ONLY Recruitment Letter sending (not EmailModal)
       emailStatus: rlStatus,
       emailTo: rlToText || "",
     };
@@ -210,7 +194,7 @@ const buildSummaryForRange = async ({ start, end }) => {
     rejectedApps,
     interviewsSent,
     interviewsSubmitted,
-    recruitmentLettersSent, // ✅ NEW summary count (published letters in range)
+    recruitmentLettersSent, 
   ] = await Promise.all([
     User.countDocuments({
       role: { $in: ["jobseeker", "Jobseeker", "JOBSEEKER"] },
@@ -224,7 +208,7 @@ const buildSummaryForRange = async ({ start, end }) => {
     Application.countDocuments({ interviewSent: true, interviewSentAt: { $gte: start, $lt: end } }),
     InterviewSubmission.countDocuments({ createdAt: { $gte: start, $lt: end } }),
 
-    // ✅ Only Recruitment Letters count
+    
     RecruitmentLetter.countDocuments({
       status: "published",
       publishedAt: { $gte: start, $lt: end },
@@ -336,7 +320,7 @@ const renderReportPdf = ({
   doc.fillColor("black");
   doc.moveDown(0.6);
 
-  // ✅ Added Recruitment Letter column (still NO Email Count)
+  
   const baseWidths = [
     110, 190, 85, 65, 65, 65, 65, 75, 125, 75,
     110, 80, 300

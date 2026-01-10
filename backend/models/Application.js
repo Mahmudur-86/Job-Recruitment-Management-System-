@@ -14,7 +14,6 @@ const applicationSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
     },
-
     //  use for interview part
     interviewSent: { type: Boolean, default: false },
 interviewSentAt: { type: Date },
@@ -22,7 +21,6 @@ interviewSetId: { type: mongoose.Schema.Types.ObjectId, ref: "InterviewSet" },
   },
   { timestamps: true }
 );
-
 // prevent duplicate apply for same job
 applicationSchema.index({ userId: 1, jobId: 1 }, { unique: true });
 

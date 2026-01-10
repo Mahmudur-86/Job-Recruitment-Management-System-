@@ -11,10 +11,10 @@ const {
 
 const router = express.Router();
 
-// root uploads folder
+
 const uploadsRoot = path.join(__dirname, "..", "uploads");
 
-// ensure subfolders exist
+
 const cvFolder = path.join(uploadsRoot, "cv");
 const profileImgFolder = path.join(uploadsRoot, "profile-images");
 
@@ -56,7 +56,7 @@ const upload = multer({ storage });
 // Routes
 router.get("/me", auth, getMyProfile);
 
-//  accept both cv and profileImage (same endpoint)
+
 router.post(
   "/",
   auth,

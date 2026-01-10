@@ -1,5 +1,4 @@
 const Job = require("../models/Job");
-
 // GET /api/jobs?q=developer&page=1&limit=9
 exports.getPublicJobs = async (req, res) => {
   try {
@@ -9,7 +8,6 @@ exports.getPublicJobs = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filter = {};
-
     if (q) {
       const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const rx = new RegExp(safe, "i");
@@ -20,7 +18,6 @@ exports.getPublicJobs = async (req, res) => {
         { category: rx },
       ];
     }
-
     const [jobs, total] = await Promise.all([
       Job.find(filter)
         .select("-mcqs") 

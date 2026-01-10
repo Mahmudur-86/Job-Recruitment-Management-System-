@@ -13,7 +13,7 @@ const {
 router.get("/jobs", auth, getAdminJobs);
 router.post("/jobs", auth, createJob);
 
-//  NEW: edit job
+//   edit job
 router.put("/jobs/:id", auth, updateJob);
 
 router.delete("/jobs/:id", auth, deleteJob);
