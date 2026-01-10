@@ -26,7 +26,7 @@ app.use(
   })
 );
 
-// Serve static files from /uploads
+// Serve static files from  uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // IMPORT ROUTES
@@ -39,27 +39,19 @@ const profileRoutes = require("./routes/profileRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const jobApplicationRoutes = require("./routes/jobApplicationRoutes"); 
 
-
-
-
-
 //   Notifications + Interviews routes
 const notificationRoutes = require("./routes/notificationRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 
-
 //  Email route
 const emailRoutes = require("./routes/emailRoutes");
 
-
 // report routes
 const adminReportRoutes = require("./routes/adminReportRoutes");
-
 const publicJobRoutes = require("./routes/publicJobRoutes");
 
 //  Recruitment Letter routes 
 const recruitmentLetterRoutes = require("./routes/recruitmentLetterRoutes");
-
 
 // USE ROUTES
 app.use("/api/admin", adminRoutes);
@@ -67,41 +59,26 @@ app.use("/api/admin", adminJobRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/public", publicJobRoutes);
 
-
-
-
 // applications (job request)
 app.use("/api/applications", jobApplicationRoutes);
-
-
 app.use("/api/profile", profileRoutes);
-
-
-
-
 
 //  mounts
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
-
-
 //   mount
 app.use("/api/email", emailRoutes);
-
-
 app.use("/api/admin/reports", adminReportRoutes);
 
-// ✅recruitment letters 
+// recruitment letters 
 app.use("/api", recruitmentLetterRoutes);
 
 // Auth
 app.use("/", authRoutes);
 
-
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

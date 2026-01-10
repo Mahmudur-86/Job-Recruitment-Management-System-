@@ -1,9 +1,7 @@
-
 const Application = require("../models/Application");
 const InterviewSet = require("../models/InterviewSet");
 const Notification = require("../models/Notification");
 const Job = require("../models/Job");
-
 const ensureAdmin = (req, res) => {
   if (req.user?.role !== "admin") {
     res.status(403).json({ message: "Admin only" });

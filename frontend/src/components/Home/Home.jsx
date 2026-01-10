@@ -1,25 +1,19 @@
 import { useState } from "react";
-
 import Navbar from "./Navbar.jsx";
 import Hero from "./Hero.jsx";
 import JobGrid from "./JobGrid.jsx";
 import LargeBanner from "./LargeBanner.jsx";
 import Footer from "./Footer.jsx";
-
 // AUTH POPUPS
 import Register from "./AuthForm/Register";
 import Login from "./AuthForm/Login";
 import Admin from "./AuthForm/Admin";
-
 // DASHBOARDS
 import JobSeekerDashboard from "../JobSeeker/JobSeekerDashboard.jsx";
-
 export default function Home() {
   const [activeForm, setActiveForm] = useState(null);
   const [userRole, setUserRole] = useState(null);
-
   const [searchQuery, setSearchQuery] = useState("");
-
   const handleLogout = async () => {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
@@ -32,11 +26,9 @@ export default function Home() {
     localStorage.removeItem("token");
     setUserRole(null);
   };
-
   if (userRole === "jobseeker") {
     return <JobSeekerDashboard onLogout={handleLogout} />;
   }
-
   if (userRole === "employer") {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-700">
@@ -44,13 +36,10 @@ export default function Home() {
       </div>
     );
   }
-
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar onAuthClick={setActiveForm} />
-
       <Hero searchValue={searchQuery} onSearch={(q) => setSearchQuery(q)} />
-
       {activeForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           {activeForm === "register" && (
@@ -62,7 +51,6 @@ export default function Home() {
               }}
             />
           )}
-
           {activeForm === "login" && (
             <Login
               onBack={() => setActiveForm(null)}
@@ -73,13 +61,10 @@ export default function Home() {
               }}
             />
           )}
-
           {activeForm === "admin" && <Admin onBack={() => setActiveForm(null)} />}
         </div>
       )}
-
       <JobGrid searchQuery={searchQuery} onApply={() => setActiveForm("register")} />
-
       <LargeBanner />
       <Footer />
     </main>

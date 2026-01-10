@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-
 export default function JobCard({
   title,
   jobTitle,
@@ -15,10 +14,8 @@ export default function JobCard({
 }) {
   const safeTitle = title || jobTitle || "-";
   const safeVacancies = vacancies === 0 || vacancies ? String(vacancies) : "";
-
   const [showDesc, setShowDesc] = useState(false);
   const [showReq, setShowReq] = useState(false);
-
   const descText = useMemo(
     () => (description ? String(description).trim() : ""),
     [description]
@@ -27,14 +24,11 @@ export default function JobCard({
     () => (requirements ? String(requirements).trim() : ""),
     [requirements]
   );
-
   const hasDesc = Boolean(descText);
   const hasReq = Boolean(reqText);
-
   const LONG_TEXT_LIMIT = 170;
   const isDescLong = hasDesc && descText.length > LONG_TEXT_LIMIT;
   const isReqLong = hasReq && reqText.length > LONG_TEXT_LIMIT;
-
   return (
     <article
       className="
@@ -57,7 +51,6 @@ export default function JobCard({
           group-hover:opacity-100
         "
       />
-
       {/* Header */}
       <header className="relative">
         <div className="flex items-start justify-between gap-3">
@@ -69,7 +62,6 @@ export default function JobCard({
               {safeTitle}
             </p>
           </div>
-
           {category ? (
             <span
               className="
@@ -85,7 +77,6 @@ export default function JobCard({
           ) : null}
         </div>
       </header>
-
       {/* Meta */}
       <div className="relative mt-4 grid grid-cols-1 gap-2 text-xs sm:text-sm text-stone-800">
         <div className="flex flex-wrap gap-2">
@@ -95,21 +86,18 @@ export default function JobCard({
               <span className="truncate">{location}</span>
             </span>
           ) : null}
-
           {salary ? (
             <span className="inline-flex items-center gap-2 rounded-xl bg-white/40 px-3 py-1 border border-white/40">
               <span className="font-semibold">Salary:</span>
               <span className="truncate">{salary}</span>
             </span>
           ) : null}
-
           {safeVacancies ? (
             <span className="inline-flex items-center gap-2 rounded-xl bg-white/40 px-3 py-1 border border-white/40">
               <span className="font-semibold">Vacancies:</span>
               <span>{safeVacancies}</span>
             </span>
           ) : null}
-
           {deadline ? (
             <span className="inline-flex items-center gap-2 rounded-xl bg-white/40 px-3 py-1 border border-white/40">
               <span className="font-semibold">Deadline:</span>
@@ -118,7 +106,6 @@ export default function JobCard({
           ) : null}
         </div>
       </div>
-
       {/* Description & Requirements */}
       {(hasDesc || hasReq) && (
         <div className="relative mt-4 space-y-3">
@@ -128,7 +115,6 @@ export default function JobCard({
                 <div className="text-[11px] sm:text-xs font-semibold text-stone-800">
                   Description
                 </div>
-
                 {isDescLong ? (
                   <button
                     type="button"
@@ -143,7 +129,6 @@ export default function JobCard({
                   </button>
                 ) : null}
               </div>
-
               <div
                 className={`
                   mt-1 text-xs sm:text-sm text-stone-900
@@ -156,14 +141,12 @@ export default function JobCard({
               </div>
             </div>
           ) : null}
-
           {hasReq ? (
             <div className="rounded-2xl bg-white/35 p-3 border border-white/40">
               <div className="flex items-center justify-between gap-3">
                 <div className="text-[11px] sm:text-xs font-semibold text-stone-800">
                   Requirements
                 </div>
-
                 {isReqLong ? (
                   <button
                     type="button"
@@ -178,7 +161,6 @@ export default function JobCard({
                   </button>
                 ) : null}
               </div>
-
               <div
                 className={`
                   mt-1 text-xs sm:text-sm text-stone-900
@@ -193,13 +175,11 @@ export default function JobCard({
           ) : null}
         </div>
       )}
-
-      {/* ✅ Footer pinned to bottom (equal card height look) */}
+      {/*  Footer pinned to bottom (equal card height look) */}
       <footer className="relative mt-auto pt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="text-xs sm:text-sm text-neutral-800">
           Ready to job request?
         </div>
-
         <button
           onClick={onApply}
           className="

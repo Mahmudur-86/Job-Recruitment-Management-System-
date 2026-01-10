@@ -19,7 +19,7 @@ export default function InterviewModal({ application, onClose }) {
         setLoading(true);
         setErr("");
 
-        // 1) submission (questions + answers)
+        //  submission (questions + answers)
         const res = await axios.get(
           `${API_BASE}/api/interviews/admin/application/${application._id}/submission`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -27,7 +27,7 @@ export default function InterviewModal({ application, onClose }) {
 
         let payload = res.data;
 
-        // if correctOption missing in payload.questions, fetch job mcqs and merge
+      
         const needsCorrect =
           Array.isArray(payload?.questions) &&
           payload.questions.length > 0 &&
@@ -36,7 +36,7 @@ export default function InterviewModal({ application, onClose }) {
         const jobId = application?.jobId?._id || application?.jobId || null;
 
         if (needsCorrect && jobId) {
-          // 2) get jobs (we use existing endpoint, no new backend needed)
+          //  get jobs 
           const jobsRes = await axios.get(`${API_BASE}/api/admin/jobs`, {
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -45,7 +45,7 @@ export default function InterviewModal({ application, onClose }) {
           const job = jobs.find((j) => String(j._id) === String(jobId));
           const mcqs = Array.isArray(job?.mcqs) ? job.mcqs : [];
 
-          // merge correctOption by index
+          
           payload = {
             ...payload,
             questions: (payload.questions || []).map((q, idx) => ({

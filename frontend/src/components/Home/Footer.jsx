@@ -5,15 +5,12 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-12">
       <div className="mx-auto max-w-6xl px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
-
-       
         <div>
           <h3 className="text-2xl font-bold text-white mb-4">Job</h3>
           <p className="text-sm">
             Your one-stop platform to discover, apply, and land the perfect job.
           </p>
         </div>
-
         {/* Quick Links */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-3">Quick Links</h4>
@@ -24,9 +21,6 @@ export default function Footer() {
             <li><a href="#" className="hover:text-white transition">Contact Us</a></li>
           </ul>
         </div>
-
-        
-        
         {/* Social & Newsletter */}
         <div>
           <h4 className="text-lg font-semibold text-white mb-3">Stay Connected</h4>

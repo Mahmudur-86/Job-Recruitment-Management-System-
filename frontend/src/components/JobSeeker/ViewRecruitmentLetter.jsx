@@ -8,10 +8,8 @@ export default function ViewRecruitmentLetter() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [letter, setLetter] = useState(null);
-
   const [toast, setToast] = useState({ show: false, text: "", type: "success" });
   const toastTimerRef = useRef(null);
-
   const showToast = (text, type = "success") => {
     setToast({ show: true, text, type });
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -20,34 +18,26 @@ export default function ViewRecruitmentLetter() {
       2000
     );
   };
-
   const [dlUI, setDlUI] = useState({ open: false, stage: "idle" });
   const closeDlUI = () => setDlUI({ open: false, stage: "idle" });
-
   const letterContainerRef = useRef(null);
-
-  
   // Load latest published letter
-  
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
         setErr("");
-
         if (!token) {
           setErr("JobSeeker token missing. Please login again.");
           setLetter(null);
           return;
         }
-
         const res = await axios.get(
           `${API_BASE}/api/recruitment-letters/me`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
         setLetter(res.data || null);
       } catch (e) {
         console.error(e);
@@ -56,36 +46,21 @@ export default function ViewRecruitmentLetter() {
         setLoading(false);
       }
     };
-
     load();
     return () => {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     };
   }, [token]);
-
-  {/*const issueDatePretty = useMemo(
-    () => prettyDate(letter?.issueDate),
-    [letter?.issueDate]
-  ); */}
-
-
 const issueDatePretty = letter?.issueDate || "";
-
-
- 
   //  PDF DOWNLOAD
-  
   const handleDownloadClick = async () => {
     if (!letter || loading) return;
-
     if (!token) {
       showToast("Token missing", "warn");
       return;
     }
-
     try {
       setDlUI({ open: true, stage: "downloading" });
-
       const res = await axios.get(
         `${API_BASE}/api/recruitment-letters/${letter._id}/pdf`,
         {
@@ -93,10 +68,8 @@ const issueDatePretty = letter?.issueDate || "";
           responseType: "blob",
         }
       );
-
       const blob = new Blob([res.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = url;
       const safeName = (letter.candidateName || "JobSeeker").replace(/\s+/g, "_");
@@ -104,12 +77,9 @@ const issueDatePretty = letter?.issueDate || "";
       document.body.appendChild(a);
       a.click();
       a.remove();
-
       window.URL.revokeObjectURL(url);
-
       setDlUI({ open: true, stage: "done" });
       showToast("PDF downloaded successfully", "success");
-
       setTimeout(() => {
         setDlUI((p) => (p.open ? { open: false, stage: "idle" } : p));
       }, 1400);
@@ -119,7 +89,6 @@ const issueDatePretty = letter?.issueDate || "";
       showToast(e?.response?.data?.message || "PDF download failed", "warn");
     }
   };
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Toast */}
@@ -130,7 +99,6 @@ const issueDatePretty = letter?.issueDate || "";
           </div>
         </div>
       )}
-
       {/* Download Modal */}
       {dlUI.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
@@ -151,11 +119,9 @@ const issueDatePretty = letter?.issueDate || "";
               <button
                 onClick={closeDlUI}
                 className="rounded-lg px-2 py-1 text-sm font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                
+              >  
               </button>
             </div>
-
             <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
               {dlUI.stage === "downloading" ? (
                 <div className="flex items-center gap-3">
@@ -168,7 +134,6 @@ const issueDatePretty = letter?.issueDate || "";
                 </div>
               )}
             </div>
-
             <div className="mt-4 flex justify-end">
               <button
                 onClick={closeDlUI}
@@ -180,7 +145,6 @@ const issueDatePretty = letter?.issueDate || "";
           </div>
         </div>
       )}
-
       {/* Main */}
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -193,7 +157,6 @@ const issueDatePretty = letter?.issueDate || "";
               box.
             </p>
           </div>
-
           <button
             onClick={handleDownloadClick}
             disabled={!letter || loading}
@@ -202,7 +165,6 @@ const issueDatePretty = letter?.issueDate || "";
             Download PDF
           </button>
         </div>
-
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           {loading ? (
             <div className="animate-pulse space-y-3">
@@ -225,7 +187,6 @@ const issueDatePretty = letter?.issueDate || "";
                   data={letter}
                   issueDatePretty={issueDatePretty}
                 />
-
                 <div className="mt-8 flex justify-end">
                   <div className="w-[260px]">
                     <div className="h-10 border-b-2 border-slate-900" />
@@ -242,14 +203,11 @@ const issueDatePretty = letter?.issueDate || "";
     </div>
   );
 }
-
-/* ---------------- TEMPLATE ---------------- */
-
+/*  TEMPLATE  */
 function LetterTemplate({ data, issueDatePretty }) {
   const line = (v) => (v && String(v).trim() ? String(v).trim() : "");
   const has = (v) => Boolean(line(v));
   const subject = has(data.subject) ? data.subject : "Recruitment Letter";
-
   return (
     <div className="text-slate-900">
       <div className="border-b border-slate-200 pb-4">
@@ -275,11 +233,9 @@ function LetterTemplate({ data, issueDatePretty }) {
           </div>
         </div>
       </div>
-
       <div className="mt-6 text-center text-lg font-extrabold uppercase">
         Recruitment Letter
       </div>
-
       <div className="mt-6 text-sm leading-6">
         <div className="font-bold">To,</div>
         <div className="font-semibold">{data.candidateName}</div>
@@ -292,12 +248,10 @@ function LetterTemplate({ data, issueDatePretty }) {
           <div className="text-slate-700">{data.candidateEmail}</div>
         )}
       </div>
-
       <div className="mt-4 text-sm">
         <span className="font-bold">Subject:</span>{" "}
         <span className="font-semibold">{subject}</span>
       </div>
-
       <div className="mt-5 space-y-4 text-sm leading-6">
         <p>
           Dear <b>{data.candidateName}</b>,
@@ -308,7 +262,6 @@ function LetterTemplate({ data, issueDatePretty }) {
           {has(data.department) && <>in the <b>{data.department}</b></>} at{" "}
           <b>{data.companyName}</b>.
         </p>
-
         <ul className="list-disc pl-5">
           {has(data.startDate) && <li>Start Date: {prettyDate(data.startDate)}</li>}
           {has(data.salaryAmount) && (
@@ -318,19 +271,12 @@ function LetterTemplate({ data, issueDatePretty }) {
           )}
           {has(data.probationPeriod) && <li>Probation Period: {data.probationPeriod}</li>}
           {has(data.workingHours) && <li>Working Hours: {data.workingHours}</li>}
-         
-          
-         
-          
           {has(data.reportingTo) && <li>Reporting To: {data.reportingTo}</li>}
            {has(data.officeAddress) && <li>Office Address: {data.officeAddress}</li>}
         </ul>
-
         {has(data.extraTerms) && <p>{data.extraTerms}</p>}
-
         <p>We look forward to welcoming you to our team.</p>
       </div>
-
       <div className="mt-10 text-sm">
         <div className="font-semibold">Sincerely,</div>
         <div className="mt-4 font-bold">{data.hrName}</div>
@@ -340,7 +286,6 @@ function LetterTemplate({ data, issueDatePretty }) {
     </div>
   );
 }
-
 function prettyDate(iso) {
   if (!iso) return "";
   const d = new Date(iso);
