@@ -41,7 +41,7 @@ export default function ManageJobs() {
 
   const openModal = (job) => {
     setActiveJob(job);
-    setShowCorrect(false); // ✅ reset each time
+    setShowCorrect(false); 
     setOpen(true);
   };
 
@@ -106,7 +106,7 @@ export default function ManageJobs() {
 
     try {
       const payload = {
-        title: newJob.jobTitle, // ✅ UI jobTitle -> DB title
+        title: newJob.jobTitle, 
         company: newJob.company,
         location: newJob.location,
         category: newJob.category,
@@ -229,7 +229,7 @@ export default function ManageJobs() {
     }
   };
 
-  // UI mapping: show title as jobTitle
+  // show title as jobTitle
   const uiJobs = jobs.map((j) => ({ ...j, jobTitle: j.title }));
 
   // Edit modal
@@ -303,7 +303,7 @@ export default function ManageJobs() {
       setEditSaving(true);
 
       const payload = {
-        title: editJob.jobTitle, // ✅ UI jobTitle -> DB title
+        title: editJob.jobTitle, 
         company: editJob.company,
         location: editJob.location,
         category: editJob.category,
@@ -345,8 +345,6 @@ export default function ManageJobs() {
       setEditSaving(false);
     }
   };
-
-  // ✅ NEW: Text Preview Modal (only UI)
   const [textOpen, setTextOpen] = useState(false);
   const [textTitle, setTextTitle] = useState("");
   const [textBody, setTextBody] = useState("");
@@ -362,8 +360,6 @@ export default function ManageJobs() {
     setTextTitle("");
     setTextBody("");
   };
-
-  // ✅ Helper: compact preview
   const renderCompactText = (label, value) => {
     const v = String(value ?? "").trim();
     const isLong = v.length > 140;
@@ -410,17 +406,13 @@ export default function ManageJobs() {
               + Add Job
             </button>
           </div>
-
           {/* Card */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             {/* top bar */}
             <div className="px-4 sm:px-6 py-3 border-b bg-white">
               <div className="flex items-center justify-between">
-                
-               
               </div>
             </div>
-
             {/* Table */}
             <div className="w-full overflow-x-auto">
               <table className="min-w-[1180px] w-full table-fixed">
@@ -447,7 +439,6 @@ export default function ManageJobs() {
                     ))}
                   </tr>
                 </thead>
-
                 <tbody className="divide-y divide-gray-200">
                   {loading ? (
                     <tr>
@@ -474,39 +465,30 @@ export default function ManageJobs() {
                           <div className="font-semibold text-gray-900 leading-5">
                             {job.jobTitle}
                           </div>
-                        
                         </td>
-
                         <td className="px-4 py-4 text-sm text-gray-800">
                           {job.company || "-"}
                         </td>
-
                         <td className="px-4 py-4 text-sm text-gray-800">
                           {job.location || "-"}
                         </td>
-
                         <td className="px-4 py-4">
                           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border">
                             {job.category || "-"}
                           </span>
                         </td>
-
                         <td className="px-4 py-4 text-sm text-gray-800">
                           {job.salary || "-"}
                         </td>
-
                         <td className="px-4 py-4">
                           {renderCompactText("Job Description", job.description)}
                         </td>
-
                         <td className="px-4 py-4">
                           {renderCompactText("Job Requirements", job.requirements)}
                         </td>
-
                         <td className="px-4 py-4 text-sm font-semibold text-gray-900">
                           {job.vacancies}
                         </td>
-
                         <td className="px-4 py-4">
                           <div className="flex flex-col gap-2">
                             <button
@@ -515,7 +497,6 @@ export default function ManageJobs() {
                             >
                               See Interview Question
                             </button>
-
                             <button
                               onClick={() => openInterviewQuestionModal(job._id)}
                               className="px-3 py-2 rounded-lg border border-indigo-300 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold transition"
@@ -524,7 +505,6 @@ export default function ManageJobs() {
                             </button>
                           </div>
                         </td>
-
                         <td className="px-4 py-4">
                           <div className="flex flex-col gap-2">
                             <button
@@ -533,7 +513,6 @@ export default function ManageJobs() {
                             >
                               Edit
                             </button>
-
                             <button
                               onClick={() => handleDelete(job._id)}
                               className="px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 text-sm font-semibold transition"
@@ -548,14 +527,10 @@ export default function ManageJobs() {
                 </tbody>
               </table>
             </div>
-
-           
-           
           </div>
         </div>
       </div>
-
-      {/* ✅ Text Modal (Description/Requirements full view) */}
+      {/*  Text Modal (Description/Requirements full view) */}
       {textOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center px-3 sm:px-4">
           <div className="absolute inset-0 bg-black/50" onClick={closeTextModal} />
@@ -572,7 +547,6 @@ export default function ManageJobs() {
                 Close
               </button>
             </div>
-
             <div className="p-4 sm:p-5 max-h-[70vh] overflow-y-auto">
               <div className="whitespace-pre-wrap wrap-break-word text-sm text-gray-800 leading-6">
                 {textBody}
@@ -581,7 +555,6 @@ export default function ManageJobs() {
           </div>
         </div>
       )}
-
       {/* Interview View Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
@@ -596,7 +569,6 @@ export default function ManageJobs() {
                   {activeJob?.title} • {activeJob?.company}
                 </p>
               </div>
-
               <label className="flex items-center gap-2 text-sm text-gray-700 select-none">
                 <input
                   type="checkbox"
@@ -607,17 +579,14 @@ export default function ManageJobs() {
                 Show correct answers
               </label>
             </div>
-
             <div className="p-4 max-h-[70vh] overflow-y-auto space-y-4">
               {Array.isArray(activeJob?.mcqs) && activeJob.mcqs.length > 0 ? (
                 activeJob.mcqs.map((m, i) => (
                   <div key={i} className="border rounded-lg p-3 sm:p-4">
                     <p className="font-semibold text-gray-900">{m.question}</p>
-
                     <div className="mt-3 space-y-2">
                       {(m.options || []).map((op, idx) => {
                         const isCorrect = Number(m.correctOption) === idx;
-
                         return (
                           <div
                             key={idx}
@@ -633,7 +602,6 @@ export default function ManageJobs() {
                         );
                       })}
                     </div>
-
                     {showCorrect && (
                       <p className="mt-2 text-xs text-gray-500">
                         Correct option index: {Number(m.correctOption) + 1}
@@ -647,7 +615,6 @@ export default function ManageJobs() {
                 </div>
               )}
             </div>
-
             <div className="p-4 border-t flex justify-end">
               <button
                 onClick={closeModal}
@@ -659,7 +626,6 @@ export default function ManageJobs() {
           </div>
         </div>
       )}
-
       {/* Edit Modal */}
       {editOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
@@ -671,14 +637,12 @@ export default function ManageJobs() {
                 <p className="text-xs sm:text-sm text-gray-600">Update job fields and save.</p>
               </div>
             </div>
-
             <div className="p-4 max-h-[70vh] overflow-y-auto">
               {editError ? (
                 <div className="mb-3 p-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm">
                   {editError}
                 </div>
               ) : null}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
                   <label className="text-sm text-gray-700">Job Title</label>
@@ -689,7 +653,6 @@ export default function ManageJobs() {
                     placeholder="Job Title"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm text-gray-700">Company</label>
                   <input
@@ -699,7 +662,6 @@ export default function ManageJobs() {
                     placeholder="Company"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm text-gray-700">Location</label>
                   <input
@@ -709,7 +671,6 @@ export default function ManageJobs() {
                     placeholder="Location"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm text-gray-700">Category</label>
                   <input
@@ -719,7 +680,6 @@ export default function ManageJobs() {
                     placeholder="Category"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm text-gray-700">Salary</label>
                   <input
@@ -729,7 +689,6 @@ export default function ManageJobs() {
                     placeholder="Salary"
                   />
                 </div>
-
                 <div>
                   <label className="text-sm text-gray-700">Vacancies</label>
                   <input
@@ -739,7 +698,6 @@ export default function ManageJobs() {
                     placeholder="Vacancies"
                   />
                 </div>
-
                 <div className="md:col-span-2">
                   <label className="text-sm text-gray-700">Description</label>
                   <textarea
@@ -749,7 +707,6 @@ export default function ManageJobs() {
                     placeholder="Description"
                   />
                 </div>
-
                 <div className="md:col-span-2">
                   <label className="text-sm text-gray-700">Requirements</label>
                   <textarea
@@ -761,7 +718,6 @@ export default function ManageJobs() {
                 </div>
               </div>
             </div>
-
             <div className="p-4 border-t flex flex-col sm:flex-row justify-end gap-2">
               <button
                 onClick={closeEditModal}
@@ -781,7 +737,6 @@ export default function ManageJobs() {
           </div>
         </div>
       )}
-
       {/* Modals */}
       <AddJobModal
         open={addOpen}
@@ -791,7 +746,6 @@ export default function ManageJobs() {
         updateJobField={updateJobField}
         addError={addError}
       />
-
       <AddInterviewQuestionModal
         open={iqOpen}
         onClose={closeInterviewQuestionModal}

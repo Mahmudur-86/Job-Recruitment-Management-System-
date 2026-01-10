@@ -15,7 +15,6 @@ export default function NotificationsTab() {
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
   // UI message (no alert)
   const [uiMsg, setUiMsg] = useState({ type: "", text: "" });
   // Success popup (toast)
@@ -107,7 +106,6 @@ export default function NotificationsTab() {
     try {
       const appId = activeNotif?.data?.applicationId;
       if (!appId) return;
-
       const total = interview?.questions?.length || 0;
       if (total === 0) {
         setUiMsg({ type: "error", text: "No questions found." });
@@ -214,7 +212,6 @@ export default function NotificationsTab() {
                       </span>
                     )}
                   </div>
-
                   <p className="text-sm text-gray-700 mt-1">{n.message || "-"}</p>
                   <p className="text-xs text-gray-500 mt-2">
                     {new Date(n.createdAt).toLocaleString()}
@@ -238,7 +235,6 @@ export default function NotificationsTab() {
                     >
                     </button>
                   )}
-
                   {!n.isRead && (
                     <button
                       onClick={() => markRead(n._id)}
@@ -247,8 +243,7 @@ export default function NotificationsTab() {
                       Mark read
                     </button>
                   )}
-
-                  {/* keep your delete button behavior same (no UI added by you before) */}
+                  
                   <button onClick={() => removeNotification(n._id)}></button>
                 </div>
               </div>
@@ -256,12 +251,10 @@ export default function NotificationsTab() {
           </div>
         )}
       </div>
-
       {/* Interview Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4">
           <div className="absolute inset-0 bg-black/50" onClick={closeInterview} />
-
           <div className="relative w-full max-w-[92vw] sm:max-w-2xl rounded-2xl bg-white shadow-xl">
             <div className="flex items-start justify-between border-b p-4 sm:p-5">
               <div>
@@ -270,7 +263,6 @@ export default function NotificationsTab() {
                 </h4>
                 <p className="text-sm text-gray-600">{interview?.title || "Loading..."}</p>
               </div>
-
               <button
                 onClick={closeInterview}
                 className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
@@ -278,16 +270,13 @@ export default function NotificationsTab() {
                 Close
               </button>
             </div>
-
             <div className="p-4 sm:p-5 max-h-[75vh] overflow-y-auto">
               {interviewLoading && (
                 <p className="text-gray-500 text-sm">Loading questions...</p>
               )}
-
               {!interviewLoading && !interview && (
                 <p className="text-red-600 text-sm">Interview not found.</p>
               )}
-
               {!interviewLoading && interview && (
                 <div className="space-y-4">
                   {uiMsg.text && (
@@ -307,13 +296,11 @@ export default function NotificationsTab() {
                       </p>
                     </div>
                   )}
-
                   {interview.questions.map((item, idx) => (
                     <div key={idx} className="rounded-xl border p-4">
                       <p className="font-semibold text-gray-900">
                         {idx + 1}. {item.q}
                       </p>
-
                       <div className="mt-3 space-y-2">
                         {item.options.map((op, i) => (
                           <label
@@ -337,7 +324,6 @@ export default function NotificationsTab() {
                       </div>
                     </div>
                   ))}
-
                   {submitted && (
                     <div className="rounded-xl bg-green-50 border border-green-200 p-4">
                       <p className="text-sm text-green-800">Submitted successfully ✅</p>
@@ -346,7 +332,6 @@ export default function NotificationsTab() {
                 </div>
               )}
             </div>
-
             <div className="border-t p-4 sm:p-5 flex justify-end gap-2 flex-wrap">
               <button
                 onClick={submitInterview}
@@ -361,7 +346,6 @@ export default function NotificationsTab() {
               >
                 {submitted ? "Submitted" : submitting ? "Submitting..." : "Submit"}
               </button>
-
               {activeNotif?._id && (
                 <button
                   onClick={() => {
@@ -374,7 +358,6 @@ export default function NotificationsTab() {
           </div>
         </div>
       )}
-
       {/* Success Toast Popup */}
       {toast.show && (
         <div className="fixed bottom-5 right-5 z-9999">

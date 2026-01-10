@@ -8,40 +8,29 @@ let API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_URL;
 if (!API_BASE || API_BASE.trim() === "") {
   console.error(" API_BASE missing! Please set VITE_API_BASE in .env");
 }
-
 API_BASE = API_BASE.replace(/\/+$/, "");
-
 export default function ProfileTab({ profile, setProfile }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isViewing, setIsViewing] = useState(true); // State to manage view-only mode
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
-
-  //  NEW: local image state (only for frontend preview)
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
-
   // Load profile
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token || !API_BASE) return;
-
     const loadProfile = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/profile/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (res.status === 404) return;
-
         const data = await res.json();
-
         setProfile({
           ...data,
           cvName: data.cvUrl ? data.cvUrl.split("/").pop() : "",
           cvFile: undefined,
         });
-
-        //  if backend later sends an image URL, show it
         if (data.profileImageUrl) {
           setProfileImagePreview(`${API_BASE}${data.profileImageUrl}`);
         }
@@ -49,19 +38,15 @@ export default function ProfileTab({ profile, setProfile }) {
         console.error("Error loading profile:", error);
       }
     };
-
     loadProfile();
   }, [setProfile]);
-
   const handleChange = (field) => (e) => {
     if (!isEditing) return;
     setProfile((prev) => ({ ...prev, [field]: e.target.value }));
   };
-
   const handleCvChange = (e) => {
     if (!isEditing) return;
     const file = e.target.files?.[0];
-
     if (file && file.type === "application/pdf") {
       setProfile((prev) => ({
         ...prev,
@@ -72,31 +57,24 @@ export default function ProfileTab({ profile, setProfile }) {
       alert("Only PDF files are allowed.");
     }
   };
-
   //   handle profile image upload (frontend preview only)
   const handleProfileImageChange = (e) => {
     if (!isEditing) return;
-
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       alert("Only image files are allowed.");
       return;
     }
-
     const previewURL = URL.createObjectURL(file);
     setProfileImageFile(file);
     setProfileImagePreview(previewURL);
   };
-
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     if (!token || !API_BASE) return;
-
     try {
       const formData = new FormData();
-
       const fields = [
         "name",
         "email",
@@ -113,27 +91,21 @@ export default function ProfileTab({ profile, setProfile }) {
         "github",
         "linkedin",
       ];
-
       fields.forEach((field) => {
         if (profile[field]) formData.append(field, profile[field]);
       });
-
       if (profile.cvFile) formData.append("cv", profile.cvFile);
-
-      //  NEW: send profile image along with form (backend work you’ll do later)
+      
       if (profileImageFile) {
         formData.append("profileImage", profileImageFile);
       }
-
       const res = await fetch(`${API_BASE}/api/profile`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
       if (!res.ok) return;
-
       setProfile((prev) => ({
         ...prev,
         ...data.profile,
@@ -142,8 +114,7 @@ export default function ProfileTab({ profile, setProfile }) {
           : prev.cvName,
         cvFile: undefined,
       }));
-
-      //  NEW: if backend returns image URL, update preview
+      
       if (data.profile && data.profile.profileImageUrl) {
         setProfileImagePreview(`${API_BASE}${data.profile.profileImageUrl}`);
         setProfileImageFile(null);
@@ -160,7 +131,7 @@ export default function ProfileTab({ profile, setProfile }) {
   const closeModal = () => setIsModalOpen(false); // Close modal
 
   const handleBackClick = () => {
-    // Functionality to navigate back to the first page after clicking 'Back'
+    
     setIsViewing(true);
     setIsEditing(false);
     setIsModalOpen(false);
@@ -173,7 +144,6 @@ export default function ProfileTab({ profile, setProfile }) {
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
           <User size={24} /> Profile Management
         </h2>
-
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {/* View/Edit Toggle Button */}
           <button
@@ -187,7 +157,6 @@ export default function ProfileTab({ profile, setProfile }) {
           >
             <Pencil size={18} /> Edit
           </button>
-
           {/* View Profile Button */}
           <button
             onClick={openModal} // Open the modal to view profile
@@ -197,7 +166,6 @@ export default function ProfileTab({ profile, setProfile }) {
           >
             View Profile
           </button>
-
           {/* Back Button */}
           {!isViewing && (
             <button
@@ -209,8 +177,7 @@ export default function ProfileTab({ profile, setProfile }) {
           )}
         </div>
       </div>
-
-      {/*  NEW: PROFILE IMAGE SECTION (page top) */}
+      {/*   PROFILE IMAGE SECTION (page top) */}
       <div className="flex justify-center mb-6">
         <label className="relative cursor-pointer group">
           <img
@@ -218,7 +185,6 @@ export default function ProfileTab({ profile, setProfile }) {
             alt=""
             className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border object-cover object-[50%_20%] shadow-md"
           />
-
           {isEditing && (
             <>
               <div className="absolute inset-0 bg-black/50 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition duration-300">
@@ -234,7 +200,6 @@ export default function ProfileTab({ profile, setProfile }) {
           )}
         </label>
       </div>
-
       <div className="space-y-6">
         {/* BASIC INFO */}
         <section>
@@ -297,7 +262,6 @@ export default function ProfileTab({ profile, setProfile }) {
             )}
           </div>
         </section>
-
         {/* PERSONAL DETAILS */}
         <section>
           <h3 className="font-semibold text-gray-800 mb-2">Personal Details</h3>
@@ -330,7 +294,6 @@ export default function ProfileTab({ profile, setProfile }) {
                       className="border px-4 py-2 rounded-lg w-full"
                     />
                   </div>
-
                   <div>
                     <label className="text-gray-700 font-semibold">
                       Gender:
@@ -347,7 +310,6 @@ export default function ProfileTab({ profile, setProfile }) {
                       <option value="other">Other</option>
                     </select>
                   </div>
-
                   <div className="col-span-2">
                     <label className="text-gray-700 font-semibold">
                       Job Interest:
@@ -365,7 +327,6 @@ export default function ProfileTab({ profile, setProfile }) {
             )}
           </div>
         </section>
-
         {/* BIO */}
         <section>
           <h3 className="font-semibold text-gray-800 mb-2">Bio</h3>
@@ -381,7 +342,6 @@ export default function ProfileTab({ profile, setProfile }) {
             />
           )}
         </section>
-
         {/* LINKS */}
         <section>
           <h3 className="font-semibold text-gray-800 mb-2">Online Links</h3>
@@ -413,7 +373,6 @@ export default function ProfileTab({ profile, setProfile }) {
                     placeholder="Enter portfolio URL"
                   />
                 </div>
-
                 <div className="w-full">
                   <label className="text-gray-700 font-semibold block mb-2">
                     GitHub:
@@ -427,7 +386,6 @@ export default function ProfileTab({ profile, setProfile }) {
                     placeholder="Enter GitHub URL"
                   />
                 </div>
-
                 <div className="w-full">
                   <label className="text-gray-700 font-semibold block mb-2">
                     LinkedIn:
@@ -445,7 +403,6 @@ export default function ProfileTab({ profile, setProfile }) {
             )}
           </div>
         </section>
-
         {/* CV UPLOAD */}
         <section>
           <h3 className="font-semibold text-gray-800 mb-2">CV Upload</h3>
@@ -477,7 +434,6 @@ export default function ProfileTab({ profile, setProfile }) {
             </a>
           )}
         </section>
-
         {/* Save Button in Editing Mode */}
         {isEditing && (
           <button
@@ -488,8 +444,6 @@ export default function ProfileTab({ profile, setProfile }) {
           </button>
         )}
       </div>
-
-      
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50 p-3 sm:p-4">
           <div className="bg-white rounded-lg shadow-lg w-[92vw] sm:max-w-2xl lg:max-w-3xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -501,12 +455,9 @@ export default function ProfileTab({ profile, setProfile }) {
                 className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border object-cover object-[50%_20%] shadow"
               />
             </div>
-
             <h3 className="font-semibold text-lg sm:text-xl mb-4">
               Profile Details
             </h3>
-
-            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <p>
                 <strong>Name:</strong> {profile.name}
@@ -541,7 +492,6 @@ export default function ProfileTab({ profile, setProfile }) {
               <p className="sm:col-span-2">
                 <strong>LinkedIn:</strong> {profile.linkedin}
               </p>
-
               {profile.cvUrl && (
                 <p className="sm:col-span-2">
                   <strong>CV:</strong>{" "}
@@ -556,8 +506,6 @@ export default function ProfileTab({ profile, setProfile }) {
                 </p>
               )}
             </div>
-
-            
             <div className="mt-6 flex justify-end">
               <button
                 onClick={closeModal}

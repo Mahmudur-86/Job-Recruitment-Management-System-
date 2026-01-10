@@ -9,7 +9,6 @@ export default function ManageUsers() {
   const [showDropdown, setShowDropdown] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-
   const [showDetails, setShowDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -30,18 +29,15 @@ export default function ManageUsers() {
       console.log("LOAD USERS ERROR:", err);
     }
   };
-
   useEffect(() => {
     loadUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const setStatusChange = (userId, statusValue) => {
     setStatusToUpdate(userId);
     setStatus(statusValue);
     setShowUpdate(userId);
   };
-
   const updateStatus = (userId) => {
     if (statusToUpdate === userId) {
       axios
@@ -65,16 +61,13 @@ export default function ManageUsers() {
         .catch((err) => console.log(err));
     }
   };
-
   const toggleDropdown = (userId) => {
     setShowDropdown((prev) => (prev === userId ? null : userId));
   };
-
   const openDeleteModal = (id) => {
     setUserToDelete(id);
     setShowConfirm(true);
   };
-
   const confirmDelete = async () => {
     try {
       await axios.delete(
@@ -85,7 +78,6 @@ export default function ManageUsers() {
           },
         }
       );
-
       setShowConfirm(false);
       setUserToDelete(null);
       loadUsers();
@@ -93,12 +85,10 @@ export default function ManageUsers() {
       console.log("DELETE ERROR:", err);
     }
   };
-
   const cancelDelete = () => {
     setShowConfirm(false);
     setUserToDelete(null);
   };
-
   //  Fetch FULL_DETAILS API
   const fetchUserDetails = async (userId) => {
     try {
@@ -108,14 +98,10 @@ export default function ManageUsers() {
           headers: { Authorization: `Bearer ${adminToken}` },
         }
       );
-
       const { user, profile } = res.data;
-
-      //  SAFE merge + normalize fields
       const merged = {
         ...user,
         ...(profile || {}),
-
         // Employer fields
         EmployerName: profile?.EmployerName || "",
         CompanyName: profile?.CompanyName || "",
@@ -123,11 +109,9 @@ export default function ManageUsers() {
         phone: profile?.phone || user?.phone || "",
         address: profile?.address || user?.address || "",
         website: profile?.website || "",
-
         companyLogo: profile?.companyLogo
           ? `${import.meta.env.VITE_API_URL}/${profile.companyLogo}`
           : "",
-
         // Jobseeker fields
         profileImage: profile?.profileImageUrl
           ? `${import.meta.env.VITE_API_URL}${profile.profileImageUrl}`
@@ -136,24 +120,19 @@ export default function ManageUsers() {
           ? `${import.meta.env.VITE_API_URL}${profile.cvUrl}`
           : "",
       };
-
       setSelectedUser(merged);
       setShowDetails(true);
     } catch (err) {
       console.log("DETAILS FETCH ERROR:", err);
     }
   };
-
   const closeDetailsModal = () => {
     setSelectedUser(null);
     setShowDetails(false);
   };
-
   return (
     <div className="p-4 sm:p-6 bg-gray-100 min-h-screen relative">
       <h3 className="text-xl font-semibold mb-2 text-gray-800">Manage Jobseekers</h3>
-     
-
       {/* Delete Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 z-40 flex items-start justify-center px-4 pt-24 bg-black/40">
@@ -161,7 +140,6 @@ export default function ManageUsers() {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Are you sure you want to delete this user?
             </h3>
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelDelete}
@@ -169,7 +147,6 @@ export default function ManageUsers() {
               >
                 No
               </button>
-
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -180,13 +157,11 @@ export default function ManageUsers() {
           </div>
         </div>
       )}
-
-      {/* DETAILS MODAL (JOBSEEKER) */}
+      {/* DETAILS MODAL (Jobseeker) */}
       {showDetails && selectedUser && (
         <div className="fixed inset-0 z-40 flex items-start justify-center px-4 py-6 sm:py-8 bg-black/40 overflow-y-auto">
-          
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl p-5 sm:p-8 relative border border-gray-200">
-            {/* EMPLOYER VIEW */}
+            
             {["employer", "Employer", "EMPLOYER"].includes(selectedUser.role) ? (
               <>
                 <div className="flex justify-center mb-6">
@@ -204,7 +179,6 @@ export default function ManageUsers() {
                     </div>
                   )}
                 </div>
-
                 <h2 className="text-2xl font-bold text-center mb-6 sm:mb-8">
                   Company Profile
                 </h2>
@@ -254,6 +228,8 @@ export default function ManageUsers() {
               </>
             ) : (
               <>
+
+
                 {/* JOBSEEKER VIEW */}
                 <div className="flex justify-center mb-6">
                   <img
@@ -264,9 +240,7 @@ export default function ManageUsers() {
                                object-contain object-top"
                   />
                 </div>
-
                 <h2 className="text-xl font-semibold mb-6">Profile Details</h2>
-
                 <div className="space-y-2 text-sm sm:text-base">
                   <p>
                     <span className="font-semibold">Name: </span>
@@ -300,7 +274,6 @@ export default function ManageUsers() {
                     <span className="font-semibold">Bio: </span>
                     {selectedUser.bio}
                   </p>
-
                   <p className="wrap-break-word">
                     <span className="font-semibold">Portfolio: </span>
                     {selectedUser.portfolio && (
@@ -314,7 +287,6 @@ export default function ManageUsers() {
                       </a>
                     )}
                   </p>
-
                   <p className="wrap-break-word">
                     <span className="font-semibold">GitHub: </span>
                     {selectedUser.github && (
@@ -342,7 +314,6 @@ export default function ManageUsers() {
                       </a>
                     )}
                   </p>
-
                   <p>
                     <span className="font-semibold">CV: </span>
                     {selectedUser.cvUrl && (
@@ -359,7 +330,6 @@ export default function ManageUsers() {
                 </div>
               </>
             )}
-
             <div className="mt-8 flex justify-end">
               <button
                 onClick={closeDetailsModal}
@@ -371,7 +341,6 @@ export default function ManageUsers() {
           </div>
         </div>
       )}
-
       {/* jobseeker TABLE */}
       <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
         <div className="w-full overflow-x-auto">
@@ -413,7 +382,6 @@ export default function ManageUsers() {
                       {u.role}
                     </span>
                   </td>
-
                   <td className="px-4 sm:px-6 py-4 text-sm">
                     <div className="relative inline-block">
                       <button
@@ -449,7 +417,6 @@ export default function ManageUsers() {
                       )}
                     </div>
                   </td>
-
                   <td className="px-4 sm:px-6 py-4 text-sm whitespace-nowrap">
                     <button
                       onClick={() => fetchUserDetails(u._id)}
@@ -469,7 +436,6 @@ export default function ManageUsers() {
                   </td>
                 </tr>
               ))}
-
               {users.length === 0 && (
                 <tr>
                   <td className="px-6 py-6 text-center text-gray-500" colSpan="6">
@@ -481,8 +447,6 @@ export default function ManageUsers() {
           </table>
         </div>
       </div>
-
-    
     </div>
   );
 }

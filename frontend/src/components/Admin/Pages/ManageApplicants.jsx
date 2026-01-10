@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import EmailModal from "./EmailModal"; // ✅ add (same folder hole ঠিক থাকবে)
+import EmailModal from "./EmailModal"; 
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -8,7 +8,7 @@ export default function ManageApplicants() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Email modal state (applicant-wise)
+  //  Email modal state (applicant-wise)
   const [emailPerson, setEmailPerson] = useState(null);
 
   // Modal state
@@ -18,7 +18,7 @@ export default function ManageApplicants() {
     email: "",
     message: "",
     questionsTitle: "",
-    questions: [], // [{ q, options }]
+    questions: [],
   });
 
   const [selectedAppId, setSelectedAppId] = useState(null);
@@ -80,7 +80,7 @@ export default function ManageApplicants() {
     }
   };
 
-  //  Build preview questions from DB job.mcqs
+  
   const buildPreviewFromJob = (job) => {
     const mcqs = Array.isArray(job?.mcqs) ? job.mcqs : [];
     if (mcqs.length === 3) {
@@ -92,14 +92,14 @@ export default function ManageApplicants() {
         })),
       };
     }
-    // If admin did not save mcqs yet
+    
     return {
       title: `${job?.title || "Interview"} (No MCQ saved)`,
       questions: [],
     };
   };
 
-  // Open popup (shows REAL DB mcqs now)
+  // Open popup 
   const handleSendInterview = (id) => {
     const app = applications.find((x) => x._id === id);
     if (!app) return;
@@ -150,7 +150,7 @@ export default function ManageApplicants() {
     }
   };
 
-  // ✅ Open Email modal (applicant-wise)
+  //  Open Email modal (applicant-wise)
   const openEmailModal = (app) => {
     setEmailPerson({
       name: app.userId?.name || "Applicant",
@@ -182,12 +182,7 @@ export default function ManageApplicants() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applicant</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-
-                {/* ✅ NEW column */}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                  Email Box
-                </th>
-
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">  Email Box </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Job</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -220,7 +215,7 @@ export default function ManageApplicants() {
                     <td className="px-6 py-4 text-sm text-gray-900">{app.userId?.name || "-"}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{app.userId?.email || "-"}</td>
 
-                    {/* ✅ Email modal button (applicant-wise) */}
+                    {/*  Email modal button (applicant-wise) */}
                     <td className="px-6 py-4 text-sm">
                       <button
                         className="text-blue-600 hover:underline disabled:opacity-40"
@@ -299,7 +294,7 @@ export default function ManageApplicants() {
         </div>
       </div>
 
-      {/* ✅ Email Modal (same EmailModal.jsx, no change needed) */}
+      {/*  Email Modal */}
       {emailPerson && (
         <EmailModal person={emailPerson} onClose={() => setEmailPerson(null)} />
       )}

@@ -1,36 +1,22 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { User, Bell,  Search, LogOut, FileText } from "lucide-react";
 import axios from "axios";
-
 import ProfileTab from "./ProfileTab";
 import BrowseJobsTab from "./BrowseJobsTab";
-
 import NotificationsTab from "./NotificationsTab";
-
 import ViewRecruitmentLetter from "./ViewRecruitmentLetter";
-
-
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
 export default function JobSeekerDashboard({ onLogout }) {
   const token = useMemo(() => localStorage.getItem("token"), []);
-
   const [profile, setProfile] = useState({});
   const [activeTab, setActiveTab] = useState("profile");
-
   //  notifications state
   const [unreadCount, setUnreadCount] = useState(0);
-
-  
- 
-
   //  popup state 
   const [showPopup, setShowPopup] = useState(false);
   const popupMsg =
     "Please complete your profile first to access other features.";
-
   const isProfileComplete = () => profile.name && profile.email && profile.phone;
-
   //  Load unread notifications count
   const loadUnreadCount = async () => {
     try {
@@ -43,32 +29,24 @@ export default function JobSeekerDashboard({ onLogout }) {
       setUnreadCount(0);
     }
   };
-
   //  on first render load unread count
   useEffect(() => {
     loadUnreadCount();
     // eslint-disable-next-line
   }, []);
-
   const handleTabChange = (tab) => {
     if (tab !== "profile" && !isProfileComplete()) {
       //  popup instead of alert
       setShowPopup(true);
-
       setActiveTab("profile");
       return;
     }
-
     setActiveTab(tab);
-
     //  when user opens notifications tab, refresh unread count
     if (tab === "notifications") {
       loadUnreadCount();
     }
   };
-
-  
-
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
@@ -91,10 +69,7 @@ export default function JobSeekerDashboard({ onLogout }) {
                     {popupMsg}
                   </p>
                 </div>
-
-              
               </div>
-
               <div className="mt-5 flex items-center justify-end gap-2">
                 <button
                   onClick={() => setShowPopup(false)}
@@ -106,13 +81,11 @@ export default function JobSeekerDashboard({ onLogout }) {
             </div>
           </div>
         )}
-
         <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Job Seeker Dashboard</h1>
             <p className="mt-2">Welcome, {profile.name || "User"}.</p>
           </div>
-
           <button
             onClick={onLogout}
             className="flex items-center gap-2 hover:bg-green-600 px-4 py-2 rounded transition duration-200 shadow-md"
@@ -121,7 +94,6 @@ export default function JobSeekerDashboard({ onLogout }) {
             Logout
           </button>
         </div>
-
         <div className="flex gap-2 mb-6 flex-wrap">
           <button
             onClick={() => handleTabChange("profile")}
@@ -131,7 +103,6 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <User size={18} /> Profile
           </button>
-
           <button
             onClick={() => handleTabChange("browse")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -140,7 +111,6 @@ export default function JobSeekerDashboard({ onLogout }) {
           >
             <Search size={18} /> Browse Jobs
           </button>
-
           <button
             onClick={() => handleTabChange("notifications")}
             className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -150,7 +120,6 @@ export default function JobSeekerDashboard({ onLogout }) {
             }`}
           >
             <Bell size={18} /> Notifications
-
             {/*  Unread badge */}
             {unreadCount > 0 && (
               <span className="ml-2 text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
@@ -158,7 +127,6 @@ export default function JobSeekerDashboard({ onLogout }) {
               </span>
             )}
           </button>
-
 <button
   onClick={() => handleTabChange("recruitment")}
   className={`px-4 py-2 rounded flex items-center gap-2 ${
@@ -166,25 +134,16 @@ export default function JobSeekerDashboard({ onLogout }) {
   }`}
 >
   <FileText size={18} /> View Recruitment Letter
-</button>
-
-
-
-
-         
+</button>   
         </div>
-
         {activeTab === "profile" && (
           <ProfileTab profile={profile} setProfile={setProfile} />
         )}
-
         {activeTab === "browse" && <BrowseJobsTab profile={profile} />}
-
         {/*   NotificationsTab should fetch from backend by itself */}
         {activeTab === "notifications" && (
           <NotificationsTab onUpdateUnread={loadUnreadCount} />
         )}
-
       {activeTab === "recruitment" && <ViewRecruitmentLetter />}
       </div>
     </div>

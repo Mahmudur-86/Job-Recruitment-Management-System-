@@ -5,20 +5,15 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function EmailModal({ person, onClose }) {
   const token = useMemo(() => localStorage.getItem("adminToken"), []);
-
   const [subject, setSubject] = useState("Regarding your job request");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [uiMsg, setUiMsg] = useState({ type: "", text: "" });
-
   const sendEmail = async () => {
     try {
       setUiMsg({ type: "", text: "" });
-
       const jobId = person?.jobId || null;
       const applicationId = person?.applicationId || null;
-
-      // ✅ MUST (no null)
       if (!jobId || !applicationId) {
         setUiMsg({
           type: "error",
@@ -26,9 +21,7 @@ export default function EmailModal({ person, onClose }) {
         });
         return;
       }
-
       setSending(true);
-
       const payload = {
         to: person?.email,
         subject,
@@ -36,11 +29,9 @@ export default function EmailModal({ person, onClose }) {
         jobId,
         applicationId,
       };
-
       const res = await axios.post(`${API_BASE}/api/email/send`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setUiMsg({ type: "success", text: res.data?.message || "Email sent!" });
       setTimeout(() => onClose?.(), 800);
     } catch (e) {
@@ -52,7 +43,6 @@ export default function EmailModal({ person, onClose }) {
       setSending(false);
     }
   };
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-3">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
@@ -62,7 +52,6 @@ export default function EmailModal({ person, onClose }) {
           To: <span className="font-semibold">{person?.name || "User"}</span>{" "}
           ({person?.email || "No email"})
         </div>
-
         {uiMsg.text && (
           <div
             className={`mb-3 p-3 rounded text-sm ${
@@ -74,14 +63,12 @@ export default function EmailModal({ person, onClose }) {
             {uiMsg.text}
           </div>
         )}
-
         <input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Subject"
           className="w-full px-3 py-2 border rounded-lg mb-3"
         />
-
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -89,7 +76,6 @@ export default function EmailModal({ person, onClose }) {
           className="w-full px-3 py-2 border rounded-lg mb-4"
           rows={6}
         />
-
         <div className="flex gap-2">
           <button
             onClick={sendEmail}
@@ -98,7 +84,6 @@ export default function EmailModal({ person, onClose }) {
           >
             {sending ? "Sending..." : "Send"}
           </button>
-
           <button
             onClick={onClose}
             disabled={sending}

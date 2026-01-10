@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-
 export default function SearchBar({ value = "", onSearch }) {
   const [local, setLocal] = useState(value);
-
   useEffect(() => setLocal(value), [value]);
-
   const submit = (e) => {
     e.preventDefault();
     onSearch && onSearch(local);
   };
-
   return (
     <form onSubmit={submit} className="relative mx-auto w-full max-w-4xl">
       <div className="flex items-center gap-3 rounded-xl bg-gray-400/60 px-3 py-3 border border-gray-200 shadow-sm backdrop-blur-sm">

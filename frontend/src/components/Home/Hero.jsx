@@ -1,5 +1,4 @@
 import SearchBar from "./SearchBar.jsx";
-
 export default function Hero({ searchValue, onSearch }) {
   return (
     <section className="mx-auto max-w-6xl px-6">

@@ -22,17 +22,13 @@ export default function AddJobModal({
               Only job data (interview questions separate)
             </p>
           </div>
-
-         
         </div>
-
         <div className="p-4 space-y-5 max-h-[75vh] overflow-y-auto">
           {addError && (
             <div className="p-3 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm">
               {addError}
             </div>
           )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
               className="border rounded-md px-3 py-2"
@@ -72,7 +68,6 @@ export default function AddJobModal({
               onChange={(e) => updateJobField("vacancies", e.target.value)}
             />
           </div>
-
           <textarea
             className="border rounded-md px-3 py-2 w-full"
             rows={3}
@@ -80,7 +75,6 @@ export default function AddJobModal({
             value={newJob.description}
             onChange={(e) => updateJobField("description", e.target.value)}
           />
-
           <textarea
             className="border rounded-md px-3 py-2 w-full"
             rows={3}
@@ -89,7 +83,6 @@ export default function AddJobModal({
             onChange={(e) => updateJobField("requirements", e.target.value)}
           />
         </div>
-
         <div className="p-4 border-t flex justify-end gap-2">
           <button
             onClick={onClose}

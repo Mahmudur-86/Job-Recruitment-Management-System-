@@ -1,6 +1,4 @@
-
 import logo from '../../assets/logo.svg';
-import Admin from "./AuthForm/Admin.jsx";
 const Btn = ({ children, onClick }) => (
   <button
     onClick={onClick}
