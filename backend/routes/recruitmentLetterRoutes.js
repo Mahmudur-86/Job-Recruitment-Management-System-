@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-// ✅ তোমার project structure অনুযায়ী
+
 const auth = require("../middleware/authMiddleware");
 
 const ctrl = require("../controllers/recruitmentLetterController");
