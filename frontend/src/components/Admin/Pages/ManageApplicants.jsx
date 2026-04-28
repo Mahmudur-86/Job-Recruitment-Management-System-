@@ -372,9 +372,7 @@ export default function ManageApplicants() {
                 </button>
               </div>
 
-              <p className="mt-3 text-xs text-gray-500">
-                This preview shows saved job-wise MCQs from DB.
-              </p>
+              
             </div>
           </div>
         </div>

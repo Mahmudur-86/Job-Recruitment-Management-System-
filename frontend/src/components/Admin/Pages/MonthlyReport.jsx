@@ -99,7 +99,7 @@ export default function MonthlyReport() {
       ))}
     </tr>
   );
-  // (mobile/tablet)
+  
   const COL1_W = "w-32 min-w-[128px]";
   const COL2_W = "w-72 min-w-[288px]";
   const COL1_LEFT = "md:left-0";
@@ -216,6 +216,8 @@ export default function MonthlyReport() {
                       <th className="text-center px-3 py-3 font-semibold w-[150px]"> Recruitment Letter</th>
                      <th className="text-center px-3 py-3 font-semibold w-[120px]">Email Status</th>
                       <th className="text-left px-3 py-3 font-semibold w-[520px]">  Email To (with time)</th>
+
+                   
                     </tr>
                   </thead>
                   <tbody className="bg-white">
