@@ -72,7 +72,7 @@ exports.getAllApplications = async (req, res) => {
 
     const apps = await Application.find()
       .populate("userId", "name email")
-      .populate("jobId", "title company location category salary mcqs") // ✅ FIX: mcqs include
+      .populate("jobId", "title company location category salary mcqs") //  mcqs include
       .sort({ createdAt: -1 });
     return res.json({ applications: apps });
   } catch (err) {
