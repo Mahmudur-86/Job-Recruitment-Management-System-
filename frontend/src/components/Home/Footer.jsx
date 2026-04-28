@@ -66,6 +66,7 @@ export default function Footer() {
           © {new Date().getFullYear()}. All rights reserved. |
           <a href="#" className="ml-2 hover:text-white transition">Privacy Policy</a> |
           <a href="#" className="ml-2 hover:text-white transition">Terms of Service</a>
+          
         </p>
       </div>
     </footer>

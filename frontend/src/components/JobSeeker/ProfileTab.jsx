@@ -477,6 +477,10 @@ export default function ProfileTab({ profile, setProfile }) {
               <p>
                 <strong>Gender:</strong> {profile.gender || ""}
               </p>
+
+
+
+              
               <p className="sm:col-span-2">
                 <strong>Job Interest:</strong> {profile.jobInterest || ""}
               </p>
