@@ -19,6 +19,15 @@ export default function Login({ onBack, onCreateNew, onLoginSuccess }) {
       setError("All fields are required");
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (form.password.length < 9) {
+      setError("Password must be at least 9 characters long");
+      return;
+    }
     try {
       const { data } = await axios.post(
         `${API_BASE}/login`,
