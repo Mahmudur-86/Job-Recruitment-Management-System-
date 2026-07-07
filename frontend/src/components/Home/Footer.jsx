@@ -53,9 +53,9 @@ export default function Footer() {
           <br />
             <button
               type="submit"
-              className="px-6 py-2 bg-teal-600 rounded text-white text-sm hover:bg-teal-500 transition"
+              className="px-6 py-2 bg-teal-700 rounded text-white text-sm hover:bg-teal-500 transition"
             >
-             Send
+             Send 
             </button>
         </div>
       </div>
@@ -65,7 +65,8 @@ export default function Footer() {
         <p>
           © {new Date().getFullYear()}. All rights reserved. |
           <a href="#" className="ml-2 hover:text-white transition">Privacy Policy</a> |
-          <a href="#" className="ml-2 hover:text-white transition">Terms of Service</a>
+          <a href="#" className="ml-2 hover:text-white transition">Terms of Service</a>   | 
+           <a href="#" className="ml-2 hover:text-white transition">Contact Support</a>
           
         </p>
       </div>
